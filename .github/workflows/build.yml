@@ -1,0 +1,46 @@
+name: Build
+
+run-name: Check "#${{github.run_number}}" [ ${{github.run_attempt}} ] [ ${{github.event.head_commit.message}} ] 
+
+on:
+  push:
+    branches-ignore: "master"
+
+  pull_request:
+    branches: [ "master", "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    container:
+      image: sjaekim/kuase_dev:v0.7
+
+    env:
+        BUILD_TYPE: Release
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Configure Submodules
+      run: |
+        git config --global --add safe.directory '*'
+        git submodule update --init --recursive
+    
+    - name: Configure CMake Environment
+      run: cmake -B $GITHUB_WORKSPACE/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build the project
+      run: cmake --build $GITHUB_WORKSPACE/build --config ${{env.BUILD_TYPE}}
+            
+    - name: Upload build directory
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-dir
+        path: build/
+        if-no-files-found: error
+
+  
