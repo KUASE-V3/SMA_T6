@@ -30,6 +30,25 @@ cmake --build .
 ```
 CMake를 이용하여 프로젝트를 빌드합니다.
 
+### CMake 설정 및 디렉토리 구조조
+📌  `CMakeLists.txt` 파일을 빌드 자동화를 위해 수정해야 합니다.
+📌  소스 코드의 경우 `.c`파일은 src디렉토리에, `.h`파일은 include디렉토리에 관리합니다.
+
+```sh
+# 공통 모듈을 라이브러리로 생성 (module.cpp)
+add_library(MyLibrary STATIC src/person.cpp)
+target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
+```
+해당 파일의 src/person.cpp는 예시이며, 파일 이름이 바뀌면 **해당 파일의 이름을 명시**합니다.
+파일이 추가되는 경우에도 **새로운 라인을 추가 후** 해당 파일을 명시합니다.
+
+```sh
+# 메인 애플리케이션 생성 (main.cpp는 라이브러리의 함수 호출)
+add_executable(MyApp src/main.cpp)
+target_link_libraries(MyApp MyLibrary)
+```
+📌 **Main함수가 위치한 소스코드가 바뀌는 경우** 해당 파일의 이름으로 수정해야 합니다.
+
 ---
 
 ## 🧪 테스트 실행 (GoogleTest)
@@ -39,6 +58,7 @@ CMake를 이용하여 프로젝트를 빌드합니다.
 cd build
 cmake .. -DBUILD_TESTS=ON
 cmake --build . --target googletest
+ctest -V
 ```
 ✅ **테스트 활성화(`BUILD_TESTS=ON`)** 후 GoogleTest를 빌드하고 실행할 수 있습니다.
 
@@ -75,3 +95,5 @@ cmake --build . --target cppcheck
 ### SonarCloud 분석 실행 방법
 SonarCloud는 **GitHub Actions와 연동**되어, **코드를 push 하면 자동으로 분석이 수행**됩니다.  
 따라서 별도의 실행 명령 없이 **GitHub에 코드 변경 사항을 push**하면 자동으로 코드 품질 및 보안 검사가 진행됩니다.
+
+---
