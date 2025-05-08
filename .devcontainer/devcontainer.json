@@ -1,0 +1,7 @@
+{
+    "name": "t6_dev",
+    "image": "sjaekim/kuase_dev:v0.7",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/dev,type=bind",
+    "workspaceFolder": "/home/dev",
+    "shutdownAction": "stopContainer"
+}
