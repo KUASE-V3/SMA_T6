@@ -1,15 +1,14 @@
 name: Build
 
-run-name: Check "#${{github.run_number}}" [ ${{github.run_attempt}} ] [ ${{github.event.head_commit.message}} ] 
+run-name: Build [${{github.run_number}}] [${{github.event.head_commit.message}}]
 
 on:
   push:
     branches-ignore: "master"
 
   pull_request:
-    branches: [ "master", "main" ]
+    branches: [ "main" ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
