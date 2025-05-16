@@ -6,6 +6,7 @@
 
 class Order {
     public:
+        Order();
         Order(const Drink& drink, const std::string& code, const std::string& payStatus);
 
         Order attachPrePay(const Drink& drink, const std::string& code);  

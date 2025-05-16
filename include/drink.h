@@ -6,7 +6,9 @@
 
 class Drink {
     public:
-        Drink(std::string name, double price, std::string code);
+        Drink();
+        
+        Drink(std::string name, int price, std::string code);
 
         std::string getName() const;
         int getPrice() const;
