@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 project(MyProject)
 
-# C++17 ì‚¬ìš©
+find_package(Threads REQUIRED)
+
+# C++17 ï¿½ê¶—ï¿½ìŠœ
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Unix ê¸°ë°˜ ì‹œìŠ¤í…œì—ì„œëŠ” ì‹¤í–‰ íŒŒì¼ ì´ë¦„ì— .out postfix ë¶€ì—¬
+# Unix æ¹²ê³•ì»? ï¿½ë–†ï¿½ë’ªï¿½ë?¥ï¿½ë¿‰ï¿½ê½Œï¿½?’— ï¿½ë–ï¿½ë»¾ ï¿½ë™†ï¿½ì”ª ï¿½ì” ?”±ê¾©ë¿‰ .out postfix ?ºï¿½ï¿½ë¿?
 if(UNIX)
     set(CMAKE_EXECUTABLE_SUFFIX ".out")
 endif()
@@ -17,26 +19,79 @@ if(ENABLE_COVERAGE)
   add_link_options(--coverage)
 endif()
 
-# í—¤ë” íŒŒì¼ ë””ë ‰í„°ë¦¬ ì¶”ê°€
-include_directories(${PROJECT_SOURCE_DIR}/include)
+# ï¿½ë¿¤ï¿½ëœ‘ ï¿½ë™†ï¿½ì”ª ï¿½ëµ’ï¿½ì †ï¿½ê½£?”±ï¿? ?•°ë¶½ï¿½ï¿?
+include_directories(
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/external/rapidjson/include
+)
 
-# ê³µí†µ ëª¨ë“ˆì„ ë¼ì´ë¸ŒëŸ¬ë¦¬ë¡œ ìƒì„± (module.cpp)
+
+# ??¨ë“¯?„» ï§â‘¤ë±?ï¿½ì“£ ï¿½ì”ªï¿½ì” ?‡‰?š®?œ­?”±?‰ì¤ˆ ï¿½ê¹®ï¿½ê½¦ (module.cpp)
 add_library(MyLibrary STATIC src/person.cpp)
 target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-# ë©”ì¸ ì• í”Œë¦¬ì¼€ì´ì…˜ ìƒì„± (main.cppëŠ” ë¼ì´ë¸ŒëŸ¬ë¦¬ì˜ í•¨ìˆ˜ í˜¸ì¶œ)
-add_executable(MyApp src/main.cpp)
-target_link_libraries(MyApp MyLibrary)
+# MessageSerializer Àü¿ë ¶óÀÌºê·¯¸®
+add_library(serializer STATIC
+    src/network/MessageSerializer.cpp
+)
+target_include_directories(serializer PUBLIC
+    ${PROJECT_SOURCE_DIR}/include
+)
+# Network ¶óÀÌºê·¯¸®
+# -> MessageSender, MessageReceiver, PaymentCallbackReceiver ±¸Çö¸¸
+add_library(network STATIC
+    src/network/MessageSender.cpp
+    src/network/MessageReceiver.cpp
+    src/network/PaymentCallbackReceiver.cpp
+)
+target_include_directories(network PUBLIC
+    ${PROJECT_SOURCE_DIR}/include
+)
+# Persistence ·¹ÀÌ¾î (OvmAddressRepository)
+add_library(persistence STATIC
+    src/persistence/OvmAddressRepository.cpp
+)
+target_include_directories(persistence PUBLIC
+    ${PROJECT_SOURCE_DIR}/include
+)
 
-# í…ŒìŠ¤íŠ¸ ë¹Œë“œë¥¼ ì„ íƒì ìœ¼ë¡œ í™œì„±í™”í•˜ëŠ” ì˜µì…˜ ì¶”ê°€
+target_link_libraries(network
+    PRIVATE
+        serializer
+        Threads::Threads
+)
+
+# ¾ÖÇÃ¸®ÄÉÀÌ¼Ç ½ÇÇà ÆÄÀÏ
+add_executable(MyApp
+    src/main.cpp
+)
+target_link_libraries(MyApp
+    PRIVATE
+        MyLibrary
+        serializer
+        network
+)
+# Áø¼Ö Å×½ºÆ®¿ë
+add_executable(TestNetwork
+    tests/test_network.cpp
+)
+target_link_libraries(TestNetwork
+    PRIVATE
+        persistence
+        network
+        Threads::Threads
+)
+
+
+# ï¿½ë?’ï¿½?’ªï¿½ë“ƒ ?®?š®ë±¶ç‘œï¿? ï¿½ê½‘ï¿½ê¹®ï¿½ìŸ»ï¿½ì‘æ¿¡ï¿½ ï¿½ì†¢ï¿½ê½¦ï¿½ì†•ï¿½ë¸¯ï¿½ë’— ï¿½ìƒƒï¿½ë?? ?•°ë¶½ï¿½ï¿?
 option(BUILD_TESTS "Build tests" OFF)
 
 if(BUILD_TESTS)
-  # GoogleTest ì„œë¸Œëª¨ë“ˆ ì¶”ê°€ (í…ŒìŠ¤íŠ¸ ë¹Œë“œëŠ” ê¸°ë³¸ ALLì—ì„œ ì œì™¸)
+  # GoogleTest ï¿½ê½Œ?‡‰?š®?ˆï¿½ë±¢ ?•°ë¶½ï¿½ï¿? (ï¿½ë?’ï¿½?’ªï¿½ë“ƒ ?®?š®ë±¶ï¿½?’— æ¹²ê³•?‚¯ ALLï¿½ë¿‰ï¿½ê½Œ ï¿½ì £ï¿½ì‡…)
   add_subdirectory(lib/googletest EXCLUDE_FROM_ALL)
   include_directories(${PROJECT_SOURCE_DIR}/lib/googletest/googletest/include)
   
-  # í…ŒìŠ¤íŠ¸ ì‹¤í–‰ íŒŒì¼ ìƒì„± (test_main.cpp í¬í•¨) - ê¸°ë³¸ ë¹Œë“œì—ì„œ ì œì™¸
+  # ï¿½ë?’ï¿½?’ªï¿½ë“ƒ ï¿½ë–ï¿½ë»¾ ï¿½ë™†ï¿½ì”ª ï¿½ê¹®ï¿½ê½¦ (test_main.cpp ï¿½ë£·ï¿½ë¸¿) - æ¹²ê³•?‚¯ ?®?š®ë±¶ï¿½ë¿‰ï¿½ê½? ï¿½ì £ï¿½ì‡…
   add_executable(RunTests tests/test_person.cpp)
   set_target_properties(RunTests PROPERTIES EXCLUDE_FROM_ALL TRUE)
   target_link_libraries(RunTests MyLibrary gtest_main gtest pthread)
@@ -44,11 +99,11 @@ if(BUILD_TESTS)
   enable_testing()
   add_test(NAME GoogleTests COMMAND RunTests)
   
-  # "googletest"ë¼ëŠ” custom targetì„ ë§Œë“¤ì–´ í•„ìš” ì‹œ í…ŒìŠ¤íŠ¸ë¥¼ ë”°ë¡œ ë¹Œë“œí•  ìˆ˜ ìˆë„ë¡ í•¨
+  # "googletest"ï¿½ì”ªï¿½ë’— custom targetï¿½ì“£ ï§ëš®ë±¾ï¿½ë¼? ï¿½ë¸˜ï¿½ìŠ‚ ï¿½ë–† ï¿½ë?’ï¿½?’ªï¿½ë“ƒ?‘œï¿? ï¿½ëµ²æ¿¡ï¿½ ?®?š®ë±¶ï¿½ë¸? ï¿½ë‹” ï¿½ì—³ï¿½ë£„æ¿¡ï¿½ ï¿½ë¸¿
   add_custom_target(googletest DEPENDS RunTests)
 endif()
 
-# cppcheck ì‹¤í–‰ ì»¤ìŠ¤í…€ íƒ€ê¹ƒ ì¶”ê°€
+# cppcheck ï¿½ë–ï¿½ë»¾ ??Œã…¼?’ªï¿½ï¿½ï¿? ï¿½ï¿½ï¿½æºï¿? ?•°ë¶½ï¿½ï¿?
 find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)
 if(CPPCHECK_EXECUTABLE)
   message(STATUS "Found cppcheck: ${CPPCHECK_EXECUTABLE}")
