@@ -3,6 +3,12 @@ project(MyProject)
 
 find_package(Threads REQUIRED)
 
+# ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ Domain (header-only) ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+add_library(domain INTERFACE)
+target_include_directories(domain INTERFACE
+    ${PROJECT_SOURCE_DIR}/include
+)
+
 # C++17 ï¿½ê¶—ï¿½ìŠœ
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -29,6 +35,19 @@ include_directories(
 # ??¨ë“¯?„» ï§â‘¤ë±?ï¿½ì“£ ï¿½ì”ªï¿½ì” ?‡‰?š®?œ­?”±?‰ì¤ˆ ï¿½ê¹®ï¿½ê½¦ (module.cpp)
 add_library(MyLibrary STATIC src/person.cpp)
 target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
+# ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ Application Logic Layer ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+add_library(application STATIC
+    src/service/MessageService.cpp
+)
+target_include_directories(application PUBLIC
+    ${PROJECT_SOURCE_DIR}/include
+)
+target_link_libraries(application
+    PRIVATE
+        network        # ¸Ş½ÃÁö ¼Û¼ö½Å
+        persistence    # OvmAddressRepository
+        domain         # Drink / Order
+)
 
 # MessageSerializer Àü¿ë ¶óÀÌºê·¯¸®
 add_library(serializer STATIC
@@ -58,6 +77,7 @@ target_include_directories(persistence PUBLIC
 target_link_libraries(network
     PRIVATE
         serializer
+        persistence   
         Threads::Threads
 )
 
@@ -68,20 +88,32 @@ add_executable(MyApp
 target_link_libraries(MyApp
     PRIVATE
         MyLibrary
+        application
         serializer
         network
 )
-# Áø¼Ö Å×½ºÆ®¿ë
-add_executable(TestNetwork
-    tests/test_network.cpp
+# # Áø¼Ö Å×½ºÆ®¿ë
+# add_executable(TestNetwork
+#     tests/test_network.cpp
+# )
+# target_link_libraries(TestNetwork
+#     PRIVATE
+#         persistence
+#         network
+#         Threads::Threads
+# )
+
+# ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ Å×½ºÆ® 2  (tests/test_bootstrap.cpp) ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
+add_executable(TestBootstrap
+    tests/test_bootstrap.cpp
 )
-target_link_libraries(TestNetwork
+target_link_libraries(TestBootstrap
     PRIVATE
-        persistence
+        application
         network
+        persistence
         Threads::Threads
 )
-
 
 # ï¿½ë?’ï¿½?’ªï¿½ë“ƒ ?®?š®ë±¶ç‘œï¿? ï¿½ê½‘ï¿½ê¹®ï¿½ìŸ»ï¿½ì‘æ¿¡ï¿½ ï¿½ì†¢ï¿½ê½¦ï¿½ì†•ï¿½ë¸¯ï¿½ë’— ï¿½ìƒƒï¿½ë?? ?•°ë¶½ï¿½ï¿?
 option(BUILD_TESTS "Build tests" OFF)

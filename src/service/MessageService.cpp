@@ -1,37 +1,116 @@
 #include "service/MessageService.hpp"
+#include "network/MessageSender.hpp"
+#include "network/MessageReceiver.hpp"
+#include "persistence/OvmAddressRepository.hpp"
+#include "domain/Drink.hpp" 
+#include <iostream>
+#include <thread>        
 
-MessageService::MessageService(MessageSender& sender, MessageReceiver& receiver)
-  : sender_(sender), receiver_(receiver) {
-    receiver_.subscribe(Message::Type::RESP_STOCK, [this](const Message& m){
-        if (stock_cb_) stock_cb_(m);
-    });
-    receiver_.subscribe(Message::Type::RESP_PREPAY, [this](const Message& m){
-        if (prepay_cb_) prepay_cb_(m);
-    });
+using application::MessageService;
+namespace {
+
+/// 응답대기 타임아웃 등은 추후 condition_variable 로 구현 예정
+constexpr int kNetworkTimeoutMs = 500;
+
 }
 
-void MessageService::requestStock(const Message& req) { sender_.send(req); }
-void MessageService::onStockResponse(StockHandler cb) { stock_cb_ = std::move(cb); }
-void MessageService::requestPrepay(const Message& req) { sender_.send(req); }
-void MessageService::onPrepayResponse(PrepayHandler cb) { prepay_cb_ = std::move(cb); }
-// bool MessageService::validOVMStock(const std::string& vm_id) {
-//     // 1) REQ_STOCK 메시지 구성
-//     Message req;
-//     req.msg_type = Message::Type::REQ_STOCK;
-//     req.src_id   = /* 내 자판기 ID, 예: */ "T5";   // TODO: runtime에 주입된 내 ID 사용
-//     req.dst_id   = vm_id;
-//     req.msg_content = {
-//         {"item_code", /* TODO: 체크할 음료 코드 */ "00"},
-//         {"item_num",  /* TODO: 체크할 수량, 보통 "01" */    "01"}
-//     };
+MessageService::MessageService(network::MessageSender&   sender,
+                               network::MessageReceiver& receiver,
+                               const persistence::OvmAddressRepository& repo)
+  : sender_(sender)
+  , receiver_(receiver)
+  , repo_   (repo)
+{
+    /* Receiver → Service 라우팅 */
+    receiver_.subscribe(network::Message::Type::REQ_STOCK,
+                        [this](auto& m){ handleReqStock(m); });
+    receiver_.subscribe(network::Message::Type::RESP_STOCK,
+                        [this](auto& m){ handleRespStock(m); });
+    receiver_.subscribe(network::Message::Type::REQ_PREPAY,
+                        [this](auto& m){ handleReqPrepay(m); });
+    receiver_.subscribe(network::Message::Type::RESP_PREPAY,
+                        [this](auto& m){ handleRespPrepay(m); });
+}
 
-//     // 2) 요청 전송
-//     sender_.send(req);
+/* ─────────────────── UC-8 ─────────────────── */
+void MessageService::broadcastStock(const domain::Drink& drink)
+{
+    network::Message req;
+    req.msg_type = network::Message::Type::REQ_STOCK;
+    req.src_id   = "T5";                // TODO: 내 VM ID 주입
+    req.dst_id   = "0";                 // 브로드캐스트
+    req.msg_content = {
+        {"item_code", drink.code()},
+        {"item_num",  "01"}
+    };
+    sender_.send(req);
+}
 
-//     // 3) 응답 수신 대기
-//     //    TODO: 실제 비동기 콜백/condition_variable 등을 사용하여
-//     //    receiver_ 에서 RESP_STOCK 을 받고, msg_content["item_num"] > 0 여부 판단
-//     //
-//     //    현재는 stub이므로 항상 true 반환
-//     return true;
-// } 이거 추후 컨트롤러가 요청하는 방식 정확히 정의되면 맞춰서 ㅅ정 
+/* ─────────────────── UC-9 (스텁) ─────────────────── */
+void MessageService::getDistance(const std::vector<network::Message>&)
+{
+    // TODO: DistanceService::findNearest(...) 호출
+}
+
+/* ─────────────────── UC-16 ─────────────────── */
+void MessageService::sendPrePayReq(const domain::Order& order)
+{
+    auto dst   = order.vm_id();                // Order 가 가진 대상 VM
+    auto ep_it = repo_.getEndpoint(dst);
+
+    if (ep_it.empty()) {
+        // TODO: ErrorService.log_error(...)
+        return;
+    }
+
+    network::Message req;
+    req.msg_type = network::Message::Type::REQ_PREPAY;
+    req.src_id   = "T5";
+    req.dst_id   = dst;
+    req.msg_content = {
+        {"item_code", order.drinkCode()},
+        {"item_num",  std::to_string(order.qty())},
+        {"cert_code", order.certCode()}
+    };
+    sender_.send(req);
+}
+
+/* ─────────────────── UC-15 (수신 측) ─────────────────── */
+void MessageService::respondPrepayReq(const domain::Order& /*order*/)
+{
+    // TODO: 실제 재고 확보 & PrepayCodeRepository.save(...)
+}
+
+/* ─────────────────── UC-17 ─────────────────── */
+bool MessageService::validOVMStock(const std::string& id,
+                                   const domain::Drink& drink,
+                                   int qty)
+{
+    /* 1) 요청 전송 */
+    network::Message req;
+    req.msg_type = network::Message::Type::REQ_STOCK;
+    req.src_id   = "T5";
+    req.dst_id   = id;
+    req.msg_content = {
+        {"item_code", drink.code()},
+        {"item_num",  std::to_string(qty)}
+    };
+    sender_.send(req);
+
+    /* 2) 응답 대기 ? TODO: condition_variable 로 실제 wait */
+    std::this_thread::sleep_for(std::chrono::milliseconds(kNetworkTimeoutMs));
+
+    /* 스텁: 항상 true */
+    return true;
+}
+
+/* ─────────────────── 수신 라우팅 ─────────────────── */
+void MessageService::onMessage(const network::Message&) {
+    /* 현재 subscribe() 가 직접 분기하므로 빈 함수 */
+}
+
+/* ─────────────────── 내부 헬퍼 (모두 TODO) ─────────────────── */
+void MessageService::handleReqStock (const network::Message&) { /* TODO */ }
+void MessageService::handleRespStock(const network::Message&) { /* TODO */ }
+void MessageService::handleReqPrepay(const network::Message&) { /* TODO */ }
+void MessageService::handleRespPrepay(const network::Message&) { /* TODO */ }

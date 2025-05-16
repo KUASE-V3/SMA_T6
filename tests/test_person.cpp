@@ -12,3 +12,9 @@ TEST(PersonTest, DifferentPerson) {
     EXPECT_EQ(p.getName(), "Charlie");
     EXPECT_EQ(p.getAge(), 40);
 }
+
+
+main(){
+    ui = new Ui::MainWindow;
+    
+}

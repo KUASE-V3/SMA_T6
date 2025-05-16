@@ -1,14 +1,14 @@
 #pragma once
-
 #include <string>
-#include <stdexcept>
-#include "network/message.hpp"
+#include "message.hpp"
 
+namespace network {
+
+/** Message <-> JSON 문자열 직렬화 유틸 (RapidJSON 기반) */
 class MessageSerializer {
-    public :
-    // 직렬화 : 메시지 -> json
-        static std::string toJson(const Message& msg);
-    // 역직렬화 : json -> 메시지
-        static Message fromJson(const std::string& jsonStr);
+public:
+    static std::string toJson(const Message& msg);     // TODO: 구현
+    static Message fromJson(const std::string& json);// TODO: 구현
 };
 
+} // namespace network

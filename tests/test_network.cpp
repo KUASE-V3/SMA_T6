@@ -1,142 +1,142 @@
-// tests/test_network.cpp
-//
-// Å×½ºÆ® ½Ã³ª¸®¿À
-// ¦£¦¡¦¡¦¡¦¡¦¡¦¨¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¨¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¨¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¤
-// ¦¢ No. ¦¢ Å×½ºÆ® Á¾·ù      ¦¢ ¼Û½ÅÀÚ        ¦¢ ¼ö½ÅÀÚ ¹× µ¿ÀÛ                                    ¦¢
-// ¦§¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦©
-// ¦¢ 1   ¦¢ ºê·ÎµåÄ³½ºÆ® Àç°í ¦¢ T1 (Æ÷Æ® 9000) ¦¢ T2 (Æ÷Æ® 9001) ¼ö½Å ¡æ ÀÀ´ä(RESP_STOCK)           ¦¢
-// ¦¢     ¦¢ Á¶È¸ ¿äÃ»       ¦¢               ¦¢ T1 ¼ö½Å ¡æ ·Î±× Ãâ·Â                             ¦¢
-// ¦§¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦©
-// ¦¢ 2   ¦¢ ´ÜÀÏ ¼±°áÁ¦ ¿äÃ» ¦¢ T1 ¡æ T2       ¦¢ T2 ¼ö½Å(REQ_PREPAY) ¡æ ÀÀ´ä(RESP_PREPAY)          ¦¢
-// ¦¢     ¦¢               ¦¢               ¦¢ T1 ¼ö½Å ¡æ ·Î±× Ãâ·Â                             ¦¢
-// ¦¦¦¡¦¡¦¡¦¡¦¡¦ª¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦ª¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦ª¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¥
+// // tests/test_network.cpp
+// //
+// // Å×½ºÆ® ½Ã³ª¸®¿À
+// // ¦£¦¡¦¡¦¡¦¡¦¡¦¨¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¨¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¨¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¤
+// // ¦¢ No. ¦¢ Å×½ºÆ® Á¾·ù      ¦¢ ¼Û½ÅÀÚ        ¦¢ ¼ö½ÅÀÚ ¹× µ¿ÀÛ                                    ¦¢
+// // ¦§¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦©
+// // ¦¢ 1   ¦¢ ºê·ÎµåÄ³½ºÆ® Àç°í ¦¢ T1 (Æ÷Æ® 9000) ¦¢ T2 (Æ÷Æ® 9001) ¼ö½Å ¡æ ÀÀ´ä(RESP_STOCK)           ¦¢
+// // ¦¢     ¦¢ Á¶È¸ ¿äÃ»       ¦¢               ¦¢ T1 ¼ö½Å ¡æ ·Î±× Ãâ·Â                             ¦¢
+// // ¦§¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦«¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦©
+// // ¦¢ 2   ¦¢ ´ÜÀÏ ¼±°áÁ¦ ¿äÃ» ¦¢ T1 ¡æ T2       ¦¢ T2 ¼ö½Å(REQ_PREPAY) ¡æ ÀÀ´ä(RESP_PREPAY)          ¦¢
+// // ¦¢     ¦¢               ¦¢               ¦¢ T1 ¼ö½Å ¡æ ·Î±× Ãâ·Â                             ¦¢
+// // ¦¦¦¡¦¡¦¡¦¡¦¡¦ª¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦ª¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦ª¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¥
 
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <vector>
-#include <unordered_map>
+// #include <iostream>
+// #include <thread>
+// #include <chrono>
+// #include <vector>
+// #include <unordered_map>
 
-#include <boost/asio.hpp>
+// #include <boost/asio.hpp>
 
-#include "network/message.hpp"
-#include "network/MessageSerializer.hpp"
-#include "network/MessageSender.hpp"
-#include "network/MessageReceiver.hpp"
-#include "persistence/OvmAddressRepository.hpp"
+// #include "network/message.hpp"
+// #include "network/MessageSerializer.hpp"
+// #include "network/MessageSender.hpp"
+// #include "network/MessageReceiver.hpp"
+// #include "persistence/OvmAddressRepository.hpp"
 
-using namespace std::chrono_literals;
-using boost::asio::ip::tcp;
+// using namespace std::chrono_literals;
+// using boost::asio::ip::tcp;
 
-int main() {
-    // 1) Asio I/O ÄÁÅØ½ºÆ®
-    boost::asio::io_context io;
+// int main() {
+//     // 1) Asio I/O ÄÁÅØ½ºÆ®
+//     boost::asio::io_context io;
 
-    // 2) OVM ÁÖ¼Ò ÀúÀå¼Ò¿¡¼­ ¿£µåÆ÷ÀÎÆ® ·Îµå
-    persistence::OvmAddressRepository repo;
-    auto endpoints = repo.getAllEndpoints();             // ¸ðµç ºê·ÎµåÄ³½ºÆ® ´ë»ó
-    // ID¡æendpoint ¸Ê
-    std::unordered_map<std::string, std::string> id_map;
-    for (const auto& id : {"T1","T2"}) {
-        id_map[id] = repo.getEndpoint(id);
-    }
+//     // 2) OVM ÁÖ¼Ò ÀúÀå¼Ò¿¡¼­ ¿£µåÆ÷ÀÎÆ® ·Îµå
+//     persistence::OvmAddressRepository repo;
+//     auto endpoints = repo.getAllEndpoints();             // ¸ðµç ºê·ÎµåÄ³½ºÆ® ´ë»ó
+//     // ID¡æendpoint ¸Ê
+//     std::unordered_map<std::string, std::string> id_map;
+//     for (const auto& id : {"T1","T2"}) {
+//         id_map[id] = repo.getEndpoint(id);
+//     }
 
-    // 3) MessageSender, MessageReceiver ÀÎ½ºÅÏ½º
-    network::MessageSender sender(io, endpoints, id_map);
-    // °¢ ÀÚÆÇ±âº° ¸®½Ã¹ö: T1Àº 9000¹ø, T2´Â 9001¹ø Æ÷Æ®
-    unsigned short portT1 = std::stoi(repo.getEndpoint("T1").substr(repo.getEndpoint("T1").find(':')+1));
-    unsigned short portT2 = std::stoi(repo.getEndpoint("T2").substr(repo.getEndpoint("T2").find(':')+1));
-    network::MessageReceiver receiverT1(io, portT1);
-    network::MessageReceiver receiverT2(io, portT2);
+//     // 3) MessageSender, MessageReceiver ÀÎ½ºÅÏ½º
+//     network::MessageSender sender(io, endpoints, id_map);
+//     // °¢ ÀÚÆÇ±âº° ¸®½Ã¹ö: T1Àº 9000¹ø, T2´Â 9001¹ø Æ÷Æ®
+//     unsigned short portT1 = std::stoi(repo.getEndpoint("T1").substr(repo.getEndpoint("T1").find(':')+1));
+//     unsigned short portT2 = std::stoi(repo.getEndpoint("T2").substr(repo.getEndpoint("T2").find(':')+1));
+//     network::MessageReceiver receiverT1(io, portT1);
+//     network::MessageReceiver receiverT2(io, portT2);
 
-    // 4) T1¿¡¼­ RESP_STOCK ¹× RESP_PREPAY ¼ö½Å ÄÝ¹é
-    receiverT1.subscribe(Message::Type::RESP_STOCK,
-        [](const Message& resp){
-            std::cout << "[T1] Received RESP_STOCK from " << resp.src_id
-                      << " item_code=" << resp.msg_content.at("item_code")
-                      << ", item_num=" << resp.msg_content.at("item_num")
-                      << ", coord=(" << resp.msg_content.at("coor_x")
-                      << "," << resp.msg_content.at("coor_y") << ")\n";
-        });
-    receiverT1.subscribe(Message::Type::RESP_PREPAY,
-        [](const Message& resp){
-            std::cout << "[T1] Received RESP_PREPAY from " << resp.src_id
-                      << " item_code=" << resp.msg_content.at("item_code")
-                      << ", item_num=" << resp.msg_content.at("item_num")
-                      << ", availability=" << resp.msg_content.at("availability") << "\n";
-        });
+//     // 4) T1¿¡¼­ RESP_STOCK ¹× RESP_PREPAY ¼ö½Å ÄÝ¹é
+//     receiverT1.subscribe(Message::Type::RESP_STOCK,
+//         [](const Message& resp){
+//             std::cout << "[T1] Received RESP_STOCK from " << resp.src_id
+//                       << " item_code=" << resp.msg_content.at("item_code")
+//                       << ", item_num=" << resp.msg_content.at("item_num")
+//                       << ", coord=(" << resp.msg_content.at("coor_x")
+//                       << "," << resp.msg_content.at("coor_y") << ")\n";
+//         });
+//     receiverT1.subscribe(Message::Type::RESP_PREPAY,
+//         [](const Message& resp){
+//             std::cout << "[T1] Received RESP_PREPAY from " << resp.src_id
+//                       << " item_code=" << resp.msg_content.at("item_code")
+//                       << ", item_num=" << resp.msg_content.at("item_num")
+//                       << ", availability=" << resp.msg_content.at("availability") << "\n";
+//         });
 
-    // 5) T2¿¡¼­ REQ_STOCK ¹× REQ_PREPAY ¼ö½Å ÄÝ¹é
-    receiverT2.subscribe(Message::Type::REQ_STOCK,
-        [&](const Message& req){
-            std::cout << "[T2] Received REQ_STOCK from " << req.src_id << "\n";
-            // RESP_STOCK ÀÀ´ä
-            Message resp;
-            resp.msg_type = Message::Type::RESP_STOCK;
-            resp.src_id   = "T2";
-            resp.dst_id   = req.src_id;
-            resp.msg_content = {
-                {"item_code", req.msg_content.at("item_code")},
-                {"item_num",  req.msg_content.at("item_num")},
-                {"coor_x",    "10"},
-                {"coor_y",    "20"}
-            };
-            sender.send(resp);
-        });
-    receiverT2.subscribe(Message::Type::REQ_PREPAY,
-        [&](const Message& req){
-            std::cout << "[T2] Received REQ_PREPAY from " << req.src_id << "\n";
-            // RESP_PREPAY ÀÀ´ä (always available for test)
-            Message resp;
-            resp.msg_type = Message::Type::RESP_PREPAY;
-            resp.src_id   = "T2";
-            resp.dst_id   = req.src_id;
-            resp.msg_content = {
-                {"item_code",    req.msg_content.at("item_code")},
-                {"item_num",     req.msg_content.at("item_num")},
-                {"availability", "T"}  // Å×½ºÆ®¿ë Ç×»ó ¼º°ø
-            };
-            sender.send(resp);
-        });
+//     // 5) T2¿¡¼­ REQ_STOCK ¹× REQ_PREPAY ¼ö½Å ÄÝ¹é
+//     receiverT2.subscribe(Message::Type::REQ_STOCK,
+//         [&](const Message& req){
+//             std::cout << "[T2] Received REQ_STOCK from " << req.src_id << "\n";
+//             // RESP_STOCK ÀÀ´ä
+//             Message resp;
+//             resp.msg_type = Message::Type::RESP_STOCK;
+//             resp.src_id   = "T2";
+//             resp.dst_id   = req.src_id;
+//             resp.msg_content = {
+//                 {"item_code", req.msg_content.at("item_code")},
+//                 {"item_num",  req.msg_content.at("item_num")},
+//                 {"coor_x",    "10"},
+//                 {"coor_y",    "20"}
+//             };
+//             sender.send(resp);
+//         });
+//     receiverT2.subscribe(Message::Type::REQ_PREPAY,
+//         [&](const Message& req){
+//             std::cout << "[T2] Received REQ_PREPAY from " << req.src_id << "\n";
+//             // RESP_PREPAY ÀÀ´ä (always available for test)
+//             Message resp;
+//             resp.msg_type = Message::Type::RESP_PREPAY;
+//             resp.src_id   = "T2";
+//             resp.dst_id   = req.src_id;
+//             resp.msg_content = {
+//                 {"item_code",    req.msg_content.at("item_code")},
+//                 {"item_num",     req.msg_content.at("item_num")},
+//                 {"availability", "T"}  // Å×½ºÆ®¿ë Ç×»ó ¼º°ø
+//             };
+//             sender.send(resp);
+//         });
 
-    // 6) ¸®½Ã¹ö(¼ö½Å ·çÇÁ) ½ÃÀÛ
-    receiverT1.start();
-    receiverT2.start();
+//     // 6) ¸®½Ã¹ö(¼ö½Å ·çÇÁ) ½ÃÀÛ
+//     receiverT1.start();
+//     receiverT2.start();
 
-    // 7) io_context¸¦ º°µµ ½º·¹µå·Î ½ÇÇà
-    std::thread io_thread([&]{ io.run(); });
+//     // 7) io_context¸¦ º°µµ ½º·¹µå·Î ½ÇÇà
+//     std::thread io_thread([&]{ io.run(); });
 
-    // --- Å×½ºÆ® ½Ã³ª¸®¿À 1: ºê·ÎµåÄ³½ºÆ® Àç°í Á¶È¸ ---
-    {
-        Message req;
-        req.msg_type   = Message::Type::REQ_STOCK;
-        req.src_id     = "T1";
-        req.dst_id     = "0";  // broadcast
-        req.msg_content = {{"item_code","05"}, {"item_num","02"}};
-        std::cout << "\n--- Scenario 1: Broadcast REQ_STOCK ---\n";
-        sender.send(req);
-        std::this_thread::sleep_for(500ms);
-    }
+//     // --- Å×½ºÆ® ½Ã³ª¸®¿À 1: ºê·ÎµåÄ³½ºÆ® Àç°í Á¶È¸ ---
+//     {
+//         Message req;
+//         req.msg_type   = Message::Type::REQ_STOCK;
+//         req.src_id     = "T1";
+//         req.dst_id     = "0";  // broadcast
+//         req.msg_content = {{"item_code","05"}, {"item_num","02"}};
+//         std::cout << "\n--- Scenario 1: Broadcast REQ_STOCK ---\n";
+//         sender.send(req);
+//         std::this_thread::sleep_for(500ms);
+//     }
 
-    // --- Å×½ºÆ® ½Ã³ª¸®¿À 2: ´ÜÀÏ ¼±°áÁ¦ ¿äÃ» ---
-    {
-        Message req;
-        req.msg_type   = Message::Type::REQ_PREPAY;
-        req.src_id     = "T1";
-        req.dst_id     = "T2";  // unicast to T2
-        req.msg_content = {
-            {"item_code", "05"},
-            {"item_num",  "02"},
-            {"cert_code", "ABC123"}  // Å×½ºÆ®¿ë
-        };
-        std::cout << "\n--- Scenario 2: Unicast REQ_PREPAY ---\n";
-        sender.send(req);
-        std::this_thread::sleep_for(500ms);
-    }
+//     // --- Å×½ºÆ® ½Ã³ª¸®¿À 2: ´ÜÀÏ ¼±°áÁ¦ ¿äÃ» ---
+//     {
+//         Message req;
+//         req.msg_type   = Message::Type::REQ_PREPAY;
+//         req.src_id     = "T1";
+//         req.dst_id     = "T2";  // unicast to T2
+//         req.msg_content = {
+//             {"item_code", "05"},
+//             {"item_num",  "02"},
+//             {"cert_code", "ABC123"}  // Å×½ºÆ®¿ë
+//         };
+//         std::cout << "\n--- Scenario 2: Unicast REQ_PREPAY ---\n";
+//         sender.send(req);
+//         std::this_thread::sleep_for(500ms);
+//     }
 
-    // 8) Á¤¸® ¹× Á¾·á
-    io.stop();
-    io_thread.join();
+//     // 8) Á¤¸® ¹× Á¾·á
+//     io.stop();
+//     io_thread.join();
 
-    return 0;
-}
+//     return 0;
+// }

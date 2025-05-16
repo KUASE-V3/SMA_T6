@@ -8,6 +8,7 @@
 #include "network/message.hpp"
 #include "network/MessageSerializer.hpp"
 
+
 namespace network {
 // Enum class에 대한 해시 지원
 struct EnumClassHash {
