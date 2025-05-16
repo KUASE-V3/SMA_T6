@@ -42,26 +42,22 @@ bool PrepaymentCode::isUsable( std::string& code) {
 
 
 // 들어온 주문과 연결
-void PrepaymentCode::hold(Order order) {
+PrepaymentCode PrepaymentCode::hold(Order order) {
     heldOrder = order;
+    return *this;
 }
 
 
 
-
-
-//코드반환
-std::string PrepaymentCode :: getCode() const {
-    return code;
-}
-
-//상태반환
-std::string PrepaymentCode :: getStatus() {
-    return status;
-}
 
 //사용됨으로 변경
 void PrepaymentCode::setStatus(std::string& newStatus){
     if (newStatus == "Used")    status = newStatus;
+}
+
+
+
+std::string PrepaymentCode :: getCode() const {
+    return code;
 }
 
