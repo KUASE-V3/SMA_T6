@@ -1,7 +1,7 @@
 #include "drink.h"
 #include <string>
 
-//기본생성자
+namespace domain {
 Drink::Drink()
     : name_(""), price_(0), code_("") {}
 
@@ -23,6 +23,6 @@ Drink::Drink(std::string name, int price, std::string code)
         return code_;
     }
     
-    
+}
 
     

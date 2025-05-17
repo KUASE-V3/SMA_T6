@@ -1,15 +1,10 @@
-// PrepaymentService.hpp
-#ifndef PREPAYMENT_SERVICE_HPP
-#define PREPAYMENT_SERVICE_HPP
-
+#pragma once
 #include <string>
 
+namespace service {
 class PrepaymentService {
 public:
     bool isValid(const std::string& code);
-    void isSueCode();  // Order ì—†ì•°
-
-    // void issueCode(Order& order);  // ì£¼ì„ ì²˜ë¦¬ ë˜ëŠ” ì œê±°
+    void isSueCode();  // ¿ÀÅ¸ÁÖÀÇ: issueCode °¡ ¾Æ´Ï¶ó isSueCode ·Î µÅÀÖÀ½
 };
-
-#endif
+}

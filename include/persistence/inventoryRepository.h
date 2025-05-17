@@ -2,22 +2,24 @@
 #define INVENTORYREPOSITORY_H
 
 #include <string>
-#include "drink.h"
 #include <vector>
+#include "domain/drink.h"
 
+
+namespace persistence {
 
 class inventoryRepository {
 
     public:
-        static void setAllDrinks(const std::vector<Drink>& drinks);
-        static const std::vector<Drink>& getAllDrinks();;
+        static void setAllDrinks(const std::vector<domain::Drink>& list);
+        static const std::vector<domain::Drink>& getAllDrinks();
 
     private:
-        static std::vector<Drink> allDrinks;
+        static std::vector<domain::Drink> all_;   // 내부 캐시
 
         
 };
-
+}
 #endif
  
 /*

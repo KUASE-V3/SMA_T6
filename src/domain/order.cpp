@@ -1,14 +1,34 @@
-#include "order.h"
+#include "domain/order.h"
 
-Order::Order()
-: drink_(), orderID_(""), payStatus_("Pending"){}
+namespace domain {
 
-Order Order::attachPrePay(const Drink& drink, const std::string& code) {
-    return Order(drink, code, "Pending");  // ìƒì„± ì‹œ ê¸°ë³¸ ìƒíƒœëŠ” Pending
+/* ±âº» »ı¼ºÀÚ: dummy ÁÖ¹® */
+Order::Order(std::string  vmId,
+             Drink        drink,
+             int          qty,
+             std::string  certCode,
+             std::string  payStatus)
+    : vm_id_(std::move(vmId))
+    , drink_(std::move(drink))
+    , qty_(qty)
+    , cert_code_(std::move(certCode))
+    , pay_status_(std::move(payStatus))
+{}
+
+/* ¼±°áÁ¦ ÄÚµå ºÎÂø ¡æ »õ Order ¹İÈ¯ (ºÒº¯ °´Ã¼ ½ºÅ¸ÀÏ) */
+Order Order::attachPrePay(const std::string& cert) {
+    return Order(vm_id_, drink_, qty_, cert, pay_status_);
 }
 
+/* °áÁ¦ °á°ú ÀúÀå */
 void Order::setStatus(const std::string& status) {
-    if (status == "Approved" || status == "Declined") {
-        payStatus_ = status;
-    }
+    if (status == "Approved" || status == "Declined")
+        pay_status_ = status;
 }
+
+/* ¸Ş½ÃÁö ¶ó¿ìÆÃ ´Ü°è¿¡¼­ ¸ñÀûÁö VM À» ¹Ù²Ü ¼ö ÀÖ°Ô Á¦°ø */
+void Order::setVmId(const std::string& vmId) {
+    vm_id_ = vmId;
+}
+
+} // namespace domain

@@ -3,6 +3,7 @@
 
 #include <string>
 
+namespace domain {
 class VendingMachine {
     public:
     VendingMachine(const std::string& id, const std::string& location);
@@ -16,4 +17,5 @@ class VendingMachine {
         std::string location;
     };
     
+}
     #endif

@@ -1,12 +1,11 @@
-// include/ErrorService.hpp
-#ifndef ERROR_SERVICE_HPP
-#define ERROR_SERVICE_HPP
-
+#pragma once
 #include <string>
+
+namespace service {
 
 class ErrorService {
 public:
-    static std::string logError(const std::string& message);
+    std::string logError(const std::string& msg);
 };
 
-#endif // ERROR_SERVICE_HPP
+} // namespace service

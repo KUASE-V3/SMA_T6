@@ -5,6 +5,7 @@
 #include "drink.h"
 
 
+namespace domain {
 class inventory {
 
     public:
@@ -26,5 +27,6 @@ class inventory {
 
         
 };
+}
 
 #endif

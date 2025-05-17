@@ -3,16 +3,19 @@
 
 #include <vector>
 #include <string>
-#include "order.h"
-#include "prepaymentCode.h"
+#include "domain/order.h"
+#include "domain/prepaymentCode.h"
+
+
+namespace persistence {
 
 class PrepaymentCodeRepository {
 public:
-    void save(const PrepaymentCode& prepayCode);
+    void save(const domain::PrepaymentCode& code);
     bool isSameCode(const std::string& code) const;
 
 private:
-    std::vector<PrepaymentCode> prepaymentCodeList;
+    std::vector<domain::PrepaymentCode> prepaymentCodeList; // 내부 캐시
 };
-
+}
 #endif

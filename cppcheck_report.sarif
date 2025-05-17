@@ -4,6 +4,116 @@
     {
       "results": [
         {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/drink.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 1,
+                  "startColumn": 0,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Include file: \"drink.h\" not found."
+          },
+          "ruleId": "missingInclude"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/inventory.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 1,
+                  "startColumn": 0,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Include file: \"inventory.h\" not found."
+          },
+          "ruleId": "missingInclude"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 1,
+                  "startColumn": 0,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Include file: \"prepaymentCode.h\" not found."
+          },
+          "ruleId": "missingInclude"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 5,
+                  "endLine": 36,
+                  "startColumn": 5,
+                  "startLine": 36
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Consider using std::all_of or std::none_of algorithm instead of a raw loop."
+          },
+          "ruleId": "useStlAlgorithm"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/vendingMachine.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 1,
+                  "startColumn": 0,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Include file: \"vendingMachine.h\" not found."
+          },
+          "ruleId": "missingInclude"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -53,107 +163,239 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
+                  "uri": "src\/persistence\/prepayCodeRepository.cpp"
                 },
                 "region": {
-                  "endColumn": 38,
-                  "endLine": 26,
-                  "startColumn": 38,
-                  "startLine": 26
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Parameter 'm' can be declared as reference to const"
-          },
-          "ruleId": "constParameterReference"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
-                },
-                "region": {
-                  "endColumn": 38,
-                  "endLine": 28,
-                  "startColumn": 38,
-                  "startLine": 28
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Parameter 'm' can be declared as reference to const"
-          },
-          "ruleId": "constParameterReference"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
-                },
-                "region": {
-                  "endColumn": 38,
-                  "endLine": 30,
-                  "startColumn": 38,
-                  "startLine": 30
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Parameter 'm' can be declared as reference to const"
-          },
-          "ruleId": "constParameterReference"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
-                },
-                "region": {
-                  "endColumn": 38,
-                  "endLine": 32,
-                  "startColumn": 38,
-                  "startLine": 32
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Parameter 'm' can be declared as reference to const"
-          },
-          "ruleId": "constParameterReference"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "include\/domain\/Order.hpp"
-                },
-                "region": {
-                  "endColumn": 0,
+                  "endColumn": 5,
                   "endLine": 14,
-                  "startColumn": 0,
+                  "startColumn": 5,
                   "startLine": 14
                 }
               }
             }
           ],
           "message": {
-            "text": "The function 'drink' is never used."
+            "text": "Consider using std::any_of algorithm instead of a raw loop."
+          },
+          "ruleId": "useStlAlgorithm"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/presentation\/UserInterface.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 1,
+                  "startColumn": 0,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Include file: \"UserInterface.hpp\" not found."
+          },
+          "ruleId": "missingInclude"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 56,
+                  "endLine": 42,
+                  "startColumn": 56,
+                  "startLine": 42
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 56,
+                  "endLine": 43,
+                  "startColumn": 56,
+                  "startLine": 43
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 56,
+                  "endLine": 44,
+                  "startColumn": 56,
+                  "startLine": 44
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 56,
+                  "endLine": 45,
+                  "startColumn": 56,
+                  "startLine": 45
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 45,
+                  "endLine": 136,
+                  "startColumn": 45,
+                  "startLine": 136
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 38,
+                  "endLine": 141,
+                  "startColumn": 38,
+                  "startLine": 141
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/order.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 19,
+                  "startColumn": 0,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'attachPrePay' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/order.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 24,
+                  "startColumn": 0,
+                  "startLine": 24
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'setStatus' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/order.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 30,
+                  "startColumn": 0,
+                  "startLine": 30
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'setVmId' is never used."
           },
           "ruleId": "unusedFunction"
         },
@@ -211,6 +453,28 @@
                 },
                 "region": {
                   "endColumn": 0,
+                  "endLine": 20,
+                  "startColumn": 0,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'getEndpoint' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/persistence\/OvmAddressRepository.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
                   "endLine": 25,
                   "startColumn": 0,
                   "startLine": 25
@@ -229,19 +493,19 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
+                  "uri": "src\/persistence\/inventoryRepository.cpp"
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 36,
+                  "endLine": 10,
                   "startColumn": 0,
-                  "startLine": 36
+                  "startLine": 10
                 }
               }
             }
           ],
           "message": {
-            "text": "The function 'broadcastStock' is never used."
+            "text": "The function 'setAllDrinks' is never used."
           },
           "ruleId": "unusedFunction"
         },
@@ -251,13 +515,79 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
+                  "uri": "src\/persistence\/inventoryRepository.cpp"
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 50,
+                  "endLine": 14,
                   "startColumn": 0,
-                  "startLine": 50
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'getAllDrinks' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/persistence\/prepayCodeRepository.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 7,
+                  "startColumn": 0,
+                  "startLine": 7
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'save' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/persistence\/prepayCodeRepository.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 13,
+                  "startColumn": 0,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'isSameCode' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/DistanceService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 6,
+                  "startColumn": 0,
+                  "startLine": 6
                 }
               }
             }
@@ -273,19 +603,19 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
+                  "uri": "src\/service\/InventoryService.cpp"
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 56,
+                  "endLine": 6,
                   "startColumn": 0,
-                  "startLine": 56
+                  "startLine": 6
                 }
               }
             }
           ],
           "message": {
-            "text": "The function 'sendPrePayReq' is never used."
+            "text": "The function 'CallInventorySer' is never used."
           },
           "ruleId": "unusedFunction"
         },
@@ -295,19 +625,19 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
+                  "uri": "src\/service\/InventoryService.cpp"
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 79,
+                  "endLine": 14,
                   "startColumn": 0,
-                  "startLine": 79
+                  "startLine": 14
                 }
               }
             }
           ],
           "message": {
-            "text": "The function 'respondPrepayReq' is never used."
+            "text": "The function 'reduceDrink' is never used."
           },
           "ruleId": "unusedFunction"
         },
@@ -317,13 +647,13 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
+                  "uri": "src\/service\/InventoryService.cpp"
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 85,
+                  "endLine": 18,
                   "startColumn": 0,
-                  "startLine": 85
+                  "startLine": 18
                 }
               }
             }
@@ -343,15 +673,147 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 108,
+                  "endLine": 49,
                   "startColumn": 0,
-                  "startLine": 108
+                  "startLine": 49
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'broadcastStock' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 67,
+                  "startColumn": 0,
+                  "startLine": 67
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'sendPrePayReq' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 86,
+                  "startColumn": 0,
+                  "startLine": 86
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'respondPrepayReq' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 194,
+                  "startColumn": 0,
+                  "startLine": 194
                 }
               }
             }
           ],
           "message": {
             "text": "The function 'onMessage' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/OrderService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 8,
+                  "startColumn": 0,
+                  "startLine": 8
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'approve' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/OrderService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 17,
+                  "startColumn": 0,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'createOrder' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/PrepaymentService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 11,
+                  "startColumn": 0,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'isSueCode' is never used."
           },
           "ruleId": "unusedFunction"
         }
@@ -361,6 +823,36 @@
           "informationUri": "https:\/\/cppcheck.sourceforge.io",
           "name": "Cppcheck",
           "rules": [
+            {
+              "fullDescription": {
+                "text": "Include file: \"drink.h\" not found."
+              },
+              "help": {
+                "text": "Include file: \"drink.h\" not found."
+              },
+              "id": "missingInclude",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Include file: \"drink.h\" not found."
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "Consider using std::all_of or std::none_of algorithm instead of a raw loop."
+              },
+              "help": {
+                "text": "Consider using std::all_of or std::none_of algorithm instead of a raw loop."
+              },
+              "id": "useStlAlgorithm",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Consider using std::all_of or std::none_of algorithm instead of a raw loop."
+              }
+            },
             {
               "fullDescription": {
                 "text": "Variable 'ep' can be declared as reference to const"
@@ -374,21 +866,6 @@
               },
               "shortDescription": {
                 "text": "Variable 'ep' can be declared as reference to const"
-              }
-            },
-            {
-              "fullDescription": {
-                "text": "Consider using std::transform algorithm instead of a raw loop."
-              },
-              "help": {
-                "text": "Consider using std::transform algorithm instead of a raw loop."
-              },
-              "id": "useStlAlgorithm",
-              "properties": {
-                "precision": "high"
-              },
-              "shortDescription": {
-                "text": "Consider using std::transform algorithm instead of a raw loop."
               }
             },
             {
@@ -408,17 +885,17 @@
             },
             {
               "fullDescription": {
-                "text": "The function 'drink' is never used."
+                "text": "The function 'attachPrePay' is never used."
               },
               "help": {
-                "text": "The function 'drink' is never used."
+                "text": "The function 'attachPrePay' is never used."
               },
               "id": "unusedFunction",
               "properties": {
                 "precision": "high"
               },
               "shortDescription": {
-                "text": "The function 'drink' is never used."
+                "text": "The function 'attachPrePay' is never used."
               }
             }
           ],

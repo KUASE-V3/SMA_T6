@@ -4,6 +4,7 @@
 #include <string>
 #include "order.h"
 
+namespace domain {
 class PrepaymentCode {
 public:
     PrepaymentCode(); // 생성자
@@ -23,5 +24,5 @@ public:
         std::string status;
         Order heldOrder;
 };
-
+}
 #endif

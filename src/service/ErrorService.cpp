@@ -1,9 +1,12 @@
 // ----- ErrorService.cpp -----
-#include "ErrorService.hpp"
+#include <iostream>
+#include "service/ErrorService.hpp"
 #include <iostream>
 
+using namespace service;
 
-std::string ErrorService::logError(const std::string& message) {
-    std::cerr << "[오류 기록됨] " << message << std::endl;
-    return message;
+std::string ErrorService::logError(const std::string& msg)
+{
+    std::cerr << "[ErrorService] " << msg << '\n';
+    return msg;
 }

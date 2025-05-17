@@ -1,160 +1,194 @@
 #include "service/MessageService.hpp"
-#include "network/MessageSender.hpp"
-#include "network/MessageReceiver.hpp"
-#include "persistence/OvmAddressRepository.hpp"
+
+#include "service/ErrorService.hpp"
+#include "service/InventoryService.hpp"
+#include "service/PrepaymentService.hpp"
+
 
 #include <iostream>
-#include <chrono>
-#include <thread>
-#include <limits>
+#include <algorithm>
 #include <cmath>
+#include <thread>
 
-using namespace application;
-using network::Message;
+using application::MessageService;
 
-/* ────────── 내부 상수 (타임아웃 등) ────────── */
-namespace {
-constexpr int kNetworkTimeoutMs = 500;   
-const std::string kMyVmId = "T5";        // TODO:내 아이디 가져오기 
+/* ────────────── 정적 HELPER ────────────── */
+std::string MessageService::myId()
+{
+    // NOTE: 도메인 완성 전까지 하드코드
+    return "T5";
+}
+std::pair<int,int> MessageService::myCoord()
+{
+    // NOTE: 도메인 완성 전까지 (0,0)
+    return {0,0};
 }
 
-/*────────────────── 생성자 ──────────────────*/
+/* ────────────── ctor ────────────── */
 MessageService::MessageService(network::MessageSender&   sender,
                                network::MessageReceiver& receiver,
-                               const persistence::OvmAddressRepository& repo)
-  : sender_(sender), receiver_(receiver), repo_(repo)
+                               const persistence::OvmAddressRepository& repo,
+                               service::ErrorService&    err,
+                               service::InventoryService& inv,
+                               service::PrepaymentService& prepay)
+  : sender_(sender)
+  , receiver_(receiver)
+  , repo_(repo)
+  , errSvc_(err)
+  , invSvc_(inv)
+  , prepaySvc_(prepay)
 {
-    /* 모든 수신 메시지를 헬퍼로 라우팅 */
-    receiver_.subscribe(Message::Type::REQ_STOCK,
-                        [this](auto& m){ handleReqStock(m); });
-    receiver_.subscribe(Message::Type::RESP_STOCK,
-                        [this](auto& m){ handleRespStock(m); });
-    receiver_.subscribe(Message::Type::REQ_PREPAY,
-                        [this](auto& m){ handleReqPrepay(m); });
-    receiver_.subscribe(Message::Type::RESP_PREPAY,
-                        [this](auto& m){ handleRespPrepay(m); });
+    using Type = network::Message::Type;
+    receiver_.subscribe(Type::REQ_STOCK,   [this](auto&m){ handleReqStock(m);   });
+    receiver_.subscribe(Type::RESP_STOCK,  [this](auto&m){ handleRespStock(m);  });
+    receiver_.subscribe(Type::REQ_PREPAY,  [this](auto&m){ handleReqPrepay(m);  });
+    receiver_.subscribe(Type::RESP_PREPAY, [this](auto&m){ handleRespPrepay(m); });
 }
 
-/*────────────────── UC-8 ──────────────────*/
+/* ────────────── UC-8 ────────────── */
 void MessageService::broadcastStock(const domain::Drink& drink)
 {
-    Message req;
-    req.msg_type = Message::Type::REQ_STOCK;
-    req.src_id   = kMyVmId;
-    req.dst_id   = "0";                  // broadcast
+    network::Message req;
+    req.msg_type = network::Message::Type::REQ_STOCK;
+    req.src_id   = myId();
+    req.dst_id   = "0";                     // broadcast
     req.msg_content = {
-        {"item_code", drink.code()},
-        {"item_num",  "01"}              // TODO: 요청 수량 필요 시 수정
+        {"item_code", drink.getCode()},
+        {"item_num",  "01"}
     };
-    sender_.send(req);
-}
 
-/*────────────────── UC-9 ──────────────────*/
-std::optional<std::string>
-MessageService::getDistance(const std::vector<Message>& replies)
-{
-    /* TODO:
-     * ① 내 좌표  : CoordinateService.myPosition()
-     * ② 거리 metric: 팀 규칙(예: 맨해튼)
-     * ③ tie-break : 요구서 확인
-     */
-    if (replies.empty()) return std::nullopt;
-
-    std::string nearest;
-    int         best     = std::numeric_limits<int>::max();
-
-    for (const auto& m : replies) {
-        int x = std::stoi(m.msg_content.at("coor_x"));
-        int y = std::stoi(m.msg_content.at("coor_y"));
-        // TODO: 실제 거리 계산으로 교체 거리 계산 
-        int dist = std::abs(x) + std::abs(y);
-
-        if (dist < best || (dist == best && m.src_id < nearest)) {
-            best    = dist;
-            nearest = m.src_id;
-        }
+    try { sender_.send(req); }
+    catch(const std::exception& e){
+        errSvc_.logError(std::string("broadcastStock send() failed: ")+e.what());
     }
-    return nearest;
 }
 
-/*────────────────── UC-16 ──────────────────*/
+/* ────────────── UC-16 ────────────── */
 void MessageService::sendPrePayReq(const domain::Order& order)
 {
-    /* TODO: repo_.getEndpoint(order.vm_id()) 가 실패하면 ErrorService.log() */
-
-    Message req;
-    req.msg_type = Message::Type::REQ_PREPAY;
-    req.src_id   = kMyVmId; 
-    req.dst_id   = order.vm_id(); //이거 어떻게 가져오는지 모르겠음
-    req.msg_content = {
-        {"item_code", order.drinkCode()},
-        {"item_num",  std::to_string(order.qty())},
-        {"cert_code", order.certCode()}      // "NONE" 일 수도 있음
+    network::Message msg;
+    msg.msg_type = network::Message::Type::REQ_PREPAY;
+    msg.src_id   = myId();
+    msg.dst_id   = order.vmId();            // 대상 VM
+    msg.msg_content = {
+        {"item_code", order.drink().getCode()},
+        {"item_num",  std::to_string(order.quantity())},
+        {"cert_code", order.certCode()}
     };
-    sender_.send(req);
+
+    try { sender_.send(msg); }
+    catch(const std::exception& e){
+        errSvc_.logError(std::string("sendPrePayReq send() failed: ")+e.what());
+    }
 }
 
-/*────────────────── UC-15 ──────────────────*/
+/* ────────────── UC-15 (수신측) ────────────── */
 void MessageService::respondPrepayReq(const domain::Order& order)
 {
-    /* TODO:
-     * ① InventoryService.reserveStock(order.drink, order.qty)
-     * ② PaymentModule.generateCertCode(order)
-     * ③ availability T/F 설정 후 RESP_PREPAY 송신
-     */
+    // ① 선결제 서비스에 코드 발행 / 재고 확보
+    if(!prepaySvc_.isValid(order.certCode())){
+        errSvc_.logError("respondPrepayReq: invalid code");
+        return;
+    }
+    // TODO: InventoryService.reserve(...) 등 실제 확보 로직
+
+    /* 성공 가정 ? 응답 전송 */
+    network::Message resp;
+    resp.msg_type = network::Message::Type::RESP_PREPAY;
+    resp.src_id   = myId();
+    resp.dst_id   = order.vmId();
+    resp.msg_content = {
+        {"availability","T"},
+        {"item_code", order.drink().getCode()}
+    };
+
+    try { sender_.send(resp); }
+    catch(const std::exception& e){
+        errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());
+    }
 }
 
-/*────────────────── UC-17 ──────────────────*/
-bool MessageService::validOVMStock(const std::string&   vm_id,
+/* ────────────── UC-17 ────────────── */
+bool MessageService::validOVMStock(const std::string& vm_id,
                                    const domain::Drink& drink,
-                                   int                  qty)
+                                   int qty)
 {
-    /* 1) 요청 송신 */
-    Message req;
-    req.msg_type = Message::Type::REQ_STOCK;
-    req.src_id   = kMyVmId;
+    network::Message req;
+    req.msg_type = network::Message::Type::REQ_STOCK;
+    req.src_id   = myId();
     req.dst_id   = vm_id;
     req.msg_content = {
-        {"item_code", drink.code()},
+        {"item_code", drink.getCode()},
         {"item_num",  std::to_string(qty)}
     };
-    sender_.send(req);
 
-    /* 2) TODO: condition_variable wait 로 실제 응답 대기 */
-    std::this_thread::sleep_for(std::chrono::milliseconds(kNetworkTimeoutMs));
+    try { sender_.send(req); }
+    catch(const std::exception& e){
+        errSvc_.logError(std::string("validOVMStock send() failed: ")+e.what());
+        return false;
+    }
 
-    // TODO: 응답 검사 후 true/false
-    return false;
+    /* 대기 */
+    std::unique_lock lk(resp_mtx_);
+    bool got = resp_cv_.wait_for(lk,
+                 std::chrono::seconds(kValidTimeoutSec),
+                 [&]{ return std::any_of(resp_cache_.begin(), resp_cache_.end(),
+                                  [&](auto& m){ return m.src_id == vm_id; }); });
+
+    if(!got) return false;
+
+    auto it = std::find_if(resp_cache_.begin(), resp_cache_.end(),
+                           [&](auto& m){ return m.src_id == vm_id; });
+
+    bool available = (it != resp_cache_.end()) &&
+                     (it->msg_content.at("item_num") != "0");
+
+    resp_cache_.clear();
+    return available;
 }
 
-/*────────────────── 모든 수신 라우팅 (현재 미사용) ──────────────────*/
-void MessageService::onMessage(const Message&) {}
-
-/*────────────────── 내부 헬퍼 ──────────────────*/
-void MessageService::handleReqStock(const Message& req)
+/* ─────────── 핸들러들 ─────────── */
+void MessageService::handleReqStock(const network::Message& msg)
 {
-    /* TODO:
-     * InventoryService.currentQty(...)
-     * CoordinateService.myPosition()
-     */
-    (void)req; // 컴파일러 warning 방지
+    // 재고 확인 후 RESP_STOCK 전송
+    bool empty = invSvc_.getSaleValid(msg.msg_content.at("item_code")) == false;
+
+    network::Message resp;
+    resp.msg_type = network::Message::Type::RESP_STOCK;
+    resp.src_id   = myId();
+    resp.dst_id   = msg.src_id;
+    resp.msg_content = {
+        {"item_code", msg.msg_content.at("item_code")},
+        {"item_num",  empty ? "0" : msg.msg_content.at("item_num")},
+        {"coor_x",    std::to_string(myCoord().first)},
+        {"coor_y",    std::to_string(myCoord().second)}
+    };
+    try { sender_.send(resp); }
+    catch(const std::exception& e){
+        errSvc_.logError(std::string("handleReqStock send() failed: ")+e.what());
+    }
 }
 
-void MessageService::handleRespStock(const Message& msg)
+void MessageService::handleRespStock(const network::Message& msg)
 {
-    std::lock_guard<std::mutex> lk(resp_mtx_);
-    resp_cache_.push_back(msg);
-    resp_cv_.notify_one();          // TODO: wait 구현 시 사용
+    {
+        std::lock_guard lg(resp_mtx_);
+        resp_cache_.push_back(msg);
+        if(resp_cache_.size() >= kBroadcastRespMax)
+            resp_cv_.notify_all();
+    }
 }
 
-void MessageService::handleReqPrepay(const Message& msg)
+void MessageService::handleReqPrepay(const network::Message& msg)
 {
-    /* TODO: msg → Order 변환 후 respondPrepayReq 호출 */
-    (void)msg;
+    // TODO: msg → Order 변환
+    // respondPrepayReq(order);
 }
 
-void MessageService::handleRespPrepay(const Message& msg)
+void MessageService::handleRespPrepay(const network::Message& msg)
 {
-    /* TODO: PaymentFlowManager.onPrepayResult(msg) */
-    (void)msg;
+    if(msg.msg_content.at("availability") == "F")
+        errSvc_.logError("RESP_PREPAY: availability == F");
 }
+
+void MessageService::onMessage(const network::Message&) { /* unused */ }

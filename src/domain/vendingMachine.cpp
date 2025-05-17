@@ -1,6 +1,8 @@
 #include "vendingMachine.h"
 
-// ex) ìƒì„±ì í˜¸ì¶œ : VendingMachine vm("001", "Seoul");
+
+namespace domain {
+// ex) ?ƒ?„±? ?˜¸ì¶? : VendingMachine vm("001", "Seoul");
 VendingMachine::VendingMachine(const std::string& id, const std::string& location)
     : id(id), location(location) {}
 
@@ -13,3 +15,4 @@ VendingMachine::VendingMachine(const std::string& id, const std::string& locatio
         return location;
     }    
 
+}

@@ -20,7 +20,7 @@ public:
 private:
     InventoryService inventoryService;
     UserInterface ui;
-    ErrorService errorService;
+    service::ErrorService errorService;
     OrderService orderService;
     DistanceService distanceService;
 };
