@@ -9,8 +9,12 @@
 class inventoryRepository {
 
     public:
-        static void setAllDrinks(const std::vector<Drink>& drinks);
-        static const std::vector<Drink>& getAllDrinks();;
+        void setAllDrinks(const std::vector<Drink>& drinks);
+        const std::vector<Drink>& getAllDrinks();;
+
+        std::vector<std :: pair<std::string, int>> getList();
+
+        
 
     private:
         static std::vector<Drink> allDrinks;
