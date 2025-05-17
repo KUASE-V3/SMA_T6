@@ -3,6 +3,6 @@
     "image": "sjaekim/kuase_dev:v0.7",
     "workspaceMount": "source=${localWorkspaceFolder},target=/home/dev,type=bind",
     "workspaceFolder": "/home/dev",
-    "shutdownAction": "stopContainer"
+    "shutdownAction": "stopContainer",
     "postCreateCommand": "apt-get update && apt-get install -y libboost-system-dev libboost-dev"
 }
