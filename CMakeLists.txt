@@ -22,15 +22,16 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # 공통 모듈을 라이브러리로 생성 (module.cpp)
 # add_library(MyLibrary STATIC src/person.cpp)
-add_library(MyLibrary STATIC
-    src/DistanceService.cpp
-    src/ErrorService.cpp
-    src/InventoryService.cpp
-    src/OrderService.cpp
-    src/PrepaymentService.cpp
-    src/UserInterface.cpp
-    src/UserProcessController.cpp
+add_library(MyLibrary
+    src/application/DistanceService.cpp
+    src/application/ErrorService.cpp
+    src/application/InventoryService.cpp
+    src/application/OrderService.cpp
+    src/application/PrepaymentService.cpp
+    src/application/UserProcessController.cpp
+    src/presentation/UserInterface.cpp
 )
+
 target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # 메인 애플리케이션 생성 (main.cpp는 라이브러리의 함수 호출)
