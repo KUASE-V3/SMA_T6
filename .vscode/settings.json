@@ -1,6 +1,5 @@
 {
     "files.associations": {
-<<<<<<< HEAD
         "*.java": "java",
         "iostream": "cpp",
         "iosfwd": "cpp",
@@ -10,7 +9,6 @@
         "csignal": "cpp",
         "cstdarg": "cpp",
         "cstddef": "cpp",
-=======
         "vector": "cpp",
         "__locale": "cpp",
         "typeinfo": "cpp",
@@ -21,15 +19,12 @@
         "cmath": "cpp",
         "cstddef": "cpp",
         "cstdint": "cpp",
->>>>>>> hyunjun
         "cstdio": "cpp",
         "cstdlib": "cpp",
         "cstring": "cpp",
         "ctime": "cpp",
         "cwchar": "cpp",
         "cwctype": "cpp",
-<<<<<<< HEAD
-=======
         "execution": "cpp",
         "initializer_list": "cpp",
         "limits": "cpp",
@@ -45,12 +40,10 @@
         "__split_buffer": "cpp",
         "locale": "cpp",
         "algorithm": "cpp",
->>>>>>> hyunjun
         "any": "cpp",
         "array": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
-<<<<<<< HEAD
         "bitset": "cpp",
         "chrono": "cpp",
         "codecvt": "cpp",
@@ -60,7 +53,6 @@
         "condition_variable": "cpp",
         "coroutine": "cpp",
         "cstdint": "cpp",
-=======
         "chrono": "cpp",
         "clocale": "cpp",
         "compare": "cpp",
@@ -68,30 +60,25 @@
         "condition_variable": "cpp",
         "csignal": "cpp",
         "cstdarg": "cpp",
->>>>>>> hyunjun
         "deque": "cpp",
         "forward_list": "cpp",
         "list": "cpp",
         "map": "cpp",
         "set": "cpp",
-<<<<<<< HEAD
         "string": "cpp",
         "unordered_map": "cpp",
         "unordered_set": "cpp",
         "vector": "cpp",
         "exception": "cpp",
         "algorithm": "cpp",
-=======
         "unordered_map": "cpp",
         "unordered_set": "cpp",
         "exception": "cpp",
->>>>>>> hyunjun
         "functional": "cpp",
         "iterator": "cpp",
         "memory": "cpp",
         "memory_resource": "cpp",
         "numeric": "cpp",
-<<<<<<< HEAD
         "optional": "cpp",
         "random": "cpp",
         "ratio": "cpp",
@@ -110,7 +97,6 @@
         "limits": "cpp",
         "mutex": "cpp",
         "new": "cpp",
-=======
         "random": "cpp",
         "system_error": "cpp",
         "type_traits": "cpp",
@@ -120,13 +106,11 @@
         "iostream": "cpp",
         "istream": "cpp",
         "mutex": "cpp",
->>>>>>> hyunjun
         "numbers": "cpp",
         "ostream": "cpp",
         "semaphore": "cpp",
         "span": "cpp",
         "sstream": "cpp",
-<<<<<<< HEAD
         "stdexcept": "cpp",
         "stop_token": "cpp",
         "streambuf": "cpp",
@@ -135,10 +119,8 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-=======
         "stop_token": "cpp",
         "streambuf": "cpp",
         "thread": "cpp"
->>>>>>> hyunjun
     }
 }

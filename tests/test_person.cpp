@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include "person.h"
 
 TEST(PersonTest, ConstructorAndGetters) {
     Person p("Bob", 25);

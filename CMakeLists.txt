@@ -187,4 +187,115 @@ if(GCOVR_EXECUTABLE)
     COMMENT "Generating coverage report with gcovr..."
     VERBATIM
   )
+cmake_minimum_required(VERSION 3.10)
+project(MyProject)
+
+# C++17 ?Ç¨?ö©
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Unix Í∏∞Î∞ò ?ãú?ä§?Öú?óê?Ñú?äî ?ã§?ñâ ?åå?ùº ?ù¥Î¶ÑÏóê .out postfix Î∂??ó¨
+if(UNIX)
+    set(CMAKE_EXECUTABLE_SUFFIX ".out")
+endif()
+
+option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
+if(ENABLE_COVERAGE)
+  message(STATUS "Coverage instrumentation enabled")
+  add_compile_options(--coverage -O0 -g)
+  add_link_options(--coverage)
+endif()
+
+# ?ó§?çî ?åå?ùº ?îî?†â?Ñ∞Î¶? Ï∂îÍ??
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+# Í≥µÌÜµ Î™®Îìà?ùÑ ?ùº?ù¥Î∏åÎü¨Î¶¨Î°ú ?Éù?Ñ± (module.cpp)
+# add_library(MyLibrary STATIC src/person.cpp)
+add_library(MyLibrary STATIC
+    src/DistanceService.cpp
+    src/ErrorService.cpp
+    src/InventoryService.cpp
+    src/OrderService.cpp
+    src/PrepaymentService.cpp
+    src/UserInterface.cpp
+    src/UserProcessController.cpp
+)
+target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
+# Î©îÏù∏ ?ï†?îåÎ¶¨Ï???ù¥?Öò ?Éù?Ñ± (main.cpp?äî ?ùº?ù¥Î∏åÎü¨Î¶¨Ïùò ?ï®?àò ?ò∏Ï∂?)
+# add_executable(MyApp src/main.cpp)
+# target_link_libraries(MyApp MyLibrary)
+
+# ?Öå?ä§?ä∏ ÎπåÎìúÎ•? ?Ñ†?Éù?†Å?úºÎ°? ?ôú?Ñ±?ôî?ïò?äî ?òµ?Öò Ï∂îÍ??
+option(BUILD_TESTS "Build tests" OFF)
+
+if(BUILD_TESTS)
+  # GoogleTest ?ÑúÎ∏åÎ™®?ìà Ï∂îÍ?? (?Öå?ä§?ä∏ ÎπåÎìú?äî Í∏∞Î≥∏ ALL?óê?Ñú ?†ú?ô∏)
+  add_subdirectory(lib/googletest EXCLUDE_FROM_ALL)
+  include_directories(${PROJECT_SOURCE_DIR}/lib/googletest/googletest/include)
+  
+  # ?Öå?ä§?ä∏ ?ã§?ñâ ?åå?ùº ?Éù?Ñ± (test_main.cpp ?è¨?ï®) - Í∏∞Î≥∏ ÎπåÎìú?óê?Ñú ?†ú?ô∏
+  add_executable(RunTests tests/test_person.cpp)
+  set_target_properties(RunTests PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  target_link_libraries(RunTests MyLibrary gtest_main gtest pthread)
+  
+  enable_testing()
+  add_test(NAME GoogleTests COMMAND RunTests)
+  
+  # "googletest"?ùº?äî custom target?ùÑ ÎßåÎì§?ñ¥ ?ïÑ?öî ?ãú ?Öå?ä§?ä∏Î•? ?î∞Î°? ÎπåÎìú?ï† ?àò ?ûà?èÑÎ°? ?ï®
+  add_custom_target(googletest DEPENDS RunTests)
+endif()
+
+# cppcheck ?ã§?ñâ Ïª§Ïä§??? ???Íπ? Ï∂îÍ??
+find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)
+if(CPPCHECK_EXECUTABLE)
+  message(STATUS "Found cppcheck: ${CPPCHECK_EXECUTABLE}")
+  add_custom_target(
+    cppcheck
+    COMMAND ${CPPCHECK_EXECUTABLE}
+      --enable=all
+      --std=c++17
+      --language=c++
+      --suppress=missingIncludeSystem
+      --verbose
+      --output-format=sarif
+      --output-file=cppcheck_report.sarif
+      -Iinclude
+      src include
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    COMMENT "Running cppcheck..."
+    VERBATIM
+  )
+endif()
+
+# GCover
+find_program(GCOVR_EXECUTABLE NAMES gcovr)
+if(GCOVR_EXECUTABLE)
+  message(STATUS "Found gcovr: ${GCOVR_EXECUTABLE}")
+  add_custom_target(coverage
+    DEPENDS googletest
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/coverage
+    COMMAND ${GCOVR_EXECUTABLE}
+      -r ${PROJECT_SOURCE_DIR}
+      --filter "${PROJECT_SOURCE_DIR}/src/.*|${PROJECT_SOURCE_DIR}/include/.*"
+      --filter "${PROJECT_SOURCE_DIR}/tests/.*"
+      --exclude "${PROJECT_SOURCE_DIR}/lib/.*"
+    COMMAND ${GCOVR_EXECUTABLE}
+      -r ${PROJECT_SOURCE_DIR}
+      --filter "${PROJECT_SOURCE_DIR}/src/.*|${PROJECT_SOURCE_DIR}/include/.*"
+      --filter "${PROJECT_SOURCE_DIR}/tests/.*"
+      --exclude "${PROJECT_SOURCE_DIR}/lib/.*"
+      --html-details
+      --output ${CMAKE_BINARY_DIR}/coverage/coverage.html
+    COMMAND ${GCOVR_EXECUTABLE}
+      -r ${PROJECT_SOURCE_DIR}
+      --filter "${PROJECT_SOURCE_DIR}/src/.*|${PROJECT_SOURCE_DIR}/include/.*"
+      --filter "${PROJECT_SOURCE_DIR}/tests/.*"
+      --exclude "${PROJECT_SOURCE_DIR}/lib/.*"
+      --coveralls
+      --output ${CMAKE_BINARY_DIR}/coverage.json
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating coverage report with gcovr..."
+    VERBATIM
+  )
 endif()
