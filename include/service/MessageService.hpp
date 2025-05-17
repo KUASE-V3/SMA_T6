@@ -1,92 +1,77 @@
 #pragma once
-#include <string>
-#include "domain/Drink.hpp"
-#include "domain/Order.hpp"
-#include "network/message.hpp"
-#include <vector>         
+/*───────────────────────────────────────────────────────────────*
+ *  MessageService
+ *  ───────────────
+ *  네트워크 계층( MessageSender / MessageReceiver ) 만을 사용해
+ *  VM 간 메시지 송·수신 로직을 중앙집중식으로 제공한다.
+ *
+ *  ※ 실제 재고·결제·좌표 계산 등은 다른 도메인 서비스에 위임하며,
+ *     이 파일에는 구체 구현을 넣지 않는다. (모두 TODO 마커)
+ *───────────────────────────────────────────────────────────────*/
 
-namespace network { class MessageSender; class MessageReceiver; }
-namespace persistence { class OvmAddressRepository; }
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <optional>
+#include <mutex>
+#include <condition_variable>
+
+#include "network/message.hpp"
+#include "domain/drink.h"
+#include "domain/order.h"
+
+
+namespace network {
+    class MessageSender;
+    class MessageReceiver;
+}
+namespace persistence {
+    class OvmAddressRepository;
+}
 
 namespace application {
 
-/**
- * MessageService
- * ?- MessageSender / MessageReceiver 를 통해
- * ?  메시지 송수신을 담당하는 서비스.
- *
- * ?? ErrorService 연동은 TODO: 로 남겨둠.
- */
 class MessageService {
 public:
-    /**
-     * ctor
-     * @param sender   MessageSender (Network Layer)
-     * @param receiver MessageReceiver (Network Layer)
-     * @param repo     OvmAddressRepository ? VM ID ↔ endpoint 조회용
-     */
-    MessageService(network::MessageSender&   sender,
-                   network::MessageReceiver& receiver,
+    /*────────────────── 생성자 ──────────────────*/
+    MessageService(network::MessageSender&                 sender,
+                   network::MessageReceiver&               receiver,
                    const persistence::OvmAddressRepository& repo);
 
-    /* ─────────────────── UC-8 ─────────────────── */
-
-    /**
-     * broadcastStock(drink)
-     * ?현재 자판기의 재고 현황(Drink) 조회 요청을 모든 VM에 브로드캐스트한다.
-     * ?→ 성공 시 각 VM이 RESP_STOCK 반환
-     */
+    /*────────────────── UC-8 ──────────────────*/
+    /* 모든 VM 에게 재고 조회(REQ_STOCK) 브로드캐스트 */
     void broadcastStock(const domain::Drink& drink);
+    /*────────────────── UC-9 ──────────────────*/
+    /* RESP_STOCK 리스트로부터 가장 가까운 VM id 결정 */
+    std::optional<std::string>
+        getDistance(const std::vector<network::Message>& stockList);
 
-    /* ─────────────────── UC-9 ─────────────────── */
-
-    /**
-     * getDistance(list)
-     * ?(다이어그램에서는 DistanceService 방향 호출이지만)
-     * ?브로드캐스트 응답 리스트를 받아 가장 가까운 VM을 계산하는 보조 함수.
-     */
-     void getDistance(const std::vector<network::Message>& stockList);
-
-    /* ─────────────────── UC-15 / UC-16 ─────────────────── */
-
-    /**
-     * sendPrePayReq(order)
-     * ?T1 → T2 단일 VM에게 선결제 요청(REQ_PREPAY) 전송
-     */
+    /*────────────────── UC-15 / 16 ──────────────────*/
+    /* (T₁ → T₂) 선결제 요청 */
     void sendPrePayReq(const domain::Order& order);
 
-    /**
-     * respondPrepayReq(order)
-     * ?수신 측(T2)에서 REQ_PREPAY 도착 시 호출.
-     * ?재고 확보 & PrePaymentCode 생성 후 RESP_PREPAY 로 응답한다.
-     */
+    /* (T₂) 선결제 요청 수신 시 응답 */
     void respondPrepayReq(const domain::Order& order);
 
-    /* ─────────────────── UC-17 ─────────────────── */
-
-    /**
-     * validOVMStock(vm_id, drink, qty)
-     * ?특정 VM(id)에게 재고가 있는지 확인.
-     * ?REQ_STOCK / RESP_STOCK 왕복 후 Bool 반환.
-     */
+    /*────────────────── UC-17 ──────────────────*/
+    /* 단일 VM 에 재고가 있는지 확인 (동기) */
     bool validOVMStock(const std::string&   vm_id,
                        const domain::Drink& drink,
                        int                  qty = 1);
 
-    /* ─────────────────── 수신 엔트리 포인트 ─────────────────── */
-
-    /**
-     * onMessage(msg)
-     * ?MessageReceiver 가 수신한 모든 메시지는
-     * ?MessageService::onMessage 로 집결 → 유스케이스별 분기 처리.
-     */
-    void onMessage(const network::Message& msg);
+    /*────────────────── 수신 엔트리 ──────────────────*/
+    void onMessage(const network::Message& msg);   // (현재는 subscribe 로 분기)
 
 private:
-    /* 의존 객체 */
-    network::MessageSender&                 sender_;
-    network::MessageReceiver&               receiver_;
-    const persistence::OvmAddressRepository& repo_;
+    /* 네트워크 의존 */
+    network::MessageSender&                   sender_;
+    network::MessageReceiver&                 receiver_;
+    const persistence::OvmAddressRepository&  repo_;
+
+    /* 브로드캐스트 응답 캐시 */
+    std::mutex                                resp_mtx_;
+    std::vector<network::Message>             resp_cache_;
+    std::condition_variable                   resp_cv_;      // → 필요 시 사용
 
     /* 내부 헬퍼 */
     void handleReqStock (const network::Message& msg);
