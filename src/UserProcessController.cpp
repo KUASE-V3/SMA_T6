@@ -1,67 +1,101 @@
-// ----- UserProcessController.cpp -----
-#include "UserProcessController.h"
-#include "InventoryService.h"
-#include "ErrorService.h"
-#include "UserInterface.h"
-#include "OrderService.h"
-#include "MessageService.h"
-#include <iostream>
-#include <stdexcept>
+// UserProcessController.cpp
+// ------------------------------
+#include "UserProcessController.hpp"
 
-UserProcessController::UserProcessController(
-    InventoryService* inv, ErrorService* err, UserInterface* ui,
-    OrderService* ord, MessageService* msg
-) : invService(inv), errService(err), ui(ui), orderService(ord), msgService(msg) {}
+UserProcessController::UserProcessController() : orderService(&order) {}
+
 
 void UserProcessController::handleMenu() {
     try {
-        auto list = invService->callInventorySer();
-        ui->displayList(list);
+        std::vector<std::pair<std::string, int>> list = inventoryService.getList();
+        ui.displayList(list);
     } catch (const std::exception& e) {
-        std::string errMsg = errService->logError(e.what());
-        ui->displayError(errMsg);
-    }
-}
-
-void UserProcessController::handleDrinkSelection() {
-    try {
-        int index = ui->askDrinkIndex();
-        std::string drink = invService->getDrinkByIndex(index);
-        ui->showSelectedDrink(drink);
-
-        if (invService->getSaleValid(index)) {
-            broadcastStock(drink);
-        } else {
-            std::string cardInfo = ui->promptCardInfo();
-            handlePayment(cardInfo);
-        }
-    } catch (const std::exception& e) {
-        std::string errMsg = errService->logError(e.what());
-        ui->displayError(errMsg);
+        std::string err = e.what();
+        errorService.log_error(err);
+        errorService.notify_error(err);
+        ui.show_error_message(err);
+        ui.display_Error(err);
     }
 }
 
 void UserProcessController::handlePayment(const std::string& cardInfo) {
     try {
-        // 예시로 승인 조건 단순화
-        bool success = (cardInfo == "valid");
-        orderService->approve("payment-id", success);
-        ui->showMessage(success ? "결제 성공" : "결제 거절");
+        std::string response = paymentReceiver.callReceiver(cardInfo); // 응답: "Approve" or "Declined"
 
-        if (!success) {
-            handleMenu();  // UC1으로 돌아감
+        if (response == "Approve") {
+            orderService.approve("paymentID", true); // UC5
+            ui.displayMessage("결제 성공");
+        } else {
+            orderService.approve("paymentID", false); // UC6
+            ui.displayMessage("결제 거절");
+            handleMenu(); // UC1: 목록 조회로 이동
         }
     } catch (const std::exception& e) {
-        std::string errMsg = errService->logError(e.what());
-        ui->displayError(errMsg);
+        std::string err = e.what();
+        errorService.log_error(err);
+        errorService.notify_error(err);
+        ui.show_error_message(err);
+        ui.display_Error(err);
     }
 }
 
-void UserProcessController::broadcastStock(const std::string& drink) {
+void UserProcessController::handlePrepayCode() {
     try {
-        msgService->send("broadcast", drink + " 재고 부족");
+        std::string code = ui.promptPrepayCode();
+        bool usable = prepayService.isValid(code);
+
+        if (usable) {
+            PrepayCode p;
+            bool same = p.isSameCode(code);
+            if (same) {
+                p.use(code);
+                p.changeStatusCode(code);
+                std::cout << "[UC14] 인증코드 유효 확인 완료" << std::endl;
+
+                std::string drinkCode = p.getDrinkCode(code);
+                std::cout << "[UC7] 음료 코드 " << drinkCode << " 에 해당하는 음료가 배출되었습니다." << std::endl;
+            }
+        }
     } catch (const std::exception& e) {
-        std::string errMsg = errService->logError(e.what());
-        errService->logError(errMsg);
+        std::string err = e.what();
+        errorService.log_error(err);
+        errorService.notify_error(err);
+        ui.show_error_message(err);
+        ui.display_Error(err);
     }
 }
+
+void UserProcessController::handleDrinkSelection() {
+    std::string drinkName;
+    std::cout << "음료수를 입력하세요: ";
+    std::cin >> drinkName;
+
+    try {
+        // 음료 이름 → 고유 코드로 매핑
+        std::string drinkCode = inventoryService.getDrinkCodeByName(drinkName);
+
+        bool valid = inventoryService.getSaleValid(drinkCode);
+
+        if (valid) {
+            // 재고 있음 → 선결제 여부 확인
+            if (ui.promptPrepayConsent()) {
+                std::string cardInfo = ui.promptCardInfo();
+                handlePayment(cardInfo); // UC4 결제 요청
+            } else {
+                handleMenu(); // UC1: 목록 조회로 되돌아감
+            }
+            return;
+        }
+
+        // 재고 없음 처리 (UC8, UC9, UC11 등)
+        // ... 생략 ...
+
+    } catch (const std::exception& e) {
+        std::string err = e.what();
+        errorService.log_error(err);
+        errorService.notify_error(err);
+        ui.show_error_message(err);
+        ui.display_Error(err);
+    }
+}
+
