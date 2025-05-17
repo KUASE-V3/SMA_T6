@@ -2,26 +2,27 @@
 // InventoryService.cpp
 // ------------------------------
 #include "InventoryService.hpp"
+#include <vector>     
+#include <string> 
+
+// InventoryService.cpp
+#include "InventoryService.hpp"
+#include <vector>
+#include <string>
 
 std::vector<std::pair<std::string, int>> InventoryService::CallInventorySer() {
-    return repository.getList();
+    return {};  // 임시 반환
 }
 
 bool InventoryService::getSaleValid(const std::string& drink) {
-    return repository.isValid(drink);
+    return true;  // 임시 반환
 }
 
 std::string InventoryService::reduceDrink(const std::string& drink) {
-    repository.changeQty(drink);
-    return drink;
+    return drink;  // 임시 반환
 }
 
 bool InventoryService::validOVMStock(const std::string& drinkName) {
-    // 예시: DrinkRepository 또는 Inventory가 있으면 내부에서 직접 재고 확인
-    for (const auto& drink : drinkList) {
-        if (drink.getName() == drinkName && drink.getStock() > 0) {
-            return true;
-        }
-    }
-    return false;
+    return true;  // 임시 반환
 }
+
