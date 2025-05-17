@@ -21,12 +21,21 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # 공통 모듈을 라이브러리로 생성 (module.cpp)
-add_library(MyLibrary STATIC src/person.cpp)
+# add_library(MyLibrary STATIC src/person.cpp)
+add_library(MyLibrary STATIC
+    src/DistanceService.cpp
+    src/ErrorService.cpp
+    src/InventoryService.cpp
+    src/OrderService.cpp
+    src/PrepaymentService.cpp
+    src/UserInterface.cpp
+    src/UserProcessController.cpp
+)
 target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # 메인 애플리케이션 생성 (main.cpp는 라이브러리의 함수 호출)
-add_executable(MyApp src/main.cpp)
-target_link_libraries(MyApp MyLibrary)
+# add_executable(MyApp src/main.cpp)
+# target_link_libraries(MyApp MyLibrary)
 
 # 테스트 빌드를 선택적으로 활성화하는 옵션 추가
 option(BUILD_TESTS "Build tests" OFF)
