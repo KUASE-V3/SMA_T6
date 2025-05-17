@@ -2,15 +2,15 @@
 #define INVENTORYREPOSITORY_H
 
 #include <string>
-#include "drink.h"
+#include "../domain/drink.h"
 #include <vector>
 
 
 class inventoryRepository {
 
     public:
-        void setAllDrinks(const std::vector<Drink>& drinks);
-        const std::vector<Drink>& getAllDrinks();;
+        static void setAllDrinks(const std::vector<Drink>& drinks);
+        static const std::vector<Drink>& getAllDrinks();;
 
         std::vector<std :: pair<std::string, int>> getList();
 

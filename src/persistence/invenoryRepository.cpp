@@ -1,4 +1,4 @@
-#include "inventoryRepository.h"
+#include "../include/persistence/inventoryRepository.h"
 #include <string>
 
 std::vector<Drink> inventoryRepository::allDrinks;
