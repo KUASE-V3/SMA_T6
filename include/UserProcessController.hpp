@@ -21,7 +21,6 @@ private:
     InventoryService inventoryService;
     UserInterface ui;
     ErrorService errorService;
-    Order order;
     OrderService orderService;
     DistanceService distanceService;
 };
