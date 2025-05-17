@@ -14,7 +14,7 @@ TEST(PersonTest, DifferentPerson) {
 }
 
 
-main(){
-    ui = new Ui::MainWindow;
+// main(){
+//     ui = new Ui::MainWindow;
     
-}
+// }

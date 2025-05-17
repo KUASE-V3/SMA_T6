@@ -1,0 +1,432 @@
+{
+  "$schema": "https:\/\/docs.oasis-open.org\/sarif\/sarif\/v2.1.0\/errata01\/os\/schemas\/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/network\/MessageSender.cpp"
+                },
+                "region": {
+                  "endColumn": 20,
+                  "endLine": 17,
+                  "startColumn": 20,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Variable 'ep' can be declared as reference to const"
+          },
+          "ruleId": "constVariableReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/persistence\/OvmAddressRepository.cpp"
+                },
+                "region": {
+                  "endColumn": 13,
+                  "endLine": 29,
+                  "startColumn": 13,
+                  "startLine": 29
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Consider using std::transform algorithm instead of a raw loop."
+          },
+          "ruleId": "useStlAlgorithm"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 38,
+                  "endLine": 26,
+                  "startColumn": 38,
+                  "startLine": 26
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 38,
+                  "endLine": 28,
+                  "startColumn": 38,
+                  "startLine": 28
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 38,
+                  "endLine": 30,
+                  "startColumn": 38,
+                  "startLine": 30
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 38,
+                  "endLine": 32,
+                  "startColumn": 38,
+                  "startLine": 32
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'm' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include\/domain\/Order.hpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 14,
+                  "startColumn": 0,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'drink' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/network\/MessageReceiver.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 19,
+                  "startColumn": 0,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'start' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/network\/PaymentCallbackReceiver.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 3,
+                  "startColumn": 0,
+                  "startLine": 3
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'simulatePrepayment' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/persistence\/OvmAddressRepository.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 25,
+                  "startColumn": 0,
+                  "startLine": 25
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'getAllEndpoints' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 36,
+                  "startColumn": 0,
+                  "startLine": 36
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'broadcastStock' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 50,
+                  "startColumn": 0,
+                  "startLine": 50
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'getDistance' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 56,
+                  "startColumn": 0,
+                  "startLine": 56
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'sendPrePayReq' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 79,
+                  "startColumn": 0,
+                  "startLine": 79
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'respondPrepayReq' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 85,
+                  "startColumn": 0,
+                  "startLine": 85
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'validOVMStock' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 108,
+                  "startColumn": 0,
+                  "startLine": 108
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'onMessage' is never used."
+          },
+          "ruleId": "unusedFunction"
+        }
+      ],
+      "tool": {
+        "driver": {
+          "informationUri": "https:\/\/cppcheck.sourceforge.io",
+          "name": "Cppcheck",
+          "rules": [
+            {
+              "fullDescription": {
+                "text": "Variable 'ep' can be declared as reference to const"
+              },
+              "help": {
+                "text": "Variable 'ep' can be declared as reference to const"
+              },
+              "id": "constVariableReference",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Variable 'ep' can be declared as reference to const"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "Consider using std::transform algorithm instead of a raw loop."
+              },
+              "help": {
+                "text": "Consider using std::transform algorithm instead of a raw loop."
+              },
+              "id": "useStlAlgorithm",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Consider using std::transform algorithm instead of a raw loop."
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "Parameter 'm' can be declared as reference to const"
+              },
+              "help": {
+                "text": "Parameter 'm' can be declared as reference to const"
+              },
+              "id": "constParameterReference",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Parameter 'm' can be declared as reference to const"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "The function 'drink' is never used."
+              },
+              "help": {
+                "text": "The function 'drink' is never used."
+              },
+              "id": "unusedFunction",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "The function 'drink' is never used."
+              }
+            }
+          ],
+          "semanticVersion": "2.17.1"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}
+
