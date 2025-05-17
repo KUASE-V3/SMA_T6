@@ -1,5 +1,4 @@
 // PrepaymentService.hpp
-// ------------------------------
 #ifndef PREPAYMENT_SERVICE_HPP
 #define PREPAYMENT_SERVICE_HPP
 
@@ -7,9 +6,10 @@
 
 class PrepaymentService {
 public:
-    bool isValid(const std::string& code);      // UC13
-    std::string issueCode();               // UC12
-    void issueCode(Order& order);  // UC15
+    bool isValid(const std::string& code);
+    void isSueCode();  // Order 없앰
+
+    // void issueCode(Order& order);  // 주석 처리 또는 제거
 };
 
 #endif
