@@ -32,7 +32,10 @@ add_library(MyLibrary
     src/presentation/UserInterface.cpp
 )
 
-target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(MyLibrary PUBLIC
+    ${PROJECT_SOURCE_DIR}/include/application
+    ${PROJECT_SOURCE_DIR}/include/presentation
+)
 
 # 메인 애플리케이션 생성 (main.cpp는 라이브러리의 함수 호출)
 # add_executable(MyApp src/main.cpp)
