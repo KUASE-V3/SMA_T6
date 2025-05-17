@@ -13,6 +13,7 @@ public:
     bool getSaleValid(const std::string& drink);                      // UC3
     std::string reduceDrink(const std::string& drink);                // UC7
     bool validOVMStock(const std::string& drinkName);                 // UC17
+    std::string getDrinkCodeByName(const std::string& name);  // UC2
 
 
 };

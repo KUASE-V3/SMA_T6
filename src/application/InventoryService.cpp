@@ -26,3 +26,10 @@ bool InventoryService::validOVMStock(const std::string& drinkName) {
     return true;  // 임시 반환
 }
 
+std::string InventoryService::getDrinkCodeByName(const std::string& name) {
+    // 예시 구현: 단순히 이름을 코드로 반환
+    return "CODE_" + name;  // 또는 실제 코드 검색 로직
+}
+
+
+
