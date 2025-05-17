@@ -4,6 +4,7 @@
 #define ORDER_SERVICE_HPP
 
 #include <string>
+#include "Order.hpp" 
 
 class OrderService {
 public:
@@ -16,3 +17,4 @@ public:
 private:
     Order* order;
 };
+#endif

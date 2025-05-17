@@ -27,6 +27,7 @@ add_library(MyLibrary STATIC
     src/ErrorService.cpp
     src/InventoryService.cpp
     src/OrderService.cpp
+    src/Order.cpp  
     src/PrepaymentService.cpp
     src/UserInterface.cpp
     src/UserProcessController.cpp
