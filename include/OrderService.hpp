@@ -1,20 +1,20 @@
-// OrderService.hpp
-// ------------------------------
 #ifndef ORDER_SERVICE_HPP
 #define ORDER_SERVICE_HPP
 
 #include <string>
-#include "Order.hpp" 
 
 class OrderService {
 public:
-    OrderService(Order* order);
-    void approve(const std::string& paymentID, bool success);
-    Order createOrder(const std::string& drinkCode); 
-    Order attachPrePay(const Order& order, const std::string& prepayCode);
+    OrderService(); // Order* order 삭제
 
-    
+    void approve(const std::string& paymentID, bool success);
+    void createOrder(const std::string& drinkCode);  // 반환형 변경
+    void attachPrePay(const std::string& prepayCode); // 파라미터 변경
+
 private:
-    Order* order;
+    std::string status;
+    std::string drinkCode;
+    std::string prepayCode;
 };
+
 #endif

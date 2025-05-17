@@ -1,23 +1,25 @@
 // OrderService.cpp
 // ------------------------------
 #include "OrderService.hpp"
+#include <iostream>
 
-OrderService::OrderService(Order* order) : order(order) {}
+OrderService::OrderService() {}
 
 void OrderService::approve(const std::string& paymentID, bool success) {
     if (success) {
-        order->setStatus("Approved");
+        status = "Approved";
     } else {
-        order->setStatus("Declined");
+        status = "Declined";
     }
+    std::cerr << "[승인 상태] " << status << std::endl;
 }
 
-Order OrderService::createOrder(const std::string& drinkCode) {
-    Order order;
-    order.setDrinkCode(drinkCode);  // 예시
-    return order;
+void OrderService::createOrder(const std::string& code) {
+    drinkCode = code;
+    std::cerr << "[주문 생성] DrinkCode: " << drinkCode << std::endl;
 }
 
-Order OrderService::attachPrePay(const Order& order, const std::string& code) {
-    return order.attachPrePay(code);  //  Order 객체의 함수 호출
+void OrderService::attachPrePay(const std::string& code) {
+    prepayCode = code;
+    std::cerr << "[선결제 코드 연결] Code: " << prepayCode << std::endl;
 }
