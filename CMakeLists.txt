@@ -28,7 +28,7 @@ endif()
 add_library(domain STATIC 
     src/domain/inventory.cpp
     src/domain/order.cpp
-    src/domain/PrepaymentCode.cpp
+    src/domain/prepaymentCode.cpp
     src/domain/drink.cpp
     src/domain/vendingMachine.cpp
 )
