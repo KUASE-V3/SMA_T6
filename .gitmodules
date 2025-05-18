@@ -2,3 +2,6 @@
 	path = lib/googletest
 	url = https://github.com/google/googletest
 	branch = v1.16.x
+[submodule "external/rapidjson"]
+	path = external/rapidjson
+	url = https://github.com/Tencent/rapidjson.git

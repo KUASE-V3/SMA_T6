@@ -1,15 +1,22 @@
 cmake_minimum_required(VERSION 3.10)
-project(MyProject)
+project(SMA_T6_Project)
 
-# C++17 사용
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Unix 기반 시스템에서는 실행 파일 이름에 .out postfix 부여
 if(UNIX)
     set(CMAKE_EXECUTABLE_SUFFIX ".out")
 endif()
 
+find_package(Threads REQUIRED)
+
+# ───────────── Include Paths ─────────────
+include_directories(
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/external/rapidjson/include
+)
+
+# ───────────── Option: Coverage ─────────────
 option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
 if(ENABLE_COVERAGE)
   message(STATUS "Coverage instrumentation enabled")
@@ -17,51 +24,114 @@ if(ENABLE_COVERAGE)
   add_link_options(--coverage)
 endif()
 
-# 헤더 파일 디렉터리 추가
-include_directories(${PROJECT_SOURCE_DIR}/include)
+# ───────────── Domain Layer -────────────
+add_library(domain STATIC 
+    src/domain/inventory.cpp
+    src/domain/order.cpp
+    src/domain/prepaymentCode.cpp
+    src/domain/drink.cpp
+    src/domain/vendingMachine.cpp
+)
+target_include_directories(domain INTERFACE ${PROJECT_SOURCE_DIR}/include)
 
-# 공통 모듈을 라이브러리로 생성 (module.cpp)
-add_library(MyLibrary STATIC src/person.cpp src/persistence/invenoryRepository.cpp src/domain/drink.cpp src/domain/inventory.cpp src/domain/prepaymentCode.cpp src/domain/order.cpp
-src/persistence/prepayCodeRepository.cpp)
-target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
+# ───────────── Network Layer ─────────────
+add_library(network STATIC
+    src/network/MessageSender.cpp
+    src/network/MessageReceiver.cpp
+    src/network/MessageSerializer.cpp
+    src/network/PaymentCallbackReceiver.cpp
+)
+target_include_directories(network PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-# 메인 애플리케이션 생성 (main.cpp는 라이브러리의 함수 호출)
-add_executable(MyApp src/main.cpp)
-target_link_libraries(MyApp MyLibrary)
+# ───────────── Persistence Layer ─────────────
+add_library(persistence STATIC
+    src/persistence/OvmAddressRepository.cpp
+    src/persistence/prepayCodeRepository.cpp
+    src/persistence/inventoryRepository.cpp
+)
+target_include_directories(persistence PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-# 테스트 빌드를 선택적으로 활성화하는 옵션 추가
+# ───────────── Application Logic Layer ─────────────
+add_library(application STATIC
+    src/service/ErrorService.cpp
+    src/service/InventoryService.cpp
+    src/service/MessageService.cpp
+    src/service/OrderService.cpp
+    src/service/PrepaymentService.cpp
+    src/service/UserProcessController.cpp
+    src/presentation/UserInterface.cpp 
+
+)
+target_include_directories(application PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(application
+    PRIVATE
+        domain
+        network
+        persistence
+        Threads::Threads
+)
+
+# ───────────── Main Executable ─────────────
+add_executable(MyApp
+    src/main.cpp
+)
+target_link_libraries(MyApp
+    PRIVATE
+        application
+        network
+        persistence
+        domain
+        Threads::Threads
+)
+
+
+
+# ───────────── GoogleTest Option ─────────────
 option(BUILD_TESTS "Build tests" OFF)
-
 if(BUILD_TESTS)
-  # GoogleTest 서브모듈 추가 (테스트 빌드는 기본 ALL에서 제외)
   add_subdirectory(lib/googletest EXCLUDE_FROM_ALL)
   include_directories(${PROJECT_SOURCE_DIR}/lib/googletest/googletest/include)
-  
-  # 테스트 소스 파일 모음
-  set(TEST_SOURCES
+
+  # ───────────── 기본 테스트 실행 파일 ─────────────
+  add_executable(RunTests
     tests/test_person.cpp
     tests/inventoryRepository_test.cpp
+    tests/inventory_test.cpp
+    tests/prepaymentCode_test.cpp
+    tests/order_test.cpp
+    tests/prepaymentCodeRepository_test.cpp
   )
-
-  # 테스트 실행 파일 생성 (test_main.cpp 포함) - 기본 빌드에서 제외
-  add_executable(RunTests tests/test_person.cpp
-                          tests/inventoryRepository_test.cpp
-                          tests/inventory_test.cpp
-                          tests/prepaymentCode_test.cpp
-                          tests/order_test.cpp
-                          tests/prepaymentCodeRepository_test.cpp)
-
   set_target_properties(RunTests PROPERTIES EXCLUDE_FROM_ALL TRUE)
-  target_link_libraries(RunTests MyLibrary gtest_main gtest pthread)
-  
-  enable_testing()
+  target_link_libraries(RunTests PRIVATE application gtest_main gtest pthread)
   add_test(NAME GoogleTests COMMAND RunTests)
-  
-  # "googletest"라는 custom target을 만들어 필요 시 테스트를 따로 빌드할 수 있도록 함
-  add_custom_target(googletest DEPENDS RunTests)
+
+  # ───────────── Message 관련 세분화 테스트 ─────────────
+  add_executable(MessageTests
+    tests/network/msg_sender_test_1.cpp
+    tests/network/msg_sender_test_2.cpp
+    tests/network/msg_service_test_1.cpp
+    tests/network/msg_service_test_2.cpp
+    tests/network/msg_service_test_3.cpp
+    tests/network/msg_service_test_4.cpp
+    tests/network/msg_service_test_5.cpp
+    tests/network/test_MessageReceiver_subscribe.cpp
+    tests/network/test_MessageSender_basicSend.cpp
+    tests/network/test_MessageService_broadcast.cpp
+    tests/network/test_message_service_broadcast_stock.cpp
+  )
+  target_include_directories(MessageTests
+    PRIVATE ${PROJECT_SOURCE_DIR}/lib/googletest/googletest/include
+  )
+  target_link_libraries(MessageTests
+    PRIVATE application domain network persistence gtest gtest_main pthread
+  )
+  add_test(NAME MessageTests COMMAND MessageTests)
+
+  add_custom_target(googletest DEPENDS RunTests MessageTests)
 endif()
 
-# cppcheck 실행 커스텀 타깃 추가
+
+# ───────────── Static Analysis: cppcheck ─────────────
 find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)
 if(CPPCHECK_EXECUTABLE)
   message(STATUS "Found cppcheck: ${CPPCHECK_EXECUTABLE}")
@@ -83,7 +153,7 @@ if(CPPCHECK_EXECUTABLE)
   )
 endif()
 
-# GCover
+# ───────────── Coverage Report: gcovr ─────────────
 find_program(GCOVR_EXECUTABLE NAMES gcovr)
 if(GCOVR_EXECUTABLE)
   message(STATUS "Found gcovr: ${GCOVR_EXECUTABLE}")
@@ -92,20 +162,13 @@ if(GCOVR_EXECUTABLE)
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/coverage
     COMMAND ${GCOVR_EXECUTABLE}
       -r ${PROJECT_SOURCE_DIR}
-      --filter "${PROJECT_SOURCE_DIR}/src/.*|${PROJECT_SOURCE_DIR}/include/.*"
-      --filter "${PROJECT_SOURCE_DIR}/tests/.*"
-      --exclude "${PROJECT_SOURCE_DIR}/lib/.*"
-    COMMAND ${GCOVR_EXECUTABLE}
-      -r ${PROJECT_SOURCE_DIR}
-      --filter "${PROJECT_SOURCE_DIR}/src/.*|${PROJECT_SOURCE_DIR}/include/.*"
-      --filter "${PROJECT_SOURCE_DIR}/tests/.*"
+      --filter "${PROJECT_SOURCE_DIR}/(src|include|tests)/.*"
       --exclude "${PROJECT_SOURCE_DIR}/lib/.*"
       --html-details
       --output ${CMAKE_BINARY_DIR}/coverage/coverage.html
     COMMAND ${GCOVR_EXECUTABLE}
       -r ${PROJECT_SOURCE_DIR}
-      --filter "${PROJECT_SOURCE_DIR}/src/.*|${PROJECT_SOURCE_DIR}/include/.*"
-      --filter "${PROJECT_SOURCE_DIR}/tests/.*"
+      --filter "${PROJECT_SOURCE_DIR}/(src|include|tests)/.*"
       --exclude "${PROJECT_SOURCE_DIR}/lib/.*"
       --coveralls
       --output ${CMAKE_BINARY_DIR}/coverage.json
