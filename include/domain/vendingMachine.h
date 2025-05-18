@@ -5,15 +5,15 @@
 
 class VendingMachine {
     public:
-    VendingMachine(const std::string& id, const std::string& location);
+    VendingMachine(const std::string& id, const double& location);
 
     std::string getId() const;
-    std::string getLocation() const;
+    double getLocation() const;
 
 
     private:
         std::string id;
-        std::string location;
+        double location;
     };
     
     #endif

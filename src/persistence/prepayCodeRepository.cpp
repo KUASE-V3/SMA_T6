@@ -1,4 +1,4 @@
-#include "prepayCodeRepository.h"
+#include "../include/persistence/prepayCodeRepository.h"
 
 void PrepaymentCodeRepository::save(const PrepaymentCode& prepayCode) {
     prepaymentCodeList.push_back(prepayCode);
