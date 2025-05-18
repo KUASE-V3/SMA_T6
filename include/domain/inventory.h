@@ -2,29 +2,20 @@
 #define INVENTORY_H
 
 #include <string>
-
-#include "domain/drink.h"
-
-
-namespace domain {
-
-
+#include "../include/domain/drink.h"
 
 
 class inventory {
-
     public:
         inventory();
         inventory(const Drink& drink, int qty);
 
-
         Drink getDrink() const;
 
         bool isEmpty() const;
-        void reduceDrink();
+        static void reduceDrink(const Drink& drink);
 
         int  getQty() const;
-
         
 
 
@@ -33,11 +24,9 @@ class inventory {
     private:
         Drink drink_;
         int qty_;
-
-        
 };
 
-}
+
 
 
 #endif
