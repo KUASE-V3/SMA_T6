@@ -11,6 +11,9 @@ class Order {
 
         Order attachPrePay(const Drink& drink, const std::string& code);  
         void setStatus(const std::string& paystatus);      //"Declined", "Approved", "Pending"
+        Drink getDrink() const;  // 음료 정보 반환
+        std::string getOrderID() const;  // 주문 ID 반환
+        std::string getPayStatus() const;  // 결제 상태 반환
 
     private:
             Drink drink_;
