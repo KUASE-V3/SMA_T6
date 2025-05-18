@@ -2,18 +2,19 @@
 #define VENDINGMACHINE_H
 
 #include <string>
+#include <utility>
 
 class VendingMachine {
     public:
-    VendingMachine(const std::string& id, const double& location);
+    VendingMachine(const std::string& id, const std::pair<double, double>& location);
 
     std::string getId() const;
-    double getLocation() const;
 
+    std::pair<double, double> getLocation() const;
 
     private:
         std::string id;
-        double location;
+        std::pair<double, double> location;
     };
     
     #endif
