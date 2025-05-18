@@ -1,22 +1,10 @@
+
 #pragma once
 #include <string>
-#include "domain/drink.h"   // Drink Á¤ÀÇ
+#include "domain/drink.h"   // Drink ï¿½ï¿½ï¿½ï¿½
 
 namespace domain {
 
-/**
- * Order
- * ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
- * ? vm_id_      : ÁÖ¹® ´ë»ó ÀÚÆÇ±â ID (ex: "T2")
- * ? drink_      : À½·á(ÄÚµå¡¤ÀÌ¸§¡¤°¡°Ý Æ÷ÇÔ)
- * ? qty_        : ¼ö·®  (Áö±ÝÀº 1·Î¸¸ »ç¿ëÇØµµ OK)
- * ? cert_code_  : ¼±°áÁ¦ ÄÚµå(¾øÀ¸¸é "NONE")
- * ? pay_status_ : "Pending" | "Approved" | "Declined"
- *
- * ¨ç ¿ì¸® ÀÚÆÇ±â¿¡¼­ ÁÖ¹® »ý¼º ¡æ vmId ¿¡ ¡°³» ÀÚÆÇ±â ID¡± ÀúÀå  
- * ¨è ´Ù¸¥ ÀÚÆÇ±â·Î ¶ó¿ìÆÃµÉ ¶§ setVmId("Tn") À¸·Î ¸ñÀûÁö¸¦ ±³Ã¼  
- * ¨é ¼±°áÁ¦ ÄÚµå°¡ ¹ß±ÞµÇ¸é attachPrePay ·Î cert_code_ Ã¤¿ò
- */
 class Order {
 public:
     Order() = default;
@@ -27,19 +15,19 @@ public:
           std::string   certCode         = "NONE",
           std::string   payStatus        = "Pending");
 
-    /* ¦¡¦¡¦¡ ºñÁî´Ï½º ¸Þ¼­µå ¦¡¦¡¦¡ */
-    Order  attachPrePay(const std::string& cert);       // ¼±°áÁ¦ ÄÚµå ºÎÂø
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    Order  attachPrePay(const std::string& cert);       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
     void   setStatus   (const std::string& payStatus);  // "Approved" | "Declined"
-    void   setVmId     (const std::string& vmId);       // ¸ñÀûÁö ¼öÁ¤
+    void   setVmId     (const std::string& vmId);       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    /* ¦¡¦¡¦¡ °ÔÅÍ (MessageService °¡ »ç¿ë) ¦¡¦¡¦¡ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (MessageService ï¿½ï¿½ ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     const std::string& vmId()      const { return vm_id_; }
     const Drink&       drink()     const { return drink_; }
     int                quantity()  const { return qty_;   }
     const std::string& certCode()  const { return cert_code_; }
 
 private:
-    std::string vm_id_;      // ¸ñÀûÁö VM  (ex: "T2")
+    std::string vm_id_;      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ VM  (ex: "T2")
     Drink       drink_;
     int         qty_        {1};
     std::string cert_code_  {"NONE"};

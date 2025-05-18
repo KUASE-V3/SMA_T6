@@ -15,7 +15,8 @@ public:
     bool isSameCode(const std::string& code) const;
 
 private:
-    std::vector<domain::PrepaymentCode> prepaymentCodeList; // ³»ºÎ Ä³½Ã
+    std::vector<domain::PrepaymentCode> prepaymentCodeList; // ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½
 };
 }
+
 #endif

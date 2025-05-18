@@ -2,7 +2,7 @@
 
 namespace domain {
 
-/* ±âº» »ý¼ºÀÚ: dummy ÁÖ¹® */
+/* ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: dummy ï¿½Ö¹ï¿½ */
 Order::Order(std::string  vmId,
              Drink        drink,
              int          qty,
@@ -15,20 +15,32 @@ Order::Order(std::string  vmId,
     , pay_status_(std::move(payStatus))
 {}
 
-/* ¼±°áÁ¦ ÄÚµå ºÎÂø ¡æ »õ Order ¹ÝÈ¯ (ºÒº¯ °´Ã¼ ½ºÅ¸ÀÏ) */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ Order ï¿½ï¿½È¯ (ï¿½Òºï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½Å¸ï¿½ï¿½) */
 Order Order::attachPrePay(const std::string& cert) {
     return Order(vm_id_, drink_, qty_, cert, pay_status_);
 }
 
-/* °áÁ¦ °á°ú ÀúÀå */
+/* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 void Order::setStatus(const std::string& status) {
     if (status == "Approved" || status == "Declined")
         pay_status_ = status;
 }
 
-/* ¸Þ½ÃÁö ¶ó¿ìÆÃ ´Ü°è¿¡¼­ ¸ñÀûÁö VM À» ¹Ù²Ü ¼ö ÀÖ°Ô Á¦°ø */
+/* ï¿½Þ½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ü°è¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ VM ï¿½ï¿½ ï¿½Ù²ï¿½ ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 void Order::setVmId(const std::string& vmId) {
     vm_id_ = vmId;
 }
 
-} // namespace domain
+
+
+Drink Order::getDrink() const {
+    return drink_;
+}
+
+std::string Order::getOrderID() const {
+    return orderID_;
+}
+
+std::string Order::getPayStatus() const {
+    return payStatus_;
+}

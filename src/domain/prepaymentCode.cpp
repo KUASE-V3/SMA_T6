@@ -1,4 +1,5 @@
 #include "domain/prepaymentCode.h"
+
 #include <cstdlib>     // rand, srand
 #include <ctime>       // time
 #include <sstream>     // stringstream
@@ -6,14 +7,14 @@
 #include <cctype> // std::isalnum, std::isupper
 
 
-namespace domain {
+
 PrepaymentCode::PrepaymentCode() {
-    code = rand();         // 5?ë¦? ?œ?¤ ì½”ë“œ ?ƒ?„±
-    status = "Unused";     // ê¸°ë³¸ ?ƒ?ƒœ
+    code = rand();         // 5ìë¦¬ ëœë¤ ì½”ë“œ ìƒì„±
+    status = "Unused";     // ê¸°ë³¸ ìƒíƒœ
     
 }
 
-// ?œ?¤ 5?ë¦? ë¬¸ì?—´ ?ƒ?„± ?•¨?ˆ˜
+// ëœë¤ 5ìë¦¬ ë¬¸ìì—´ ìƒì„± í•¨ìˆ˜
 std::string PrepaymentCode::rand() {
     static const char charset[] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -29,20 +30,21 @@ std::string PrepaymentCode::rand() {
 }
 
 
-//?¸ì¦ì½”?“œ ?˜•?‹ ê²??‚¬
-bool PrepaymentCode::isUsable(const std::string& code) {
+//ì¸ì¦ì½”ë“œ í˜•ì‹ ê²€ì‚¬
+bool PrepaymentCode::isUsable( const std::string& code) {
     if (code.length() != 5) return false;
 
     for (char c : code) {
-        if (!std::isalnum(c)) return false;               // ?ˆ«??‚˜ ë¬¸ì ?•„?‹Œê²½ìš°,
-        if (std::isalpha(c) && !std::isupper(c)) return false;      // ?•Œ?ŒŒë²³ì¼ ?•Œ, ?†Œë¬¸ì?¼ ê²½ìš° false
+        if (!std::isalnum(c)) return false;               // ìˆ«ìë‚˜ ë¬¸ì ì•„ë‹Œê²½ìš°,
+        if (std::isalpha(c) && !std::isupper(c)) return false;      // ì•ŒíŒŒë²³ì¼ ë•Œ, ì†Œë¬¸ìì¼ ê²½ìš° false
     }
 
     return true;
 }
 
 
-// ?“¤?–´?˜¨ ì£¼ë¬¸ê³? ?—°ê²?
+
+// ë“¤ì–´ì˜¨ ì£¼ë¬¸ ëœë¤ìƒì„±ëœ ì¸ì¦ì½”ë“œ prepaymentcodeì™€ ì—°ê²°
 PrepaymentCode PrepaymentCode::hold(Order order) {
     heldOrder = order;
     return *this;
@@ -51,8 +53,8 @@ PrepaymentCode PrepaymentCode::hold(Order order) {
 
 
 
-//?‚¬?š©?¨?œ¼ë¡? ë³?ê²?
-void PrepaymentCode::setStatus(std::string& newStatus){
+//ì‚¬ìš©ë¨ìœ¼ë¡œ ë³€ê²½
+void PrepaymentCode::setStatus( std::string& newStatus){
     if (newStatus == "Used")    status = newStatus;
 }
 
@@ -62,4 +64,8 @@ std::string PrepaymentCode :: getCode() const {
     return code;
 }
 
+
+
+std::string PrepaymentCode :: getStatus() {
+    return status;
 }

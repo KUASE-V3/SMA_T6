@@ -92,7 +92,21 @@ if(BUILD_TESTS)
   add_subdirectory(lib/googletest EXCLUDE_FROM_ALL)
   include_directories(${PROJECT_SOURCE_DIR}/lib/googletest/googletest/include)
 
-  add_executable(RunTests tests/test_person.cpp)
+  
+  # 테스트 소스 파일 모음
+  set(TEST_SOURCES
+    tests/test_person.cpp
+    tests/inventoryRepository_test.cpp
+  )
+
+  # 테스트 실행 파일 생성 (test_main.cpp 포함) - 기본 빌드에서 제외
+  add_executable(RunTests tests/test_person.cpp
+                          tests/inventoryRepository_test.cpp
+                          tests/inventory_test.cpp
+                          tests/prepaymentCode_test.cpp
+                          tests/order_test.cpp
+                          tests/prepaymentCodeRepository_test.cpp)
+
   set_target_properties(RunTests PROPERTIES EXCLUDE_FROM_ALL TRUE)
   target_link_libraries(RunTests PRIVATE application gtest_main gtest pthread)
 
