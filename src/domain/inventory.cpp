@@ -34,3 +34,4 @@ void inventory::reduceDrink() {
 int inventory :: getQty () const {
     return qty_;
 }
+}
