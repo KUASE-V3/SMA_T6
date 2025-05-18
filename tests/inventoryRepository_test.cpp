@@ -3,33 +3,38 @@
 #include "../include/domain/drink.h"
 #include "../include/domain/inventory.h"
 
+
+using domain::Drink;
+using domain::inventory;
+using persistence::inventoryRepository;
+
 TEST(InventoryRepositoryTest, SetAndGetAllDrinks) {
     std::vector<Drink> testDrinks = {
         Drink("μ½λΌ", 1500, "D001"),
-        Drink("μ‚¬μ΄λ‹¤", 1500, "D002"),
-        Drink("ν™νƒ€ μ¤λ μ§€", 1600, "D003"),
-        Drink("ν™νƒ€ ν¬λ„", 1600, "D004"),
-        Drink("λª¬μ¤ν„°", 2500, "D005"),
-        Drink("λ λ“λ¶", 2700, "D006"),
-        Drink("κ²ν† λ μ΄", 1800, "D007"),
-        Drink("νμ›μ—μ΄λ“", 1800, "D008"),
-        Drink("μ΄ν”„λ΅", 1700, "D009"),
-        Drink("λΉ„νƒ€500", 1000, "D010"),
-        Drink("λ³΄μ„±λ…Ήμ°¨", 1500, "D011"),
-        Drink("μ¥μμμμ—Όμ°¨", 1500, "D012"),
-        Drink("μ½”μ½”ν", 1600, "D013"),
-        Drink("νΈλ΅ν”ΌμΉ΄λ‚", 1600, "D014"),
-        Drink("ν•«μ‹μ¤", 2000, "D015"),
-        Drink("μ•„λ©”λ¦¬μΉ΄λ…Έ μΊ”μ»¤ν”Ό", 1200, "D016"),
-        Drink("μ΅°μ§€μ•„ μ¤λ¦¬μ§€λ„", 1300, "D017"),
-        Drink("TOP μ¤μ„νΈ μ•„λ©”λ¦¬μΉ΄λ…Έ", 1400, "D018"),
-        Drink("λ°€ν‚¤μ¤", 1500, "D019"),
-        Drink("μΉΈνƒ€νƒ€", 1600, "D020")
+        Drink("?‚¬?΄?‹¤", 1500, "D002"),
+        Drink("?™??? ?¤? μ§?", 1600, "D003"),
+        Drink("?™??? ?¬?„", 1600, "D004"),
+        Drink("λª¬μ¤?„°", 2500, "D005"),
+        Drink("? ?“λ¶?", 2700, "D006"),
+        Drink("κ²ν† ? ?΄", 1800, "D007"),
+        Drink("??›?—?΄?“", 1800, "D008"),
+        Drink("?΄?”„λ΅?", 1700, "D009"),
+        Drink("λΉ„ν??500", 1000, "D010"),
+        Drink("λ³΄μ„±?…Ήμ°?", 1500, "D011"),
+        Drink("?¥????—Όμ°?", 1500, "D012"),
+        Drink("μ½”μ½”?", 1600, "D013"),
+        Drink("?Έλ΅ν”ΌμΉ΄λ‚", 1600, "D014"),
+        Drink("?•«?‹?¤", 2000, "D015"),
+        Drink("?•„λ©”λ¦¬μΉ΄λ…Έ μΊ”μ»¤?”Ό", 1200, "D016"),
+        Drink("μ΅°μ???•„ ?¤λ¦¬μ???„", 1300, "D017"),
+        Drink("TOP ?¤?„?Έ ?•„λ©”λ¦¬μΉ΄λ…Έ", 1400, "D018"),
+        Drink("λ°??‚¤?¤", 1500, "D019"),
+        Drink("μΉΈν?????", 1600, "D020")
     };
 
-    //μΈλ²¤ν† λ¦¬ λ¦¬μ¤νΈ μƒμ„±
+    //?Έλ²¤ν† λ¦? λ¦¬μ¤?Έ ?ƒ?„±
     std::vector<inventory> inventoryList;
-    const int INITIAL_QUANTITY = 10;  // μ΄κΈ° μ¬κ³  μλ‰
+    const int INITIAL_QUANTITY = 10;  // μ΄κΈ° ?¬κ³? ??‰
 
     for (const auto& drink : testDrinks) {
         inventoryList.push_back(inventory(drink, INITIAL_QUANTITY));
@@ -44,24 +49,24 @@ TEST(InventoryRepositoryTest, SetAndGetAllDrinks) {
 
     
 
-    //λ νΌμ§€ν† λ¦¬ κ°μ²΄ μƒμ„± ν›„ μ •ν–λ μΈλ²¤ν† λ¦¬(μλ£ + μλ‰) λ‚΄μ© μ €μ¥
+    //? ?Όμ§??† λ¦? κ°μ²΄ ?ƒ?„± ?›„ ? •?–? ?Έλ²¤ν† λ¦?(?λ£? + ??‰) ?‚΄?© ????¥
     inventoryRepository repo;
     repo.setAllDrinks(inventoryList);
 
-    //μ €μ¥λ λ¦¬μ¤νΈ λ°ν™
+    //????¥? λ¦¬μ¤?Έ λ°ν™
     auto resultList = repo.getList();
     EXPECT_EQ(resultList.size(), 20);
 
-    // μ²« λ²μ§Έ μλ£ κ²€μ¦
+    // μ²? λ²μ§Έ ?λ£? κ²?μ¦?
     EXPECT_EQ(resultList[0].first, "μ½λΌ");
     EXPECT_EQ(resultList[0].second, 10);
 
-    // λ§μ§€λ§‰ μλ£ κ²€μ¦
-    EXPECT_EQ(resultList[19].first, "μΉΈνƒ€νƒ€");
+    // λ§μ??λ§? ?λ£? κ²?μ¦?
+    EXPECT_EQ(resultList[19].first, "μΉΈν?????");
     EXPECT_EQ(resultList[19].second, 10);
 
-    // μ¤‘κ°„ μλ£ κ²€μ¦
-    EXPECT_EQ(resultList[9].first, "λΉ„νƒ€500");
+    // μ¤‘κ°„ ?λ£? κ²?μ¦?
+    EXPECT_EQ(resultList[9].first, "λΉ„ν??500");
     EXPECT_EQ(resultList[9].second, 10);
 
 }

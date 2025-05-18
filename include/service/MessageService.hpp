@@ -1,8 +1,6 @@
 #pragma once
-/*───────────────────────────────────────────────────────────
- * MessageService  ?  네트워크 계층과 애플리케이션 계층 사이의
- *                   Message 송?수신 로직을 담당
- *───────────────────────────────────────────────────────────*/
+
+
 #include "network/message.hpp"
 #include "network/MessageSender.hpp"
 #include "network/MessageReceiver.hpp"
@@ -26,6 +24,7 @@
 namespace application {
 
 class MessageService {
+
 public:
     /* 타임아웃 / 응답 최대치 (임시 상수) */
     static inline constexpr int kBroadcastTimeoutSec = 30;
