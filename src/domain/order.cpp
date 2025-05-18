@@ -2,7 +2,6 @@
 
 namespace domain {
 
-/* �⺻ ������: dummy �ֹ� */
 Order::Order(std::string  vmId,
              Drink        drink,
              int          qty,
@@ -15,21 +14,19 @@ Order::Order(std::string  vmId,
     , pay_status_(std::move(payStatus))
 {}
 
-/* ������ �ڵ� ���� �� �� Order ��ȯ (�Һ� ��ü ��Ÿ��) */
-Order Order::attachPrePay(const std::string& cert) {
+Order Order::attachPrePay(const std::string& cert) { //선결제로 전환시 
     return Order(vm_id_, drink_, qty_, cert, pay_status_);
 }
 
-/* ���� ��� ���� */
-void Order::setStatus(const std::string& status) {
+void Order::setStatus(const std::string& status) { 
     if (status == "Approved" || status == "Declined")
         pay_status_ = status;
 }
 
-/* �޽��� ����� �ܰ迡�� ������ VM �� �ٲ� �� �ְ� ���� */
 void Order::setVmId(const std::string& vmId) {
     vm_id_ = vmId;
 }
+
 
 
 

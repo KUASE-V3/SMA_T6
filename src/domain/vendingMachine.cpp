@@ -4,23 +4,27 @@
 
 using namespace domain;
 
-// ex) ?ƒ?„±? ?˜¸ì¶? : VendingMachine vm("001", std::make_pair(37.5665, 126.9780)); // ?„œ?š¸?‹œì²? ì¢Œí‘œ
-VendingMachine::VendingMachine(const std::string& id, const std::pair<double, double>& location)
-    : id(id), location(location) {}
+// ì´ˆê¸°í™”ì‹œ : id, locationì„ "T5", {123, 123}ìœ¼ë¡œ ì„¤ì •í•©ë‹ˆë‹¤.
+VendingMachine::VendingMachine(const std::string& id, const std::pair<int, int>& location, const std::string& port)
+    : id(id), location(location), port(port){}
 
 std::string VendingMachine::getId() const {
     return id;
 }
 
-std::pair<double, double> VendingMachine::getLocation() const {
+std::pair<int, int> VendingMachine::getLocation() const {
     return location;
 }
 
-/*          ê±°ë¦¬ê³„ì‚° ?˜ˆ?‹œ
+std::string VendingMachine::getPort() const {
+    return port;
+}
+
+/*          å«„ê³•â”æ€¨ê¾©ê¶› ï¿½ì‚ï¿½ë–†
 double VendingMachine::calculateDistance(const VendingMachine& other) const {
     double dx = location.first - other.location.first;
     double dy = location.second - other.location.second;
-    return std::sqrt(dx * dx + dy * dy);        //ê³„ì‚°??? ?•Œ?•„?„œ ?‘?„±
+    return std::sqrt(dx * dx + dy * dy);        //æ€¨ê¾©ê¶›ï¿½ï¿½ï¿½ ï¿½ë¸£ï¿½ë¸˜ï¿½ê½Œ ï¿½ì˜‰ï¿½ê½¦
 }
 */
 

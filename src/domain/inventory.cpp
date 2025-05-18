@@ -22,7 +22,7 @@ bool inventory::isEmpty() const {
 }
 
 
-// qty_ 1 감소 (0 미만으로는 감소 안 함)
+// qty_ 1 감소 (0 미만?��로는 감소 ?�� ?��)
 void inventory::reduceDrink() {
     if (qty_ > 0) {
         qty_--;

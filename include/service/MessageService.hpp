@@ -1,88 +1,97 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <mutex>
-#include <condition_variable>
-
+/*───────────────────────────────────────────────────────────
+ * MessageService  ?  네트워크 계층과 애플리케이션 계층 사이의
+ *                   Message 송?수신 로직을 담당
+ *───────────────────────────────────────────────────────────*/
 #include "network/message.hpp"
-#include "network/MessageReceiver.hpp"
 #include "network/MessageSender.hpp"
+#include "network/MessageReceiver.hpp"
+
 #include "persistence/OvmAddressRepository.hpp"
+#include "service/ErrorService.hpp"
+#include "service/InventoryService.hpp"
+#include "service/PrepaymentService.hpp"
+
 #include "domain/drink.h"
 #include "domain/order.h"
-#include "domain/vendingMachine.h"
-#include "InventoryService.hpp"
-#include "PrepaymentService.hpp"
-#include "ErrorService.hpp"
+#include "domain/inventory.h"
 
-namespace service   { class ErrorService;      }
-namespace service   { class InventoryService;  }
-namespace service   { class PrepaymentService; }
+#include <vector>
+#include <mutex>
+#include <condition_variable>
+#include <optional>
+#include <future>
+#include <chrono>
 
 namespace application {
 
 class MessageService {
 public:
-    /** ctor  
-     *  @param sender   네트워크 송신기  
-     *  @param receiver 네트워크 수신기  
-     *  @param repo     VM ID ↔ endpoint 저장소  
-     *  @param err      ErrorService (string-based)  
-     *  @param inv      InventoryService  
-     *  @param prepay   PrepaymentService
-     */
+    /* 타임아웃 / 응답 최대치 (임시 상수) */
+    static inline constexpr int kBroadcastTimeoutSec = 30;
+    static inline constexpr int kBroadcastRespMax    = 7;
+    static inline constexpr int kValidTimeoutSec     = 10;
+
+    /* ctor */
     MessageService(network::MessageSender&              sender,
                    network::MessageReceiver&            receiver,
                    const persistence::OvmAddressRepository& repo,
                    service::ErrorService&               err,
                    service::InventoryService&           inv,
-                   service::PrepaymentService&          prepay);
+                   service::PrepaymentService&          prepay,
+                   domain::inventory&                   drink);
 
-    /* ─────────────── UC-8 ─────────────── */
+    /* UC-8  */
     void broadcastStock(const domain::Drink& drink);
 
-    /* ─────────────── UC-16 ────────────── */
+    /* UC-16 (송신측) */
     void sendPrePayReq(const domain::Order& order);
 
-    /* ─────────────── UC-15 ────────────── */
-    void respondPrepayReq(const domain::Order& order);
-
-    /* ─────────────── UC-17 ────────────── */
-    bool validOVMStock(const std::string&   vm_id,
+    /* UC-17 */
+    bool validOVMStock(const std::string& vm_id,
                        const domain::Drink& drink,
-                       int                  qty = 1);
-
-    /* 모든 수신 메시지 엔트리-포인트 (현재 subscribe 로 분기하므로 빈 몸체) */
-    void onMessage(const network::Message&);
+                       int qty);
 
 private:
-    /* 내부 상수 (파일 안에서만 사용) */
-    static constexpr int kBroadcastRespMax     = 7;   // 7개 응답 or
-    static constexpr int kBroadcastTimeoutSec  = 30;  // 30초 종료
-    static constexpr int kValidTimeoutSec      = 10;  // validOVMStock 대기
+    /* ───────────── internal helpers ───────────── */
+    static std::string           myId();
+    static std::pair<int,int>    myCoord();
 
-    /* 의존성 */
-    network::MessageSender&                 sender_;
-    network::MessageReceiver&               receiver_;
-    const persistence::OvmAddressRepository& repo_;
-    service::ErrorService&                  errSvc_;
-    service::InventoryService&              invSvc_;
-    service::PrepaymentService&             prepaySvc_;
-
-    /* 브로드캐스트 응답 캐시 */
-    std::mutex                              resp_mtx_;
-    std::vector<network::Message>           resp_cache_;
-    std::condition_variable                 resp_cv_;
-
-    /* 내부 헬퍼 */
+    /* msg handlers (subscribe callback) */
     void handleReqStock (const network::Message& msg);
     void handleRespStock(const network::Message& msg);
     void handleReqPrepay(const network::Message& msg);
     void handleRespPrepay(const network::Message& msg);
 
-    /* 현재 VM 식별/좌표 ? 완성 전까지 임시 상수 */
-    static std::string myId();                 // TODO: VendingMachine 연동
-    static std::pair<int,int> myCoord();       // TODO: VendingMachine 연동
+    /* 외부에서 직접 호출 안 함 */
+    void respondPrepayReq(const domain::Order& order);
+    void onMessage(const network::Message&);            // (unused)
+
+    /* ───────────── pending PREPAY 1-shot 관리 ───────────── */
+    struct PendingPrepay {
+        domain::Order      order;
+        std::future<void>  timer_future;   // 30s watchdog
+    };
+    std::optional<PendingPrepay> pending_;              // option 3 : 1건만
+
+    void startPrepayTimer();
+    void cancelPrepayTimer();
+
+    /* ───────────── data members ───────────── */
+    network::MessageSender&                sender_;
+    network::MessageReceiver&              receiver_;
+    const persistence::OvmAddressRepository& repo_;
+
+    service::ErrorService&                 errSvc_;
+    service::InventoryService&             invSvc_;
+    service::PrepaymentService&            prepaySvc_;
+
+    domain::inventory&                    drink_; // 재고 정보
+
+    /* RESP_STOCK 병렬 수집용 */
+    std::vector<network::Message>          resp_cache_;
+    std::mutex                             resp_mtx_;
+    std::condition_variable                resp_cv_;
 };
 
 } // namespace application
