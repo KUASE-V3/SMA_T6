@@ -16,7 +16,7 @@ using application::MessageService;
 /* ────────────── 정적 HELPER ────────────── */
 std::string MessageService::myId()
 {
-    domain::VendingMachine vm("001",);
+    domain::VendingMachine vm("001", {0, 0}); // 임시 ID
     return vm.getId();
 }
 std::pair<int,int> MessageService::myCoord()
@@ -51,7 +51,7 @@ void MessageService::broadcastStock(const domain::Drink& drink)
 {
     network::Message req;
     req.msg_type = network::Message::Type::REQ_STOCK;
-    req.src_id   = domain::VendingMachine::getId(); // 내 자판기 ID
+    req.src_id   = myId();
     req.dst_id   = "0";                     // broadcast
     req.msg_content = {
         {"item_code", drink.getCode()},

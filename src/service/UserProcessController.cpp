@@ -73,16 +73,17 @@ void UserProcessController::handleDrinkSelection() {
     cin >> drinkName;
 
     try {
-        vector<Drink> drinks = inventoryRepository::getAllDrinks();  // ?��메인 객체 리스?��
+        vector<domain::inventory> drinks = inventoryRepository::getAllDrinks();
+
         bool found = false;
 
         for (const auto& drink : drinks) {
-            if (drink.getName() == drinkName) {
+            if (drink.getDrink().getName() == drinkName) {
                 found = true;
 
-                bool valid = inventoryService.getSaleValid(drink.getCode());
+                bool valid = inventoryService.getSaleValid(drink.getDrink().getCode());
                 if (valid) {
-                    Order order("T1", drink);  // ?��?���? ID?�� "T1" �??��
+                    Order order("T1", drink.getDrink());  // ?��?���? ID?�� "T1" �??��
 
                     if (ui.promptPrepayConsent()) {
                         string cardInfo = ui.promptCardInfo();

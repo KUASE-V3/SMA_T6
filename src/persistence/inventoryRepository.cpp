@@ -1,16 +1,26 @@
-#include "persistence/inventoryRepository.h"
+#include "../include/persistence/inventoryRepository.h"
 #include <string>
 
-using namespace persistence;
+using namespace domain;
 
-std::vector<domain::Drink> inventoryRepository::all_;
+namespace persistence {
+std::vector<domain::inventory> inventoryRepository::allDrinks;
 
-
-
-void inventoryRepository::setAllDrinks(const std::vector<domain::Drink>& list) {
-    all_ = list;
+void inventoryRepository::setAllDrinks(const std::vector<domain::inventory>& drinks) {
+    allDrinks = drinks;
 }
 
-const std::vector<domain::Drink>& inventoryRepository::getAllDrinks() {
-    return all_;
+const std::vector<domain::inventory>& inventoryRepository::getAllDrinks() {
+    return allDrinks;
+}
+ 
+
+//uc1 ë²? getListë©”ì†Œ?“œ
+std::vector<std::pair<std::string, int>> inventoryRepository::getList() {
+    std::vector<std::pair<std::string, int>> List;
+    for (const auto& inventory : allDrinks) {
+        List.emplace_back(inventory.getDrink().getName(), inventory.getQty());
+    }
+    return List;
+}
 }

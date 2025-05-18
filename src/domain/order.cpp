@@ -33,14 +33,6 @@ void Order::setVmId(const std::string& vmId) {
 
 
 
-Drink Order::getDrink() const {
-    return drink_;
-}
 
-std::string Order::getOrderID() const {
-    return orderID_;
-}
 
-std::string Order::getPayStatus() const {
-    return payStatus_;
 }

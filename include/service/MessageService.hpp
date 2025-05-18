@@ -13,6 +13,7 @@
 #include "domain/vendingMachine.h"
 #include "InventoryService.hpp"
 #include "PrepaymentService.hpp"
+#include "ErrorService.hpp"
 
 namespace service   { class ErrorService;      }
 namespace service   { class InventoryService;  }

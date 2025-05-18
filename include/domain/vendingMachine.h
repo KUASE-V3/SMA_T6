@@ -18,4 +18,6 @@ class VendingMachine {
         std::pair<double, double> location;
     };
     
-    #endif
+}
+
+#endif
