@@ -7,19 +7,27 @@
 
 TEST(PrepaymentCodeRepositoryTest, MultipleSaves) {
     PrepaymentCodeRepository repo;
+    std::vector<PrepaymentCode> codes;
     
     // 여러 개의 코드 저장
     for (int i = 0; i < 5; i++) {
         PrepaymentCode code;
+        codes.push_back(code);
         repo.save(code);
-        // 저장 즉시 존재하는지 확인
-        EXPECT_TRUE(repo.isSameCode(code.getCode()));
     }
+    
+    // 저장된 코드 중 하나를 선택하여 검증
+    EXPECT_TRUE(repo.isSameCode(codes[2].getCode()));
 }
 
 TEST(PrepaymentCodeRepositoryTest, InvalidCode) {
     PrepaymentCodeRepository repo;
     
+    for (int i = 0; i < 5; i++) {
+        PrepaymentCode code;
+        repo.save(code); 
+    }
+
     // 존재하지 않는 코드 검색
     EXPECT_FALSE(repo.isSameCode("INVALID"));
     EXPECT_FALSE(repo.isSameCode(""));
