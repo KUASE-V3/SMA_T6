@@ -22,6 +22,8 @@ struct EnumClassHash {
 // MessageReceiver: TCP 서버를 열어 들어오는 JSON 메시지를 수신
 // - msg_type별 handler를 등록하여 분기 처리
 class MessageReceiver {
+    friend class test_MessageReceiver_subscribe;  
+
 public:
     using Handler = std::function<void(const Message&)>;
 

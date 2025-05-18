@@ -92,29 +92,44 @@ if(BUILD_TESTS)
   add_subdirectory(lib/googletest EXCLUDE_FROM_ALL)
   include_directories(${PROJECT_SOURCE_DIR}/lib/googletest/googletest/include)
 
-  
-  # 테스트 소스 파일 모음
-  set(TEST_SOURCES
+  # ───────────── 기본 테스트 실행 파일 ─────────────
+  add_executable(RunTests
     tests/test_person.cpp
     tests/inventoryRepository_test.cpp
+    tests/inventory_test.cpp
+    tests/prepaymentCode_test.cpp
+    tests/order_test.cpp
+    tests/prepaymentCodeRepository_test.cpp
   )
-
-  # 테스트 실행 파일 생성 (test_main.cpp 포함) - 기본 빌드에서 제외
-  add_executable(RunTests tests/test_person.cpp
-                          tests/inventoryRepository_test.cpp
-                          tests/inventory_test.cpp
-                          tests/prepaymentCode_test.cpp
-                          tests/order_test.cpp
-                          tests/prepaymentCodeRepository_test.cpp)
-
   set_target_properties(RunTests PROPERTIES EXCLUDE_FROM_ALL TRUE)
   target_link_libraries(RunTests PRIVATE application gtest_main gtest pthread)
-
-  enable_testing()
   add_test(NAME GoogleTests COMMAND RunTests)
 
-  add_custom_target(googletest DEPENDS RunTests)
+  # ───────────── Message 관련 세분화 테스트 ─────────────
+  add_executable(MessageTests
+    tests/network/msg_sender_test_1.cpp
+    tests/network/msg_sender_test_2.cpp
+    tests/network/msg_service_test_1.cpp
+    tests/network/msg_service_test_2.cpp
+    tests/network/msg_service_test_3.cpp
+    tests/network/msg_service_test_4.cpp
+    tests/network/msg_service_test_5.cpp
+    tests/network/test_MessageReceiver_subscribe.cpp
+    tests/network/test_MessageSender_basicSend.cpp
+    tests/network/test_MessageService_broadcast.cpp
+    tests/network/test_message_service_broadcast_stock.cpp
+  )
+  target_include_directories(MessageTests
+    PRIVATE ${PROJECT_SOURCE_DIR}/lib/googletest/googletest/include
+  )
+  target_link_libraries(MessageTests
+    PRIVATE application domain network persistence gtest gtest_main pthread
+  )
+  add_test(NAME MessageTests COMMAND MessageTests)
+
+  add_custom_target(googletest DEPENDS RunTests MessageTests)
 endif()
+
 
 # ───────────── Static Analysis: cppcheck ─────────────
 find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)

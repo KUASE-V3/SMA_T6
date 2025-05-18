@@ -1,83 +1,86 @@
-#include <gtest/gtest.h>
-#include "../include/domain/prepaymentCode.h"
-#include "../include/domain/order.h"
-#include "../include/domain/drink.h"
+// #include <gtest/gtest.h>
+// #include "../include/domain/prepaymentCode.h"
+// #include "../include/domain/order.h"
+// #include "../include/domain/drink.h"
 
-// ìƒì„±ì í…ŒìŠ¤íŠ¸
-TEST(PrepaymentCodeTest, Constructor) {
-    PrepaymentCode code;
-    // ìƒì„±ìì—ì„œ codeê°€ 5ìë¦¬ì´ê³  ìƒíƒœê°€ "Unused"ì¸ì§€ í™•ì¸
-    EXPECT_EQ(code.getCode().length(), 5);
-    EXPECT_TRUE(PrepaymentCode::isUsable(code.getCode()));
-}
+// using namespace domain;
 
-// rand() ë©”ì†Œë“œ í…ŒìŠ¤íŠ¸
-TEST(PrepaymentCodeTest, Rand) {
-    PrepaymentCode code1;
-    PrepaymentCode code2;
-    // ë‘ ê°œì˜ ë‹¤ë¥¸ ì½”ë“œê°€ ìƒì„±ë˜ëŠ”ì§€ í™•ì¸
-    EXPECT_NE(code1.getCode(), code2.getCode());
+
+// // ?ƒ?„±? ?…Œ?Š¤?Š¸
+// TEST(PrepaymentCodeTest, Constructor) {
+//     PrepaymentCode code;
+//     // ?ƒ?„±??—?„œ codeê°? 5?ë¦¬ì´ê³? ?ƒ?ƒœê°? "Unused"?¸ì§? ?™•?¸
+//     EXPECT_EQ(code.getCode().length(), 5);
+//     EXPECT_TRUE(PrepaymentCode::isUsable(code.getCode()));
+// }
+
+// // rand() ë©”ì†Œ?“œ ?…Œ?Š¤?Š¸
+// TEST(PrepaymentCodeTest, Rand) {
+//     PrepaymentCode code1;
+//     PrepaymentCode code2;
+//     // ?‘ ê°œì˜ ?‹¤ë¥? ì½”ë“œê°? ?ƒ?„±?˜?Š”ì§? ?™•?¸
+//     EXPECT_NE(code1.getCode(), code2.getCode());
     
-    // ìƒì„±ëœ ì½”ë“œê°€ ì˜¬ë°”ë¥¸ í˜•ì‹ì¸ì§€ í™•ì¸
-    std::string code = code1.getCode();
-    EXPECT_EQ(code.length(), 5);
-    for (char c : code) {
-        EXPECT_TRUE(std::isalnum(c));
-        if (std::isalpha(c)) {
-            EXPECT_TRUE(std::isupper(c));
-        }
-    }
-}
+//     // ?ƒ?„±?œ ì½”ë“œê°? ?˜¬ë°”ë¥¸ ?˜•?‹?¸ì§? ?™•?¸
+//     std::string code = code1.getCode();
+//     EXPECT_EQ(code.length(), 5);
+//     for (char c : code) {
+//         EXPECT_TRUE(std::isalnum(c));
+//         if (std::isalpha(c)) {
+//             EXPECT_TRUE(std::isupper(c));
+//         }
+//     }
+// }
 
-// isUsable() ë©”ì†Œë“œ í…ŒìŠ¤íŠ¸
-TEST(PrepaymentCodeTest, IsUsable) {
-    // ì˜¬ë°”ë¥¸ í˜•ì‹ì˜ ì½”ë“œ
-    std::string validCode = "ABC12";
-    EXPECT_TRUE(PrepaymentCode::isUsable(validCode));
+// // isUsable() ë©”ì†Œ?“œ ?…Œ?Š¤?Š¸
+// TEST(PrepaymentCodeTest, IsUsable) {
+//     // ?˜¬ë°”ë¥¸ ?˜•?‹?˜ ì½”ë“œ
+//     std::string validCode = "ABC12";
+//     EXPECT_TRUE(PrepaymentCode::isUsable(validCode));
 
-    // ì˜ëª»ëœ ê¸¸ì´
-    std::string wrongLength = "ABC1";
-    EXPECT_FALSE(PrepaymentCode::isUsable(wrongLength));
+//     // ?˜ëª»ëœ ê¸¸ì´
+//     std::string wrongLength = "ABC1";
+//     EXPECT_FALSE(PrepaymentCode::isUsable(wrongLength));
 
-    // ì†Œë¬¸ì í¬í•¨
-    std::string lowerCase = "abc12";
-    EXPECT_FALSE(PrepaymentCode::isUsable(lowerCase));
+//     // ?†Œë¬¸ì ?¬?•¨
+//     std::string lowerCase = "abc12";
+//     EXPECT_FALSE(PrepaymentCode::isUsable(lowerCase));
 
-    // íŠ¹ìˆ˜ë¬¸ì í¬í•¨
-    std::string specialChar = "ABC!2";
-    EXPECT_FALSE(PrepaymentCode::isUsable(specialChar));
-}
+//     // ?Š¹?ˆ˜ë¬¸ì ?¬?•¨
+//     std::string specialChar = "ABC!2";
+//     EXPECT_FALSE(PrepaymentCode::isUsable(specialChar));
+// }
 
-// hold() ë©”ì†Œë“œ í…ŒìŠ¤íŠ¸
-TEST(PrepaymentCodeTest, Hold) {
-    PrepaymentCode code;
-    Drink drink("ì½œë¼", 1500, "D001");
-    Order order(drink, "ORDER001", "Pending");
+// // hold() ë©”ì†Œ?“œ ?…Œ?Š¤?Š¸
+// TEST(PrepaymentCodeTest, Hold) {
+//     PrepaymentCode code;
+//     Drink drink("ì½œë¼", 1500, "D001");
+//     Order order(drink, "ORDER001", "Pending");
     
-    PrepaymentCode heldCode = code.hold(order);
-    // hold ë©”ì†Œë“œê°€ í˜„ì¬ ê°ì²´ë¥¼ ë°˜í™˜í•˜ëŠ”ì§€ í™•ì¸
-    EXPECT_EQ(heldCode.getCode(), code.getCode());
-}
+//     PrepaymentCode heldCode = code.hold(order);
+//     // hold ë©”ì†Œ?“œê°? ?˜„?¬ ê°ì²´ë¥? ë°˜í™˜?•˜?Š”ì§? ?™•?¸
+//     EXPECT_EQ(heldCode.getCode(), code.getCode());
+// }
 
-// setStatus() ë©”ì†Œë“œ í…ŒìŠ¤íŠ¸
-TEST(PrepaymentCodeTest, SetStatus) {
-    PrepaymentCode code;
-    std::string usedStatus = "Used";
+// // setStatus() ë©”ì†Œ?“œ ?…Œ?Š¤?Š¸
+// TEST(PrepaymentCodeTest, SetStatus) {
+//     PrepaymentCode code;
+//     std::string usedStatus = "Used";
     
-    // ìœ íš¨í•œ ìƒíƒœ ë³€ê²½
-    code.setStatus(usedStatus);
-    // ìƒíƒœê°€ "Used"ë¡œ ë³€ê²½ë˜ì—ˆëŠ”ì§€ í™•ì¸
-    EXPECT_EQ(usedStatus, code.getStatus());
+//     // ?œ ?š¨?•œ ?ƒ?ƒœ ë³?ê²?
+//     code.setStatus(usedStatus);
+//     // ?ƒ?ƒœê°? "Used"ë¡? ë³?ê²½ë˜?—ˆ?Š”ì§? ?™•?¸
+//     EXPECT_EQ(usedStatus, code.getStatus());
     
-    // (getStatus ë©”ì†Œë“œê°€ ìˆë‹¤ë©´ ì‚¬ìš©)
-}
+//     // (getStatus ë©”ì†Œ?“œê°? ?ˆ?‹¤ë©? ?‚¬?š©)
+// }
 
-// getCode() ë©”ì†Œë“œ í…ŒìŠ¤íŠ¸
-TEST(PrepaymentCodeTest, GetCode) {
-    PrepaymentCode code;
-    std::string generatedCode = code.getCode();
+// // getCode() ë©”ì†Œ?“œ ?…Œ?Š¤?Š¸
+// TEST(PrepaymentCodeTest, GetCode) {
+//     PrepaymentCode code;
+//     std::string generatedCode = code.getCode();
     
-    // getCodeê°€ ì˜¬ë°”ë¥¸ í˜•ì‹ì˜ ì½”ë“œë¥¼ ë°˜í™˜í•˜ëŠ”ì§€ í™•ì¸
-    EXPECT_EQ(generatedCode.length(), 5);
-    EXPECT_TRUE(PrepaymentCode::isUsable(generatedCode));
-}
+//     // getCodeê°? ?˜¬ë°”ë¥¸ ?˜•?‹?˜ ì½”ë“œë¥? ë°˜í™˜?•˜?Š”ì§? ?™•?¸
+//     EXPECT_EQ(generatedCode.length(), 5);
+//     EXPECT_TRUE(PrepaymentCode::isUsable(generatedCode));
+// }

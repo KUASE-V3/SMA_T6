@@ -4,7 +4,51 @@
     {
       "results": [
         {
-          "level": "note",
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include\/domain\/drink.h"
+                },
+                "region": {
+                  "endColumn": 21,
+                  "endLine": 16,
+                  "startColumn": 21,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Function 'getName()' should return member 'name_' by const reference."
+          },
+          "ruleId": "returnByReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include\/domain\/drink.h"
+                },
+                "region": {
+                  "endColumn": 21,
+                  "endLine": 18,
+                  "startColumn": 21,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Function 'getCode()' should return member 'code_' by const reference."
+          },
+          "ruleId": "returnByReference"
+        },
+        {
+          "level": "warning",
           "locations": [
             {
               "physicalLocation": {
@@ -12,62 +56,40 @@
                   "uri": "src\/domain\/drink.cpp"
                 },
                 "region": {
-                  "endColumn": 0,
-                  "endLine": 1,
-                  "startColumn": 0,
-                  "startLine": 1
+                  "endColumn": 55,
+                  "endLine": 14,
+                  "startColumn": 55,
+                  "startLine": 14
                 }
               }
             }
           ],
           "message": {
-            "text": "Include file: \"drink.h\" not found."
+            "text": "Function parameter 'code' should be passed by const reference."
           },
-          "ruleId": "missingInclude"
+          "ruleId": "passedByValue"
         },
         {
-          "level": "note",
+          "level": "warning",
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/domain\/inventory.cpp"
+                  "uri": "include\/domain\/inventory.h"
                 },
                 "region": {
-                  "endColumn": 0,
-                  "endLine": 1,
-                  "startColumn": 0,
-                  "startLine": 1
+                  "endColumn": 15,
+                  "endLine": 21,
+                  "startColumn": 15,
+                  "startLine": 21
                 }
               }
             }
           ],
           "message": {
-            "text": "Include file: \"inventory.h\" not found."
+            "text": "Function 'getDrink()' should return member 'drink_' by const reference."
           },
-          "ruleId": "missingInclude"
-        },
-        {
-          "level": "note",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/domain\/prepaymentCode.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
-                  "endLine": 1,
-                  "startColumn": 0,
-                  "startLine": 1
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Include file: \"prepaymentCode.h\" not found."
-          },
-          "ruleId": "missingInclude"
+          "ruleId": "returnByReference"
         },
         {
           "level": "warning",
@@ -79,9 +101,119 @@
                 },
                 "region": {
                   "endColumn": 5,
-                  "endLine": 36,
+                  "endLine": 13,
                   "startColumn": 5,
-                  "startLine": 36
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Variable 'code' is assigned in constructor body. Consider performing initialization in initialization list."
+          },
+          "ruleId": "useInitializationList"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include\/domain\/prepaymentCode.h"
+                },
+                "region": {
+                  "endColumn": 17,
+                  "endLine": 19,
+                  "startColumn": 17,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Function 'getCode()' should return member 'code' by const reference."
+          },
+          "ruleId": "returnByReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include\/domain\/prepaymentCode.h"
+                },
+                "region": {
+                  "endColumn": 17,
+                  "endLine": 22,
+                  "startColumn": 17,
+                  "startLine": 22
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Function 'getStatus()' should return member 'status' by const reference."
+          },
+          "ruleId": "returnByReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 43,
+                  "endLine": 49,
+                  "startColumn": 43,
+                  "startLine": 49
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Function parameter 'order' should be passed by const reference."
+          },
+          "ruleId": "passedByValue"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 46,
+                  "endLine": 58,
+                  "startColumn": 46,
+                  "startLine": 58
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'newStatus' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 5,
+                  "endLine": 38,
+                  "startColumn": 5,
+                  "startLine": 38
                 }
               }
             }
@@ -92,26 +224,70 @@
           "ruleId": "useStlAlgorithm"
         },
         {
-          "level": "note",
+          "level": "warning",
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/domain\/vendingMachine.cpp"
+                  "uri": "include\/domain\/vendingMachine.h"
                 },
                 "region": {
-                  "endColumn": 0,
-                  "endLine": 1,
-                  "startColumn": 0,
-                  "startLine": 1
+                  "endColumn": 5,
+                  "endLine": 11,
+                  "startColumn": 5,
+                  "startLine": 11
                 }
               }
             }
           ],
           "message": {
-            "text": "Include file: \"vendingMachine.h\" not found."
+            "text": "Class 'VendingMachine' has a constructor with 1 argument that is not explicit."
           },
-          "ruleId": "missingInclude"
+          "ruleId": "noExplicitConstructor"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include\/domain\/vendingMachine.h"
+                },
+                "region": {
+                  "endColumn": 17,
+                  "endLine": 13,
+                  "startColumn": 17,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Function 'getId()' should return member 'id' by const reference."
+          },
+          "ruleId": "returnByReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "include\/domain\/vendingMachine.h"
+                },
+                "region": {
+                  "endColumn": 17,
+                  "endLine": 17,
+                  "startColumn": 17,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Function 'getPort()' should return member 'port' by const reference."
+          },
+          "ruleId": "returnByReference"
         },
         {
           "level": "warning",
@@ -163,13 +339,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "src\/persistence\/inventoryRepository.cpp"
+                },
+                "region": {
+                  "endColumn": 14,
+                  "endLine": 22,
+                  "startColumn": 14,
+                  "startLine": 22
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Consider using std::transform algorithm instead of a raw loop."
+          },
+          "ruleId": "useStlAlgorithm"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "src\/persistence\/prepayCodeRepository.cpp"
                 },
                 "region": {
                   "endColumn": 5,
-                  "endLine": 14,
+                  "endLine": 15,
                   "startColumn": 5,
-                  "startLine": 14
+                  "startLine": 15
                 }
               }
             }
@@ -180,28 +378,6 @@
           "ruleId": "useStlAlgorithm"
         },
         {
-          "level": "note",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/presentation\/UserInterface.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
-                  "endLine": 1,
-                  "startColumn": 0,
-                  "startLine": 1
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Include file: \"UserInterface.hpp\" not found."
-          },
-          "ruleId": "missingInclude"
-        },
-        {
           "level": "warning",
           "locations": [
             {
@@ -210,10 +386,10 @@
                   "uri": "src\/service\/MessageService.cpp"
                 },
                 "region": {
-                  "endColumn": 56,
-                  "endLine": 42,
-                  "startColumn": 56,
-                  "startLine": 42
+                  "endColumn": 53,
+                  "endLine": 37,
+                  "startColumn": 53,
+                  "startLine": 37
                 }
               }
             }
@@ -232,10 +408,10 @@
                   "uri": "src\/service\/MessageService.cpp"
                 },
                 "region": {
-                  "endColumn": 56,
-                  "endLine": 43,
-                  "startColumn": 56,
-                  "startLine": 43
+                  "endColumn": 53,
+                  "endLine": 38,
+                  "startColumn": 53,
+                  "startLine": 38
                 }
               }
             }
@@ -254,10 +430,10 @@
                   "uri": "src\/service\/MessageService.cpp"
                 },
                 "region": {
-                  "endColumn": 56,
-                  "endLine": 44,
-                  "startColumn": 56,
-                  "startLine": 44
+                  "endColumn": 53,
+                  "endLine": 39,
+                  "startColumn": 53,
+                  "startLine": 39
                 }
               }
             }
@@ -276,54 +452,10 @@
                   "uri": "src\/service\/MessageService.cpp"
                 },
                 "region": {
-                  "endColumn": 56,
-                  "endLine": 45,
-                  "startColumn": 56,
-                  "startLine": 45
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Parameter 'm' can be declared as reference to const"
-          },
-          "ruleId": "constParameterReference"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
-                },
-                "region": {
-                  "endColumn": 45,
-                  "endLine": 136,
-                  "startColumn": 45,
-                  "startLine": 136
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Parameter 'm' can be declared as reference to const"
-          },
-          "ruleId": "constParameterReference"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
-                },
-                "region": {
-                  "endColumn": 38,
-                  "endLine": 141,
-                  "startColumn": 38,
-                  "startLine": 141
+                  "endColumn": 53,
+                  "endLine": 40,
+                  "startColumn": 53,
+                  "startLine": 40
                 }
               }
             }
@@ -343,9 +475,9 @@
                 },
                 "region": {
                   "endColumn": 22,
-                  "endLine": 28,
+                  "endLine": 29,
                   "startColumn": 22,
-                  "startLine": 28
+                  "startLine": 29
                 }
               }
             }
@@ -365,9 +497,9 @@
                 },
                 "region": {
                   "endColumn": 74,
-                  "endLine": 24,
+                  "endLine": 25,
                   "startColumn": 74,
-                  "startLine": 24
+                  "startLine": 25
                 }
               }
             }
@@ -383,13 +515,57 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "src\/domain\/drink.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 23,
+                  "startColumn": 0,
+                  "startLine": 23
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'getPrice' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/inventory.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 15,
+                  "startColumn": 0,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'isEmpty' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "src\/domain\/order.cpp"
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 19,
+                  "endLine": 17,
                   "startColumn": 0,
-                  "startLine": 19
+                  "startLine": 17
                 }
               }
             }
@@ -409,9 +585,9 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 24,
+                  "endLine": 21,
                   "startColumn": 0,
-                  "startLine": 24
+                  "startLine": 21
                 }
               }
             }
@@ -431,15 +607,125 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 30,
+                  "endLine": 26,
                   "startColumn": 0,
-                  "startLine": 30
+                  "startLine": 26
                 }
               }
             }
           ],
           "message": {
             "text": "The function 'setVmId' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 19,
+                  "startColumn": 0,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'generate' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 35,
+                  "startColumn": 0,
+                  "startLine": 35
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'isUsable' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 49,
+                  "startColumn": 0,
+                  "startLine": 49
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'hold' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/prepaymentCode.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 70,
+                  "startColumn": 0,
+                  "startLine": 70
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'getStatus' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/domain\/vendingMachine.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 19,
+                  "startColumn": 0,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'getPort' is never used."
           },
           "ruleId": "unusedFunction"
         },
@@ -541,15 +827,37 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 10,
+                  "endLine": 9,
                   "startColumn": 0,
-                  "startLine": 10
+                  "startLine": 9
                 }
               }
             }
           ],
           "message": {
             "text": "The function 'setAllDrinks' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/persistence\/inventoryRepository.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 19,
+                  "startColumn": 0,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'getList' is never used."
           },
           "ruleId": "unusedFunction"
         },
@@ -585,15 +893,81 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 13,
+                  "endLine": 14,
                   "startColumn": 0,
-                  "startLine": 13
+                  "startLine": 14
                 }
               }
             }
           ],
           "message": {
             "text": "The function 'isSameCode' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/presentation\/UserInterface.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 4,
+                  "startColumn": 0,
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'displayMainMenu' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/presentation\/UserInterface.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 42,
+                  "startColumn": 0,
+                  "startLine": 42
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'dispense' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/presentation\/UserInterface.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 56,
+                  "startColumn": 0,
+                  "startLine": 56
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'showText' is never used."
           },
           "ruleId": "unusedFunction"
         },
@@ -629,28 +1003,6 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 14,
-                  "startColumn": 0,
-                  "startLine": 14
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "The function 'reduceDrink' is never used."
-          },
-          "ruleId": "unusedFunction"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/InventoryService.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
                   "endLine": 18,
                   "startColumn": 0,
                   "startLine": 18
@@ -673,9 +1025,31 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 49,
+                  "endLine": 17,
                   "startColumn": 0,
-                  "startLine": 49
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'myCoord' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/MessageService.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 44,
+                  "startColumn": 0,
+                  "startLine": 44
                 }
               }
             }
@@ -695,9 +1069,9 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 67,
+                  "endLine": 62,
                   "startColumn": 0,
-                  "startLine": 67
+                  "startLine": 62
                 }
               }
             }
@@ -717,31 +1091,9 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 86,
+                  "endLine": 231,
                   "startColumn": 0,
-                  "startLine": 86
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "The function 'respondPrepayReq' is never used."
-          },
-          "ruleId": "unusedFunction"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/MessageService.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
-                  "endLine": 194,
-                  "startColumn": 0,
-                  "startLine": 194
+                  "startLine": 231
                 }
               }
             }
@@ -794,50 +1146,6 @@
             "text": "The function 'isSueCode' is never used."
           },
           "ruleId": "unusedFunction"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/UserProcessController.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
-                  "endLine": 44,
-                  "startColumn": 0,
-                  "startLine": 44
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "The function 'handlePrepayCode' is never used."
-          },
-          "ruleId": "unusedFunction"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/UserProcessController.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
-                  "endLine": 69,
-                  "startColumn": 0,
-                  "startLine": 69
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "The function 'handleDrinkSelection' is never used."
-          },
-          "ruleId": "unusedFunction"
         }
       ],
       "tool": {
@@ -847,17 +1155,62 @@
           "rules": [
             {
               "fullDescription": {
-                "text": "Include file: \"drink.h\" not found."
+                "text": "Function 'getName()' should return member 'name_' by const reference."
               },
               "help": {
-                "text": "Include file: \"drink.h\" not found."
+                "text": "Function 'getName()' should return member 'name_' by const reference."
               },
-              "id": "missingInclude",
+              "id": "returnByReference",
               "properties": {
                 "precision": "high"
               },
               "shortDescription": {
-                "text": "Include file: \"drink.h\" not found."
+                "text": "Function 'getName()' should return member 'name_' by const reference."
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "Parameter 'code' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++."
+              },
+              "help": {
+                "text": "Parameter 'code' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++."
+              },
+              "id": "passedByValue",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Function parameter 'code' should be passed by const reference."
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'code' a value by passing the value to the constructor in the initialization list."
+              },
+              "help": {
+                "text": "When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'code' a value by passing the value to the constructor in the initialization list."
+              },
+              "id": "useInitializationList",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Variable 'code' is assigned in constructor body. Consider performing initialization in initialization list."
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "Parameter 'newStatus' can be declared as reference to const"
+              },
+              "help": {
+                "text": "Parameter 'newStatus' can be declared as reference to const"
+              },
+              "id": "constParameterReference",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Parameter 'newStatus' can be declared as reference to const"
               }
             },
             {
@@ -877,6 +1230,21 @@
             },
             {
               "fullDescription": {
+                "text": "Class 'VendingMachine' has a constructor with 1 argument that is not explicit. Such, so called \"Converting constructors\", should in general be explicit for type safety reasons as that prevents unintended implicit conversions."
+              },
+              "help": {
+                "text": "Class 'VendingMachine' has a constructor with 1 argument that is not explicit. Such, so called \"Converting constructors\", should in general be explicit for type safety reasons as that prevents unintended implicit conversions."
+              },
+              "id": "noExplicitConstructor",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Class 'VendingMachine' has a constructor with 1 argument that is not explicit."
+              }
+            },
+            {
+              "fullDescription": {
                 "text": "Variable 'ep' can be declared as reference to const"
               },
               "help": {
@@ -888,21 +1256,6 @@
               },
               "shortDescription": {
                 "text": "Variable 'ep' can be declared as reference to const"
-              }
-            },
-            {
-              "fullDescription": {
-                "text": "Parameter 'm' can be declared as reference to const"
-              },
-              "help": {
-                "text": "Parameter 'm' can be declared as reference to const"
-              },
-              "id": "constParameterReference",
-              "properties": {
-                "precision": "high"
-              },
-              "shortDescription": {
-                "text": "Parameter 'm' can be declared as reference to const"
               }
             },
             {
@@ -922,17 +1275,17 @@
             },
             {
               "fullDescription": {
-                "text": "The function 'attachPrePay' is never used."
+                "text": "The function 'getPrice' is never used."
               },
               "help": {
-                "text": "The function 'attachPrePay' is never used."
+                "text": "The function 'getPrice' is never used."
               },
               "id": "unusedFunction",
               "properties": {
                 "precision": "high"
               },
               "shortDescription": {
-                "text": "The function 'attachPrePay' is never used."
+                "text": "The function 'getPrice' is never used."
               }
             }
           ],
