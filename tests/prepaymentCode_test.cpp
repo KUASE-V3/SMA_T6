@@ -63,16 +63,12 @@ TEST(PrepaymentCodeTest, Hold) {
 TEST(PrepaymentCodeTest, SetStatus) {
     PrepaymentCode code;
     std::string usedStatus = "Used";
-    std::string invalidStatus = "Invalid";
     
     // 유효한 상태 변경
     code.setStatus(usedStatus);
     // 상태가 "Used"로 변경되었는지 확인
-    // (getStatus 메소드가 있다면 사용)
+    EXPECT_EQ(usedStatus, code.getStatus());
     
-    // 잘못된 상태는 무시되어야 함
-    code.setStatus(invalidStatus);
-    // 상태가 여전히 "Used"인지 확인
     // (getStatus 메소드가 있다면 사용)
 }
 

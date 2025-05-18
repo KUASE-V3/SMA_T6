@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <string>
-#include "order.h"
-#include "prepaymentCode.h"
+#include "../include/domain/order.h"
+#include "../include/domain/prepaymentCode.h"
 
 class PrepaymentCodeRepository {
 public:

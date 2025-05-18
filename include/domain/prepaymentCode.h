@@ -15,6 +15,7 @@ public:
     std::string getCode() const;
 
     void setStatus(std::string& status);
+    std::string getStatus();
 
     private:
         std::string code;

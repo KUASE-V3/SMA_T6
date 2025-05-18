@@ -41,7 +41,7 @@ bool PrepaymentCode::isUsable( const std::string& code) {
 }
 
 
-// 들어온 주문과 연결
+// 들어온 주문 랜덤생성된 인증코드 prepaymentcode와 연결
 PrepaymentCode PrepaymentCode::hold(Order order) {
     heldOrder = order;
     return *this;
@@ -61,3 +61,8 @@ std::string PrepaymentCode :: getCode() const {
     return code;
 }
 
+
+
+std::string PrepaymentCode :: getStatus() {
+    return status;
+}
