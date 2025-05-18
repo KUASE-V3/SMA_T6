@@ -1,4 +1,4 @@
-#include "prepaymentCode.h"
+#include "../include/domain/prepaymentCode.h"
 #include <cstdlib>     // rand, srand
 #include <ctime>       // time
 #include <sstream>     // stringstream
@@ -29,7 +29,7 @@ std::string PrepaymentCode::rand() {
 
 
 //인증코드 형식 검사
-bool PrepaymentCode::isUsable( std::string& code) {
+bool PrepaymentCode::isUsable( const std::string& code) {
     if (code.length() != 5) return false;
 
     for (char c : code) {
@@ -51,7 +51,7 @@ PrepaymentCode PrepaymentCode::hold(Order order) {
 
 
 //사용됨으로 변경
-void PrepaymentCode::setStatus(std::string& newStatus){
+void PrepaymentCode::setStatus( std::string& newStatus){
     if (newStatus == "Used")    status = newStatus;
 }
 

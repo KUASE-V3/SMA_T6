@@ -10,13 +10,11 @@ public:
 
     std::string rand();          // 5자리 코드 생성
     PrepaymentCode hold(Order order);      // Order 객체 홀드
-    static bool isUsable(std::string& code);        //객체생성 없이 문자열 입력 후 메소드호출 가능
-
-
+    static bool isUsable( const std::string& code);        //객체생성 없이 문자열 입력 후 메소드호출 가능
 
     std::string getCode() const;
 
-    void setStatus(std ::string& status);
+    void setStatus(std::string& status);
 
     private:
         std::string code;
