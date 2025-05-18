@@ -3,21 +3,22 @@
 
 #include <string>
 #include "../domain/drink.h"
+#include "../domain/inventory.h"
 #include <vector>
 
 
 class inventoryRepository {
 
     public:
-        static void setAllDrinks(const std::vector<Drink>& drinks);
-        static const std::vector<Drink>& getAllDrinks();;
+        void setAllDrinks(const std::vector<inventory>& drinks);
+        static const std::vector<inventory>& getAllDrinks();;
 
         std::vector<std :: pair<std::string, int>> getList();
 
         
 
     private:
-        static std::vector<Drink> allDrinks;
+        static std::vector<inventory> allDrinks;
 
         
 };

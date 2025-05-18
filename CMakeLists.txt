@@ -21,7 +21,7 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # 공통 모듈을 라이브러리로 생성 (module.cpp)
-add_library(MyLibrary STATIC src/person.cpp)
+add_library(MyLibrary STATIC src/person.cpp src/persistence/invenoryRepository.cpp src/domain/drink.cpp src/domain/inventory.cpp)
 target_include_directories(MyLibrary PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # 메인 애플리케이션 생성 (main.cpp는 라이브러리의 함수 호출)
@@ -36,8 +36,16 @@ if(BUILD_TESTS)
   add_subdirectory(lib/googletest EXCLUDE_FROM_ALL)
   include_directories(${PROJECT_SOURCE_DIR}/lib/googletest/googletest/include)
   
+  # 테스트 소스 파일 모음
+  set(TEST_SOURCES
+    tests/test_person.cpp
+    tests/inventoryRepository_test.cpp
+  )
+
   # 테스트 실행 파일 생성 (test_main.cpp 포함) - 기본 빌드에서 제외
-  add_executable(RunTests tests/test_person.cpp)
+  add_executable(RunTests tests/test_person.cpp
+                          tests/inventoryRepository_test.cpp
+                          tests/inventory_test.cpp)
   set_target_properties(RunTests PROPERTIES EXCLUDE_FROM_ALL TRUE)
   target_link_libraries(RunTests MyLibrary gtest_main gtest pthread)
   

@@ -1,22 +1,23 @@
 #include "../include/persistence/inventoryRepository.h"
 #include <string>
 
-std::vector<Drink> inventoryRepository::allDrinks;
+std::vector<inventory> inventoryRepository::allDrinks;
 
 
-void inventoryRepository::setAllDrinks(const std::vector<Drink>& drinks) {
+void inventoryRepository::setAllDrinks(const std::vector<inventory>& drinks) {
     allDrinks = drinks;
 }
 
-const std::vector<Drink>& inventoryRepository::getAllDrinks() {
+const std::vector<inventory>& inventoryRepository::getAllDrinks() {
     return allDrinks;
 }
-
+ 
 
 //uc1 번 getList메소드
 std::vector<std::pair<std::string, int>> inventoryRepository::getList() {
-    std::vector<std::pair<std::string, double>> List;
-    for (const auto& drink : allDrinks) {
-        List.emplace_back(drink.getName(), drink.getPrice());
+    std::vector<std::pair<std::string, int>> List;
+    for (const auto& inventory : allDrinks) {
+        List.emplace_back(inventory.getDrink().getName(), inventory.getQty());
     }
+    return List;
 }

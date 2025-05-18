@@ -13,8 +13,10 @@ class inventory {
 
 
         Drink getDrink() const;
-        bool isEmpty();
+        bool isEmpty() const;
         void reduceDrink();
+
+        int  getQty() const;
         
 
 
