@@ -1,5 +1,6 @@
 #include "service/MessageService.hpp"
 
+#include "domain/vendingMachine.h"
 #include "service/ErrorService.hpp"
 #include "service/InventoryService.hpp"
 #include "service/PrepaymentService.hpp"
@@ -15,8 +16,8 @@ using application::MessageService;
 /* ────────────── 정적 HELPER ────────────── */
 std::string MessageService::myId()
 {
-    // NOTE: 도메인 완성 전까지 하드코드
-    return "T5";
+    domain::VendingMachine vm("001",);
+    return vm.getId();
 }
 std::pair<int,int> MessageService::myCoord()
 {
@@ -50,7 +51,7 @@ void MessageService::broadcastStock(const domain::Drink& drink)
 {
     network::Message req;
     req.msg_type = network::Message::Type::REQ_STOCK;
-    req.src_id   = myId();
+    req.src_id   = domain::VendingMachine::getId(); // 내 자판기 ID
     req.dst_id   = "0";                     // broadcast
     req.msg_content = {
         {"item_code", drink.getCode()},
