@@ -1,29 +1,35 @@
-#include "../include/domain/order.h"
+#include "domain/order.h"
 
-Order::Order()
-: drink_(), orderID_(""), payStatus_("Pending"){}
+namespace domain {
 
-Order::Order(const Drink& drink, const std::string& code, const std::string& payStatus)
-: drink_(drink), orderID_(code), payStatus_(payStatus) {}
+Order::Order(std::string  vmId,
+             Drink        drink,
+             int          qty,
+             std::string  certCode,
+             std::string  payStatus)
+    : vm_id_(std::move(vmId))
+    , drink_(std::move(drink))
+    , qty_(qty)
+    , cert_code_(std::move(certCode))
+    , pay_status_(std::move(payStatus))
+{}
 
-Order Order::attachPrePay(const Drink& drink, const std::string& code) {
-    return Order(drink, code, "Pending");  // 생성 시 기본 상태는 Pending
+Order Order::attachPrePay(const std::string& cert) { //선결제로 전환시 
+    return Order(vm_id_, drink_, qty_, cert, pay_status_);
 }
 
-void Order::setStatus(const std::string& status) {
-    if (status == "Approved" || status == "Declined") {
-        payStatus_ = status;
-    }
+void Order::setStatus(const std::string& status) { 
+    if (status == "Approved" || status == "Declined")
+        pay_status_ = status;
 }
 
-Drink Order::getDrink() const {
-    return drink_;
+void Order::setVmId(const std::string& vmId) {
+    vm_id_ = vmId;
 }
 
-std::string Order::getOrderID() const {
-    return orderID_;
-}
 
-std::string Order::getPayStatus() const {
-    return payStatus_;
+
+
+
+
 }

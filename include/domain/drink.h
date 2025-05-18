@@ -4,6 +4,9 @@
 #include <string>
 
 
+
+namespace domain {
+
 class Drink {
     public:
         Drink();
@@ -19,5 +22,7 @@ class Drink {
         int price_;
         std:: string code_;
 };
+
+}
 
 #endif

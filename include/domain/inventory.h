@@ -2,7 +2,13 @@
 #define INVENTORY_H
 
 #include <string>
-#include "drink.h"
+
+#include "domain/drink.h"
+
+
+namespace domain {
+
+
 
 
 class inventory {
@@ -13,10 +19,12 @@ class inventory {
 
 
         Drink getDrink() const;
+
         bool isEmpty() const;
         void reduceDrink();
 
         int  getQty() const;
+
         
 
 
@@ -28,5 +36,8 @@ class inventory {
 
         
 };
+
+}
+
 
 #endif

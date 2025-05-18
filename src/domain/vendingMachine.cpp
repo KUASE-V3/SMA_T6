@@ -1,23 +1,30 @@
-#include "vendingMachine.h"
+
+#include "domain/vendingMachine.h"
 #include <cmath>
 
-// ex) 생성자 호출 : VendingMachine vm("001", std::make_pair(37.5665, 126.9780)); // 서울시청 좌표
-VendingMachine::VendingMachine(const std::string& id, const std::pair<double, double>& location)
-    : id(id), location(location) {}
+using namespace domain;
+
+// 초기화시 : id, location을 "T5", {123, 123}으로 설정합니다.
+VendingMachine::VendingMachine(const std::string& id, const std::pair<int, int>& location, const std::string& port)
+    : id(id), location(location), port(port){}
 
 std::string VendingMachine::getId() const {
     return id;
 }
 
-std::pair<double, double> VendingMachine::getLocation() const {
+std::pair<int, int> VendingMachine::getLocation() const {
     return location;
 }
 
-/*          거리계산 예시
+std::string VendingMachine::getPort() const {
+    return port;
+}
+
+/*          嫄곕━怨꾩궛 �삁�떆
 double VendingMachine::calculateDistance(const VendingMachine& other) const {
     double dx = location.first - other.location.first;
     double dy = location.second - other.location.second;
-    return std::sqrt(dx * dx + dy * dy);        //계산은 알아서 작성
+    return std::sqrt(dx * dx + dy * dy);        //怨꾩궛��� �븣�븘�꽌 �옉�꽦
 }
 */
 

@@ -1,3 +1,6 @@
+#include "domain/inventory.h"
+
+namespace domain {
 #include "../include/domain/inventory.h"
 
 inventory::inventory(const Drink& drink, int qty)
@@ -7,6 +10,7 @@ inventory::inventory(const Drink& drink, int qty)
 Drink inventory::getDrink() const {
 return drink_;
 }
+
 
 bool inventory::isEmpty() const {
     if (qty_ <= 0)  {
@@ -18,7 +22,7 @@ bool inventory::isEmpty() const {
 }
 
 
-// qty_ 1 감소 (0 미만으로는 감소 안 함)
+// qty_ 1 감소 (0 미만?��로는 감소 ?�� ?��)
 void inventory::reduceDrink() {
     if (qty_ > 0) {
         qty_--;
@@ -26,6 +30,8 @@ void inventory::reduceDrink() {
 }
 
 
+
 int inventory :: getQty () const {
     return qty_;
+}
 }
