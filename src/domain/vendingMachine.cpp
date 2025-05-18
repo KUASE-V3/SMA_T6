@@ -1,4 +1,4 @@
-#include "vendingMachine.h"
+#include "domain/vendingMachine.h"
 
 
 namespace domain {

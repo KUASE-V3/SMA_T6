@@ -1,4 +1,4 @@
-#include "UserInterface.hpp"
+#include "presentation/UserInterface.hpp"
 #include <iostream>
 
 void UserInterface::displayMainMenu() {
@@ -52,3 +52,7 @@ bool UserInterface::promptPrepayConsent() {
     std::cin >> consent;
     return (consent == 'y' || consent == 'Y');
     }
+
+void UserInterface::showText(const std::string& prepaymentCode) {
+    std::cout << "선결제 코드: " << prepaymentCode << std::endl;
+}

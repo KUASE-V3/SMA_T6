@@ -1,4 +1,4 @@
-#include "prepaymentCode.h"
+#include "domain/prepaymentCode.h"
 #include <cstdlib>     // rand, srand
 #include <ctime>       // time
 #include <sstream>     // stringstream
@@ -30,7 +30,7 @@ std::string PrepaymentCode::rand() {
 
 
 //?¸ì¦ì½”?“œ ?˜•?‹ ê²??‚¬
-bool PrepaymentCode::isUsable( std::string& code) {
+bool PrepaymentCode::isUsable(const std::string& code) {
     if (code.length() != 5) return false;
 
     for (char c : code) {

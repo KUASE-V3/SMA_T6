@@ -9,6 +9,7 @@ using namespace service;
 
 UserProcessController::UserProcessController() : orderService() {}
 
+
 void UserProcessController::handleMenu() {
     try {
         vector<pair<string, int>> list = inventoryService.CallInventorySer();

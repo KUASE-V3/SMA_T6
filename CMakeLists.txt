@@ -24,8 +24,14 @@ if(ENABLE_COVERAGE)
   add_link_options(--coverage)
 endif()
 
-# ───────────── Domain Layer (Header-Only) ─────────────
-add_library(domain INTERFACE)
+# ───────────── Domain Layer -────────────
+add_library(domain STATIC 
+    src/domain/inventory.cpp
+    src/domain/order.cpp
+    src/domain/PrepaymentCode.cpp
+    src/domain/drink.cpp
+    src/domain/vendingMachine.cpp
+)
 target_include_directories(domain INTERFACE ${PROJECT_SOURCE_DIR}/include)
 
 # ───────────── Network Layer ─────────────
@@ -53,6 +59,8 @@ add_library(application STATIC
     src/service/OrderService.cpp
     src/service/PrepaymentService.cpp
     src/service/UserProcessController.cpp
+    src/presentation/UserInterface.cpp 
+
 )
 target_include_directories(application PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(application

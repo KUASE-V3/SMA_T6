@@ -2,7 +2,7 @@
 #define INVENTORY_H
 
 #include <string>
-#include "drink.h"
+#include "domain/drink.h"
 
 
 namespace domain {
