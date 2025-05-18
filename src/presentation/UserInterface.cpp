@@ -42,3 +42,13 @@ std::string UserInterface::promptPrepayCode() {
 void UserInterface::dispense(const std::string& drinkCode) {
     std::cout << "[음료 배출] 코드 " << drinkCode << " 에 해당하는 음료가 배출되었습니다.\n";
 }
+
+
+bool UserInterface::promptPrepayConsent() {
+    //일단 임시로 구현
+   //"[선결제 동의] 선결제 동의 여부를 입력하세요 (y/n) yes -> true 반환 
+    char consent;
+    std::cout << "선결제 동의 여부를 입력하세요 (y/n): ";
+    std::cin >> consent;
+    return (consent == 'y' || consent == 'Y');
+    }

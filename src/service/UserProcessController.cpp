@@ -5,6 +5,7 @@
 using namespace std;
 using namespace domain;
 using namespace persistence;
+using namespace service;
 
 UserProcessController::UserProcessController() : orderService() {}
 
@@ -14,7 +15,7 @@ void UserProcessController::handleMenu() {
         ui.displayList(list);
     } catch (const exception& e) {
         string err = e.what();
-        ErrorService::logError(err);
+        errorService.logError(err);
         ui.show_error_message(err);
         ui.display_Error(err);
     }
@@ -22,11 +23,11 @@ void UserProcessController::handleMenu() {
 
 void UserProcessController::handlePayment(const string& cardInfo, Order& order) {
     try {
-        string response = "Approve";  // 결제 응답 가정
+        string response = "Approve";  // 결제 ?��?�� �??��
 
         if (response == "Approve") {
             orderService.approve(order.vmId(), true); // UC5
-            ui.displayMessage("결제 성공: " + order.drink().getName());
+            ui.displayMessage("결제 ?���?: " + order.drink().getName());
         } else {
             orderService.approve(order.vmId(), false); // UC6
             ui.displayMessage("결제 거절: " + order.drink().getName());
@@ -34,7 +35,7 @@ void UserProcessController::handlePayment(const string& cardInfo, Order& order) 
         }
     } catch (const exception& e) {
         string err = e.what();
-        ErrorService::logError(err);
+        errorService.logError(err);
         ui.show_error_message(err);
         ui.display_Error(err);
     }
@@ -43,22 +44,23 @@ void UserProcessController::handlePayment(const string& cardInfo, Order& order) 
 void UserProcessController::handlePrepayCode() {
     try {
         string code = ui.promptPrepayCode();
+    
 
         bool isValid = prepaymentService.isValid(code);
 
         if (isValid) {
-            cout << "[UC14] 인증코드 유효성 검사 성공" << endl;
-            cout << "[UC7] 음료 배출 완료" << endl;
-            cout << "[UC14] 상태 코드 변경 요청 → changeStatusCode(" << code << ")" << endl;
+            cout << "[UC14] ?��증코?�� ?��?��?�� �??�� ?���?" << endl;
+            cout << "[UC7] ?���? 배출 ?���?" << endl;
+            cout << "[UC14] ?��?�� 코드 �?�? ?���? ?�� changeStatusCode(" << code << ")" << endl;
         } else {
-            string err = "유효하지 않은 인증코드입니다.";
-            ErrorService::logError(err);
+            string err = "?��?��?���? ?��??? ?��증코?��?��?��?��.";
+            errorService.logError(err);
             ui.show_error_message(err);
             ui.display_Error(err);
         }
     } catch (const exception& e) {
         string err = e.what();
-        ErrorService::logError(err);
+        errorService.logError(err);
         ui.show_error_message(err);
         ui.display_Error(err);
     }
@@ -66,11 +68,11 @@ void UserProcessController::handlePrepayCode() {
 
 void UserProcessController::handleDrinkSelection() {
     string drinkName;
-    cout << "음료수를 입력하세요: ";
+    cout << "?��료수�? ?��?��?��?��?��: ";
     cin >> drinkName;
 
     try {
-        vector<Drink> drinks = inventoryRepository::getAllDrinks();  // 도메인 객체 리스트
+        vector<Drink> drinks = inventoryRepository::getAllDrinks();  // ?��메인 객체 리스?��
         bool found = false;
 
         for (const auto& drink : drinks) {
@@ -79,18 +81,18 @@ void UserProcessController::handleDrinkSelection() {
 
                 bool valid = inventoryService.getSaleValid(drink.getCode());
                 if (valid) {
-                    Order order("T1", drink);  // 자판기 ID는 "T1" 가정
+                    Order order("T1", drink);  // ?��?���? ID?�� "T1" �??��
 
                     if (ui.promptPrepayConsent()) {
                         string cardInfo = ui.promptCardInfo();
-                        handlePayment(cardInfo, order);  // 도메인 객체 전달
+                        handlePayment(cardInfo, order);  // ?��메인 객체 ?��?��
                     } else {
                         handleMenu();
                     }
                     return;
                 } else {
-                    string err = "재고가 부족합니다.";
-                    ErrorService::logError(err);
+                    string err = "?��고�?? �?족합?��?��.";
+                    errorService.logError(err);
                     ui.show_error_message(err);
                     ui.display_Error(err);
                     return;
@@ -99,15 +101,15 @@ void UserProcessController::handleDrinkSelection() {
         }
 
         if (!found) {
-            string err = "해당 음료를 찾을 수 없습니다.";
-            ErrorService::logError(err);
+            string err = "?��?�� ?��료�?? 찾을 ?�� ?��?��?��?��.";
+            errorService.logError(err);
             ui.show_error_message(err);
             ui.display_Error(err);
         }
 
     } catch (const exception& e) {
         string err = e.what();
-        ErrorService::logError(err);
+        errorService.logError(err);
         ui.show_error_message(err);
         ui.display_Error(err);
     }

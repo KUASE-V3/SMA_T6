@@ -339,6 +339,50 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "src\/service\/UserProcessController.cpp"
+                },
+                "region": {
+                  "endColumn": 22,
+                  "endLine": 28,
+                  "startColumn": 22,
+                  "startLine": 28
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Condition 'response==\"Approve\"' is always true"
+          },
+          "ruleId": "knownConditionTrueFalse"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/UserProcessController.cpp"
+                },
+                "region": {
+                  "endColumn": 74,
+                  "endLine": 24,
+                  "startColumn": 74,
+                  "startLine": 24
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Parameter 'order' can be declared as reference to const"
+          },
+          "ruleId": "constParameterReference"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "src\/domain\/order.cpp"
                 },
                 "region": {
@@ -515,28 +559,6 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src\/persistence\/inventoryRepository.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
-                  "endLine": 14,
-                  "startColumn": 0,
-                  "startLine": 14
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "The function 'getAllDrinks' is never used."
-          },
-          "ruleId": "unusedFunction"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
                   "uri": "src\/persistence\/prepayCodeRepository.cpp"
                 },
                 "region": {
@@ -594,28 +616,6 @@
           ],
           "message": {
             "text": "The function 'getDistance' is never used."
-          },
-          "ruleId": "unusedFunction"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/InventoryService.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
-                  "endLine": 6,
-                  "startColumn": 0,
-                  "startLine": 6
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "The function 'CallInventorySer' is never used."
           },
           "ruleId": "unusedFunction"
         },
@@ -761,28 +761,6 @@
                 },
                 "region": {
                   "endColumn": 0,
-                  "endLine": 8,
-                  "startColumn": 0,
-                  "startLine": 8
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "The function 'approve' is never used."
-          },
-          "ruleId": "unusedFunction"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "src\/service\/OrderService.cpp"
-                },
-                "region": {
-                  "endColumn": 0,
                   "endLine": 17,
                   "startColumn": 0,
                   "startLine": 17
@@ -814,6 +792,50 @@
           ],
           "message": {
             "text": "The function 'isSueCode' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/UserProcessController.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 44,
+                  "startColumn": 0,
+                  "startLine": 44
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'handlePrepayCode' is never used."
+          },
+          "ruleId": "unusedFunction"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src\/service\/UserProcessController.cpp"
+                },
+                "region": {
+                  "endColumn": 0,
+                  "endLine": 69,
+                  "startColumn": 0,
+                  "startLine": 69
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "The function 'handleDrinkSelection' is never used."
           },
           "ruleId": "unusedFunction"
         }
@@ -881,6 +903,21 @@
               },
               "shortDescription": {
                 "text": "Parameter 'm' can be declared as reference to const"
+              }
+            },
+            {
+              "fullDescription": {
+                "text": "Condition 'response==\"Approve\"' is always true"
+              },
+              "help": {
+                "text": "Condition 'response==\"Approve\"' is always true"
+              },
+              "id": "knownConditionTrueFalse",
+              "properties": {
+                "precision": "high"
+              },
+              "shortDescription": {
+                "text": "Condition 'response==\"Approve\"' is always true"
               }
             },
             {

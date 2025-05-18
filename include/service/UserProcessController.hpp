@@ -3,11 +3,13 @@
 #ifndef USER_PROCESS_CONTROLLER_HPP
 #define USER_PROCESS_CONTROLLER_HPP
 
-#include "InventoryService.hpp"
-#include "UserInterface.hpp"
-#include "ErrorService.hpp"
+#include "service/InventoryService.hpp"
+#include "presentation/UserInterface.hpp"
+#include "service/ErrorService.hpp"
 #include "OrderService.hpp"
 #include "DistanceService.hpp"
+#include "domain/order.h"
+#include "service/PrepaymentService.hpp" 
 
 class UserProcessController {
 public:
@@ -15,14 +17,15 @@ public:
     void handleMenu();
     void handlePrepayCode();
     void handleDrinkSelection();
-    void handlePayment(const std::string& cardInfo);
+    void handlePayment(const std::string& cardInfo, domain::Order& order);
 
 private:
-    InventoryService inventoryService;
+    service::InventoryService inventoryService;
     UserInterface ui;
     service::ErrorService errorService;
     OrderService orderService;
     DistanceService distanceService;
+    service::PrepaymentService prepaymentService;
 };
 
 #endif
