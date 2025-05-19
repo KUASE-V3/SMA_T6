@@ -23,17 +23,17 @@ void UserProcessController::handleMenu() {
     }
 }
 
-void UserProcessController::handlePayment(const bool& isPrepay) {
+void UserProcessController::handlePayment(/*const bool& isPrepay*/) {
     try {
         network::PaymentCallbackReceiver receiver;
-        bool isPre = isPrepay;
+        //bool isPre = isPrepay;
 
-        receiver.simulatePrepayment([isPrepay, this](bool success) {
+        receiver.simulatePrepayment([/*isPrepay*/this](bool success) {
              // 지금 문서상으로는 결제의 종류를 가져올 수는 있지만 어떤 종류의 결제인지는 알 수 없음 리팩토링 필요 
              // 분기를 바깥에서 처리하고 이 함수에서는 결제 결과만 처리해야함 
                 if (success) {
                     std::cout << "결제가 승인되었습니다. -> UC5" << std::endl;
-                    if(isPrepay){// 결제 성공 후 처리
+                    if(true){// 결제 성공 후 처리
                         //선결제인경우
                         std::cout << "재고 확보 요청을 전송합니다 -> UC16" << std::endl;
                         OrderService orderService;
