@@ -1,6 +1,11 @@
-#include "../include/persistence/prepayCodeRepository.h"
+#include "persistence/prepayCodeRepository.h"
+#include "domain/prepaymentCode.h"  // ��Ȯ�� ��� ��η� include
 
-void PrepaymentCodeRepository::save(const PrepaymentCode& prepayCode) {
+
+using namespace persistence;
+
+void PrepaymentCodeRepository::save(const domain::PrepaymentCode& prepayCode) {
+
     prepaymentCodeList.push_back(prepayCode);
 }
 
@@ -13,4 +18,9 @@ bool PrepaymentCodeRepository::isSameCode(const std::string& code) const {
         }
     }
     return false;
+
+    
+
+
 }
+

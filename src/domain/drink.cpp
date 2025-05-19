@@ -1,3 +1,8 @@
+#include "domain/drink.h"
+#include <string>
+
+namespace domain {
+
 #include "../include/domain/drink.h"
 #include <string>
 
@@ -23,6 +28,5 @@ Drink::Drink(std::string name, int price, std::string code)
         return code_;
     }
     
-    
-
+}
     
