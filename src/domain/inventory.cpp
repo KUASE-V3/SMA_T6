@@ -22,7 +22,6 @@ bool inventory::isEmpty() const {
 }
 
 
-// qty_ 1 ê°ì†Œ (0 ë¯¸ë§Œ?œ¼ë¡œëŠ” ê°ì†Œ ?•ˆ ?•¨)
 void inventory::reduceDrink() {
     if (qty_ > 0) {
         qty_--;

@@ -1,5 +1,5 @@
 #include "persistence/prepayCodeRepository.h"
-#include "domain/prepaymentCode.h"  // ��Ȯ�� ��� ��η� include
+#include "domain/prepaymentCode.h"  // ��Ȯ�� ���? ��η�? include
 
 
 using namespace persistence;
@@ -23,4 +23,3 @@ bool PrepaymentCodeRepository::isSameCode(const std::string& code) const {
 
 
 }
-

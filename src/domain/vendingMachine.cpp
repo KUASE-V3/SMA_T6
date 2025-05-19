@@ -20,7 +20,7 @@ std::string VendingMachine::getPort() const {
     return port;
 }
 
-/*          嫄곕━怨꾩궛 �삁�떆
+/*         
 double VendingMachine::calculateDistance(const VendingMachine& other) const {
     double dx = location.first - other.location.first;
     double dy = location.second - other.location.second;

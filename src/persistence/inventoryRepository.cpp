@@ -15,7 +15,6 @@ const std::vector<domain::inventory>& inventoryRepository::getAllDrinks() {
 }
  
 
-//uc1 ë²? getListë©”ì†Œ?“œ
 std::vector<std::pair<std::string, int>> inventoryRepository::getList() {
     std::vector<std::pair<std::string, int>> List;
     for (const auto& inventory : allDrinks) {
