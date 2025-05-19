@@ -29,7 +29,7 @@ std::vector<std::pair<std::string, int>> inventoryRepository::getList() {
 bool inventoryRepository::isValid(const domain::Drink& drink) {
     for (const auto& inventory : allDrinks) {
         if (inventory.getDrink().getName() == drink.getName()) {
-            if (inventory.getQty() > 0;)    return true;
+            if (inventory.getQty() > 0)    return true;
             else    return false;
         }
     }
