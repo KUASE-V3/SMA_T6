@@ -26,16 +26,17 @@ std::vector<std::pair<std::string, int>> inventoryRepository::getList() {
 
 
 //unit 테스트 기록 필요.
-bool inventoryRepository::isValid(const Drink& drink) {
+bool inventoryRepository::isValid(const domain::Drink& drink) {
     for (const auto& inventory : allDrinks) {
         if (inventory.getDrink().getName() == drink.getName()) {
-            return inventory.getQty() > 0;
+            if (inventory.getQty() > 0;)    return true;
+            else    return false;
         }
     }
-    return false;
+
 }
 
-void inventoryRepository::changeQty(const Drink& drink) {
+void inventoryRepository::changeQty(const domain::Drink& drink) {
     for (auto& inventory : allDrinks) {
         if (inventory.getDrink().getName() == drink.getName()) {
             inventory.reduceDrink(drink);
@@ -44,7 +45,7 @@ void inventoryRepository::changeQty(const Drink& drink) {
     }
 }
 
-bool inventoryRepository::isEmptyRepo(const Drink& drink) const {
+bool inventoryRepository::isEmptyRepo(const domain::Drink& drink) const {
     for (const auto& inventory : allDrinks) {
         if (inventory.getDrink().getName() == drink.getName()) {
             return inventory.isEmpty();

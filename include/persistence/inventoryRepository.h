@@ -16,9 +16,9 @@ class inventoryRepository {
 
         std::vector<std :: pair<std::string, int>> getList();
 
-        bool isValid(const Drink& drink);
-        void changeQty(const Drink& drink);
-        bool isEmptyRepo(const Drink& drink) const;
+        bool isValid(const domain::Drink& drink);
+        void changeQty(const domain::Drink& drink);
+        bool isEmptyRepo(const domain::Drink& drink) const;
 
         
 
