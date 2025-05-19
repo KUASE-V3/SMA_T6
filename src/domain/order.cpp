@@ -27,7 +27,6 @@ void Order::setVmId(const std::string& vmId) {
     vm_id_ = vmId;
 }
 
-const std::string& Order::vmId() const { return vm_id_; }
 
 
 
