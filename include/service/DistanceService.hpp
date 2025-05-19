@@ -6,9 +6,11 @@
 #include <vector>
 #include <string>
 
+namespace service {
+
 class DistanceService {
 public:
     void getDistance(const std::vector<std::string>& list);
 };
-
+}
 #endif

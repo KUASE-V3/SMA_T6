@@ -18,11 +18,11 @@ public:
     void handleMenu();
     void handlePrepayCode();
     void handleDrinkSelection();
-    void handlePayment(/*const bool& isPrepay*/);
+    void handlePayment(const bool& isPrepay);
     void nofityError(const std::string& error);
     void nearestVM(const network::Message& msg);
     void showPrepaymentCode(const std::string& prepaymentCode);
-    void prepayFlow_UC12();
+    std::string prepayFlow_UC12();
 
 private:
     service::InventoryService inventoryService;

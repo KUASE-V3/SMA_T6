@@ -9,14 +9,17 @@
 
 #include <service/PrepaymentService.hpp>
 
+
+
 /*  ───────────── 지역-스코프 전역 (임시) ───────────── */
 static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1차 때는 그냥 변수 사용(본인 자판기의 정보를 저장하는 레포지토리 문서상 구현 안함)  
-
-using application::MessageService;
+using service::MessageService;
 
 /* ───────────── 정적 helper ───────────── */
 std::string MessageService::myId()            { return vm.getId();      }
 std::pair<int,int> MessageService::myCoord()  { return vm.getLocation();}
+
+
 
 /* ───────────── ctor ───────────── */
 MessageService::MessageService(network::MessageSender&              sender,
@@ -179,7 +182,7 @@ void MessageService::handleReqStock(const network::Message& msg)
     resp.dst_id   = msg.src_id; //브로드캐스트 받았을 때 돌려주는 핸들러 
     resp.msg_content = {
         {"item_code", msg.msg_content.at("item_code")},
-        {"item_num",  empty ? "0" : "1"}, //TODO : 지금 원하는 음료의 재고 잔량을 확인하는 메소드가 없음 일단 1차 때는 비어있지 않으면 응답 1로 고정, 2차 때 구현해야됨. 
+        {"item_num",  empty ? "0" : "1"}, //TODO : 지금 원하는 음료의 재고 잔량을 확인하는 메소드가 없음 비어있는지만 알 수 있음.
     };
     try { sender_.send(resp); }
     catch(const std::exception& e){
@@ -234,7 +237,7 @@ void MessageService::handleRespPrepay(const network::Message& msg)
 
     const bool ok = (msg.msg_content.at("availability") == "T");
     if (ok) {
-        // TODO: Controller.onPrepayApproved(pending_->order); -> 컨트롤러 상에서 구현 안됨.. 2차 때 진행
+        // TODO: Controller.onPrepayApproved(pending_->order); -> 컨트롤러 상에서 구현 안됨
         std::cout << "[MessageService] PREPAY approved\n";
     } else {
         errSvc_.logError("PREPAY declined (availability == F)");
@@ -242,6 +245,3 @@ void MessageService::handleRespPrepay(const network::Message& msg)
     pending_.reset();
 }
 
-void MessageService::onMessage(const network::Message&) { /* unused */ } 
-        // TODO: 문서에는 있으나 사용처 없어서 구현 안함, 2차 때 수정 예정
- 

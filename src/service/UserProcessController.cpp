@@ -2,6 +2,7 @@
 #include "persistence/inventoryRepository.h"
 #include <iostream>
 #include "network/PaymentCallbackReceiver.hpp"
+#include "service/MessageService.hpp"
 
 using namespace std;
 using namespace domain;
@@ -23,22 +24,34 @@ void UserProcessController::handleMenu() {
     }
 }
 
-void UserProcessController::handlePayment(/*const bool& isPrepay*/) {
+void UserProcessController::handlePayment(const bool& isPrepay) {
     try {
         network::PaymentCallbackReceiver receiver;
-        //bool isPre = isPrepay;
+    
 
-        receiver.simulatePrepayment([/*isPrepay*/this](bool success) {
+        receiver.simulatePrepayment([isPrepay,this](bool success) {
              // 지금 문서상으로는 결제의 종류를 가져올 수는 있지만 어떤 종류의 결제인지는 알 수 없음 리팩토링 필요 
              // 분기를 바깥에서 처리하고 이 함수에서는 결제 결과만 처리해야함 
                 if (success) {
                     std::cout << "결제가 승인되었습니다. -> UC5" << std::endl;
                     if(true){// 결제 성공 후 처리
                         //선결제인경우
+                        //UC12번  + 16번 
                         std::cout << "재고 확보 요청을 전송합니다 -> UC16" << std::endl;
-                        OrderService orderService;
+    
                         std::cout << "인증코드를 발급합니다. -> UC12" << std::endl;
-                        prepayFlow_UC12();
+                        std::string code = prepayFlow_UC12();
+                        OrderService orderService;
+                        std::string temp_drink_id = "001"; // TODO : 임시로 넣은 값, 실제로는 선택한 음료의 ID를 가져와야 함
+                        domain::Order order = orderService.createOrder(temp_drink_id,code);
+                         // TODO : 지금 여기서 생성하는 것이 아닌 메인 플로우를 담당하는 함수가 필요할 듯 함 여기는 Drink를 가져오는 곳이 아님 
+                        //위 코드 문제점 : 도착지가 상대방 vm이 아닌 나한테 옴, 인수 갯수 문서랑 맞지 않음
+                        
+                        //TODO : UC16 중간 
+                        //service::MessageService msgService;
+                        //msgService.sendPrePayReq(order); 
+                        
+
                     }else{
                         std::cout << "음료를 배출합니다 -> UC7" << std::endl;
                         //결제 후 음료 배출
@@ -186,7 +199,14 @@ void UserProcessController::showPrepaymentCode(const std::string& text) {//자�
     ui.display_SomeText("귀하의 결제코드는 " + text + "입니다.");
 }
 
-void UserProcessController::prepayFlow_UC12(){
+std::string UserProcessController::prepayFlow_UC12(){
+    // 선결제 코드 발급
+    std::string prepayCode = prepaymentService.isSueCode();
+    ui.display_SomeText(prepayCode); // 발급된 선결제 코드 표시
 
+    // 결제 요청
+    handlePayment(true); // 선결제 처리
 
+    return prepayCode;
 }
+

@@ -21,7 +21,7 @@
 #include <future>
 #include <chrono>
 
-namespace application {
+namespace service {
 
 class MessageService {
 

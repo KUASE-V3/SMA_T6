@@ -32,7 +32,7 @@ void UserInterface::promptCardInfo() {
 
     UserProcessController controller;
     // handlePayment �샇異�
-    controller.handlePayment(/*false*/); //UI단에서 선결제와 일반결제를 구분하지 못함 -> 이거 구조 
+    controller.handlePayment(false); //UI단에서 선결제와 일반결제를 구분하지 못함 -> 이거 구조 
 }
 
 std::string UserInterface::promptPrepayCode() {
