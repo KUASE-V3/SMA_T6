@@ -118,7 +118,7 @@ void UserProcessController::handleDrinkSelection() {
         // 여기서 cardInfo를 사용한 추가 처리 가능
 
     } else {    //UC 8 브로드캐스트 조회
-        std::cout << "유효하지 않음. -> UC8 " << std::endl;
+        std::cout << "유효하지 않음. " << std::endl;
     }
 
 /*
