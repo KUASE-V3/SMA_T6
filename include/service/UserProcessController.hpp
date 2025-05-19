@@ -18,7 +18,7 @@ public:
     void handleMenu();
     void handlePrepayCode();
     void handleDrinkSelection();
-    void UserProcessController::handlePayment();
+    void handlePayment(/*const bool& isPrepay*/);
     void nofityError(const std::string& error);
     void nearestVM(const network::Message& msg);
     void showPrepaymentCode(const std::string& prepaymentCode);
