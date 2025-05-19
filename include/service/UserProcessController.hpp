@@ -29,7 +29,7 @@ private:
     UserInterface ui;
     service::ErrorService errorService;
     OrderService orderService;
-    DistanceService distanceService;
+    service::DistanceService distanceService;
     service::PrepaymentService prepaymentService;
 };
 
