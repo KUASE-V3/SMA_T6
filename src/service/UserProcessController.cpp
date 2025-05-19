@@ -26,14 +26,16 @@ void UserProcessController::handleMenu() {
 void UserProcessController::handlePayment(const std :: string& cardInfo) {
     try {
         network::PaymentCallbackReceiver receiver;
-
+        
         receiver.simulatePrepayment( [](bool success) {
                 if (success) {
-                    std::cout << "결제가 승인되었습니다. -> UC5" << std::endl;
+                    std::cout << "UC5" << std::endl;
                     // 결제 성공 후 처리
+                    UserInterface::displayMessage("결제가 승인되었습니다.");
                 } else {
-                    std::cout << "결제가 거절되었습니다. -> UC6" << std::endl;
+                    std::cout << "UC6" << std::endl;
                     // 결제 실패 후 처리
+                    UserInterface::displayMessage("결제가 거절되었습니다.");
                 }
             },
             3  
