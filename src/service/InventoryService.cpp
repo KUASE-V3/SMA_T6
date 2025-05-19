@@ -1,22 +1,25 @@
 // InventoryService.cpp
 #include "service/InventoryService.hpp"
+#include "../include/persistence/inventoryRepository.h"
 #include <vector>
 #include <string>
 namespace service {
 std::vector<std::pair<std::string, int>> InventoryService::CallInventorySer() {
-    return {};  // ?ž„?‹œ ë°˜í™˜
+    persistence::inventoryRepository repo;
+    return repo.getList();
 }
 
-bool InventoryService::getSaleValid(const std::string& drink) {
-    return true;  // ?ž„?‹œ ë°˜í™˜
+bool InventoryService::getSaleValid(const std::string& drinkname) {
+    bool result = persistence::inventoryRepository::isValid(drinkname);
+    return result;  
 }
 
 std::string InventoryService::reduceDrink(const std::string& drink) {
-    return drink;  // ?ž„?‹œ ë°˜í™˜
+    return drink;  // ?ï¿½ï¿½?ï¿½ï¿½ ë°˜í™˜
 }
 
 bool InventoryService::validOVMStock(const std::string& drinkName) {
-    return true;  // ?ž„?‹œ ë°˜í™˜
+    return true;  // ?ï¿½ï¿½?ï¿½ï¿½ ë°˜í™˜
 }
 
 

@@ -1,4 +1,5 @@
 #include "network/MessageSerializer.hpp"
+/*
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
@@ -7,7 +8,7 @@ using namespace network;
 
 std::string MessageSerializer::toJson(const Message& msg)
 {
-    // TODO: RapidJSON °´Ã¼ »ý¼º & Á÷·ÄÈ­
+    // TODO: RapidJSON ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ & ï¿½ï¿½ï¿½ï¿½È­
     rapidjson::StringBuffer buf;
     rapidjson::Writer<rapidjson::StringBuffer> w(buf);
     w.StartObject();
@@ -25,7 +26,7 @@ std::string MessageSerializer::toJson(const Message& msg)
 
 Message MessageSerializer::fromJson(const std::string& s)
 {
-    // TODO: Robust ÆÄ½Ì + ¿¹¿Ü
+    // TODO: Robust ï¿½Ä½ï¿½ + ï¿½ï¿½ï¿½ï¿½
     rapidjson::Document d; d.Parse(s.c_str());
     Message m;
     m.msg_type = static_cast<Message::Type>(d["msg_type"].GetInt());
@@ -36,3 +37,4 @@ Message MessageSerializer::fromJson(const std::string& s)
     }
     return m;
 }
+*/
