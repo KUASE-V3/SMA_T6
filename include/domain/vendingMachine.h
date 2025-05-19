@@ -5,7 +5,7 @@
 #include <utility>
 namespace domain {
 
-// ÃÊ±âÈ­½Ã : id, locationÀ» "T5", {123, 123}, "8080"À¸·Î ¼³Á¤ÇÕ´Ï´Ù.
+// ï¿½Ê±ï¿½È­ï¿½ï¿½ : id, locationï¿½ï¿½ "T5", {123, 123}, "8080"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 class VendingMachine {
     public:
     VendingMachine(const std::string& id = "T5", const std::pair<int, int>& location = {123, 123}, const std::string& port = "8080");
@@ -18,11 +18,10 @@ class VendingMachine {
 
 
     private:
-        std::string id; //ÀÚÆÇ±â ID, 5Á¶ÀÌ¹Ç·Î T5·Î ¼³Á¤
-        std::pair<int, int> location; //ÁÂÇ¥½Ö
-        std::string port; //Æ÷Æ®¹øÈ£
+        std::string id; //ï¿½ï¿½ï¿½Ç±ï¿½ ID, 5ï¿½ï¿½ï¿½Ì¹Ç·ï¿½ T5ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        std::pair<int, int> location; //ï¿½ï¿½Ç¥ï¿½ï¿½
+        std::string port; //ï¿½ï¿½Æ®ï¿½ï¿½È£
     };
     
 }
-
 #endif

@@ -1,14 +1,15 @@
 #include "domain/inventory.h"
+#include "domain/drink.h"
 
-namespace domain {
-#include "../include/domain/inventory.h"
+
+using namespace domain;
 
 inventory::inventory(const Drink& drink, int qty)
     : drink_(drink), qty_(qty) {}
 
 
 Drink inventory::getDrink() const {
-return drink_;
+    return drink_;
 }
 
 
@@ -22,16 +23,16 @@ bool inventory::isEmpty() const {
 }
 
 
-// qty_ 1 ê°ì†Œ (0 ë¯¸ë§Œ?œ¼ë¡œëŠ” ê°ì†Œ ?•ˆ ?•¨)
-void inventory::reduceDrink() {
-    if (qty_ > 0) {
+// Reduce quantity only if the input drink matches the stored drink
+void inventory::reduceDrink(const Drink& selecteddrink) {
+    if (selecteddrink.getName() == drink_.getName() && qty_ > 0) {
         qty_--;
     }
 }
 
 
 
-int inventory :: getQty () const {
+int inventory::getQty() const {
     return qty_;
 }
-}
+
