@@ -9,8 +9,9 @@ std::vector<std::pair<std::string, int>> InventoryService::CallInventorySer() {
     return repo.getList();
 }
 
-bool InventoryService::getSaleValid(const std::string& drink) {
-    return true;  // ?? 반환
+bool InventoryService::getSaleValid(const std::string& drinkname) {
+    bool result = persistence::inventoryRepository::isValid(drinkname);
+    return result;  
 }
 
 std::string InventoryService::reduceDrink(const std::string& drink) {
