@@ -1,6 +1,7 @@
 // OrderService.cpp
 // ------------------------------
 #include "service/OrderService.hpp"
+#include "domain/order.h"
 #include <iostream>
 
 OrderService::OrderService() {}
@@ -14,13 +15,12 @@ void OrderService::approve(const std::string& paymentID, bool success) {
     std::cerr << "[?��?�� ?��?��] " << status << std::endl;
 }
 
-void OrderService::createOrder(const std::string& code) {
-    drinkCode = code;
-    std::cerr << "[주문 ?��?��] DrinkCode: " << drinkCode << std::endl;
-}
+domain::Order OrderService::createOrder(const std::string& drinkcode, const std::string& precode) {
+    domain::Drink drink("",0,drinkcode);
+    domain::Order order("T5", drink, 1, "Pending");
 
-void OrderService::attachPrePay(const std::string& code) {
-    prepayCode = code;
-    std::cerr << "[?��결제 코드 ?���?] Code: " << prepayCode << std::endl;
+    order.attachPrePay(precode);
+
+    return order; 
 }
 
