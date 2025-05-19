@@ -10,6 +10,7 @@
 #include "DistanceService.hpp"
 #include "domain/order.h"
 #include "service/PrepaymentService.hpp" 
+#include "network/message.hpp"
 
 class UserProcessController {
 public:
@@ -17,14 +18,18 @@ public:
     void handleMenu();
     void handlePrepayCode();
     void handleDrinkSelection();
-    void handlePayment(const std::string& cardInfo);
+    void handlePayment(const bool& isPrepay);
+    void nofityError(const std::string& error);
+    void nearestVM(const network::Message& msg);
+    void showPrepaymentCode(const std::string& prepaymentCode);
+    std::string prepayFlow_UC12();
 
 private:
     service::InventoryService inventoryService;
     UserInterface ui;
     service::ErrorService errorService;
     OrderService orderService;
-    DistanceService distanceService;
+    service::DistanceService distanceService;
     service::PrepaymentService prepaymentService;
 };
 

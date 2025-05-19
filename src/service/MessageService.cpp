@@ -7,14 +7,19 @@
 #include <cmath>
 #include <thread>
 
-/*  �������������������������� ����-������ ���� (�ӽ�) �������������������������� */
-static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1�� ���� �׳� �ӽ÷� ���(�������丮 ������ ���� ����) -> 2�� �� �����Ѵ�. 
+#include <service/PrepaymentService.hpp>
 
-using application::MessageService;
+
+
+/*  �������������������������� ����-������ ���� (�ӽ�) �������������������������� */
+static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1�� ���� �׳� ���� ���(���� ���Ǳ��� ������ �����ϴ� �������丮 ������ ���� ����)  
+using service::MessageService;
 
 /* �������������������������� ���� helper �������������������������� */
 std::string MessageService::myId()            { return vm.getId();      }
 std::pair<int,int> MessageService::myCoord()  { return vm.getLocation();}
+
+
 
 /* �������������������������� ctor �������������������������� */
 MessageService::MessageService(network::MessageSender&              sender,
@@ -109,6 +114,12 @@ void MessageService::cancelPrepayTimer()
 /* �������������������������� UC-15 : REQ_PREPAY ���� �� �����ڵ鷯 �������������������������� */
 void MessageService::respondPrepayReq(const domain::Order& order) //
 {
+
+        service::PrepaymentService prepaySvc;
+        prepaySvc.saveCode(order); //������ �ڵ� �����ϴ� �޼ҵ� ȣ��(�����ڵ� ����)
+        
+        
+
     /* 1. ������ �ڵ� ���� */
     
     if(!prepaySvc_.isValid(order.certCode())){ //�ǵ��� �߱޵� �ڵ����� Ȯ���ϰ� �����ϴ� ���̾����� PrepaymentService���� �̸� ���� �ڵ尡 ��� ��ȿ�� �˻縸 ����
@@ -130,12 +141,12 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
         };
 
         try { sender_.send(resp);
-            invSvc_.ReqReduceDrink(order.drink().getCode()); // ��� ���ҿ�
+            invSvc_.reduceDrink(order.drink().getCode()); // ��� ���ҿ�
         }
         catch(const std::exception& e){
             errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());
         }
-    }else{ //����� ���� �� �Ұ����� ���
+    }else{ //����� ���� �� �Ұ����� ��� �޽��� ������. 
         network::Message resp;
         resp.msg_type = network::Message::Type::RESP_PREPAY;
         resp.src_id   = myId();
@@ -169,7 +180,7 @@ void MessageService::handleReqStock(const network::Message& msg)
     resp.dst_id   = msg.src_id; //��ε�ĳ��Ʈ �޾��� �� �����ִ� �ڵ鷯 
     resp.msg_content = {
         {"item_code", msg.msg_content.at("item_code")},
-        {"item_num",  empty ? "0" : "1"}, //TODO : ���� ���ϴ� ������ ��� �ܷ��� Ȯ���ϴ� �޼ҵ尡 ���� �ϴ� 1�� ���� ������� ������ ���� 1�� ����, 2�� �� �����ؾߵ�. 
+        {"item_num",  empty ? "0" : "1"}, //TODO : ���� ���ϴ� ������ ��� �ܷ��� Ȯ���ϴ� �޼ҵ尡 ���� ����ִ����� �� �� ����.
     };
     try { sender_.send(resp); }
     catch(const std::exception& e){
@@ -184,23 +195,27 @@ void MessageService::handleRespStock(const network::Message& msg)
     resp_cache_.push_back(msg);
     if(resp_cache_.size() >= kBroadcastRespMax)
         resp_cv_.notify_all();
+    
 }
 
+
+//UC 15 �ڵ鷯�Դϴ�
 void MessageService::handleReqPrepay(const network::Message& msg)
 {
     /*  msg �� Order �Ľ� �� respondPrepayReq(order) ȣ�� */
     try {
-        /* �� network::Message �� domain::Order ���� */
-        domain::Drink d{"", 0, msg.msg_content.at("item_code")};    // �̸������� �� �� 0 ã�ƿ� �� ������ �ʿ伺 ���� �ʳ�
+        // �޼��� ���� order ��ü �����ϰ� �ڵ� �ٿ��� ���� 
+        domain::Drink d{"", 0, msg.msg_content.at("item_code")};    // �帵ũ �ϳ� �����
         domain::Order order{
             msg.src_id,     // vmId  (���� ��)
             d,
-            std::stoi(msg.msg_content.at("item_num")),
+            1,
             msg.msg_content.at("cert_code"),
             "Pending"
-        };
+        };//order�������
 
-        
+
+        //UC15���� �Ѿ 
         respondPrepayReq(order);
     }
     catch (const std::exception& e) {
@@ -220,7 +235,7 @@ void MessageService::handleRespPrepay(const network::Message& msg)
 
     const bool ok = (msg.msg_content.at("availability") == "T");
     if (ok) {
-        // TODO: Controller.onPrepayApproved(pending_->order); -> ��Ʈ�ѷ� �󿡼� ���� �ȵ�.. 2�� �� ����
+        // TODO: Controller.onPrepayApproved(pending_->order); -> ��Ʈ�ѷ� �󿡼� ���� �ȵ�
         std::cout << "[MessageService] PREPAY approved\n";
     } else {
         errSvc_.logError("PREPAY declined (availability == F)");
@@ -228,6 +243,3 @@ void MessageService::handleRespPrepay(const network::Message& msg)
     pending_.reset();
 }
 
-void MessageService::onMessage(const network::Message&) { /* unused */ } 
-        // TODO: �������� ������ ���ó ��� ���� ����, 2�� �� ���� ����
- 

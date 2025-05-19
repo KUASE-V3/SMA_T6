@@ -1,6 +1,7 @@
 // OrderService.cpp
 // ------------------------------
 #include "service/OrderService.hpp"
+#include "domain/order.h"
 #include <iostream>
 
 OrderService::OrderService() {}
@@ -11,15 +12,15 @@ void OrderService::approve(const std::string& paymentID, bool success) {
     } else {
         status = "Declined";
     }
-    std::cerr << "[?Š¹?¸ ?ƒ?ƒœ] " << status << std::endl;
+    std::cerr << "[?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½] " << status << std::endl;
 }
 
-void OrderService::createOrder(const std::string& code) {
-    drinkCode = code;
-    std::cerr << "[ì£¼ë¬¸ ?ƒ?„±] DrinkCode: " << drinkCode << std::endl;
+domain::Order OrderService::createOrder(const std::string& drinkcode, const std::string& precode) {
+    domain::Drink drink("",0,drinkcode);
+    domain::Order order("T5", drink, 1, "Pending");
+
+    order.attachPrePay(precode);
+
+    return order; 
 }
 
-void OrderService::attachPrePay(const std::string& code) {
-    prepayCode = code;
-    std::cerr << "[?„ ê²°ì œ ì½”ë“œ ?—°ê²?] Code: " << prepayCode << std::endl;
-}
