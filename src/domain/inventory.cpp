@@ -1,4 +1,3 @@
-
 #include "../include/domain/inventory.h"
 
 inventory::inventory(const Drink& drink, int qty)
@@ -20,8 +19,7 @@ bool inventory::isEmpty() const {
 }
 
 
-
-// 입력받은 음료가 저장된 음료와 같을 때만 수량 감소
+// Reduce quantity only if the input drink matches the stored drink
 void inventory::reduceDrink(const Drink& selecteddrink) {
     if (selecteddrink.getName() == drink_.getName() && qty_ > 0) {
         qty_--;
@@ -30,7 +28,7 @@ void inventory::reduceDrink(const Drink& selecteddrink) {
 
 
 
-int inventory :: getQty () const {
+int inventory::getQty() const {
     return qty_;
 }
 

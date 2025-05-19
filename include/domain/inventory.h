@@ -20,7 +20,6 @@ class inventory {
 
 
 
-
     private:
         Drink drink_;
         int qty_;
