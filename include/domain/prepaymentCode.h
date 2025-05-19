@@ -17,7 +17,7 @@ public:
 
     std::string getCode() const;
 
-    void setStatus(std::string& status);
+    void use(std::string& status);
     std::string getStatus();
 
 
