@@ -16,6 +16,10 @@ class inventoryRepository {
 
         std::vector<std :: pair<std::string, int>> getList();
 
+        bool isValid(const Drink& drink);
+        void changeQty(const Drink& drink);
+        bool isEmptyRepo(const Drink& drink) const;
+
         
 
     private:
