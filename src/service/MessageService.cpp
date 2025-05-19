@@ -130,7 +130,7 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
         };
 
         try { sender_.send(resp);
-            invSvc_.reduceDrink(order.drink().getCode()); // 재고 감소와
+            invSvc_.ReqReduceDrink(order.drink().getCode()); // 재고 감소와
         }
         catch(const std::exception& e){
             errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());

@@ -34,3 +34,9 @@ PrepaymentCode PrepaymentService::isSueCode(const Order& order) {
 bool PrepaymentService::isValid(const std::string& code) {
     return PrepaymentCode::isUsable(code);  // 정적 검사
 }
+
+// UC14: 인증코드 상태 변경
+void PrepaymentService::changeStatusCode(const std::string& code) {
+    //TOOD 상태 변경 메서드 구현 필요
+    
+}

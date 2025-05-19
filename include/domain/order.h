@@ -23,6 +23,7 @@ public:
     const Drink&       drink()     const { return drink_; }
     int                quantity()  const { return qty_;   }
     const std::string& certCode()  const { return cert_code_; }
+    
 
 private:
     std::string vm_id_;      
