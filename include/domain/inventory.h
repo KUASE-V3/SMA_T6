@@ -2,7 +2,7 @@
 #define INVENTORY_H
 
 #include <string>
-#include "../include/domain/drink.h"
+#include "drink.h"
 
 
 class inventory {
