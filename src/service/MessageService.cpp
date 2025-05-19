@@ -7,8 +7,10 @@
 #include <cmath>
 #include <thread>
 
+#include <service/PrepaymentService.hpp>
+
 /*  ───────────── 지역-스코프 전역 (임시) ───────────── */
-static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1차 때는 그냥 임시로 사용(레포지토리 문서상 구현 안함) -> 2차 때 참조한다. 
+static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1차 때는 그냥 변수 사용(본인 자판기의 정보를 저장하는 레포지토리 문서상 구현 안함)  
 
 using application::MessageService;
 
@@ -109,6 +111,12 @@ void MessageService::cancelPrepayTimer()
 /* ───────────── UC-15 : REQ_PREPAY 수신 후 응답핸들러 ───────────── */
 void MessageService::respondPrepayReq(const domain::Order& order) //
 {
+
+        service::PrepaymentService prepaySvc;
+        prepaySvc.saveCode(order); //선결제 코드 저장하는 메소드 호출(인증코드 저장)
+        
+        
+
     /* 1. 선결제 코드 검증 */
     
     if(!prepaySvc_.isValid(order.certCode())){ //의도는 발급된 코드인지 확인하고 저장하는 것이었으나 PrepaymentService에서 이를 위한 코드가 없어서 유효성 검사만 진행
@@ -125,17 +133,19 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
         resp.msg_content = {
         {"availability","T"},
         {"item_num",    std::to_string(order.quantity())},
-        {"item_code", order.drink().getCode()} //표 형식 따라서 작성 
-            /*  2. 재고 확보 근데 음료 코드만으로 인벤토리 접근해서 재고 감소하게 하는 것이 inventory에 구현 안돼있음(2차 때 진행해야됨) */
+        {"item_code", order.drink().getCode()} //표 형식 따라서 작성  //메시지 만든다
         };
 
-        try { sender_.send(resp);
-            invSvc_.reduceDrink(order.drink().getCode()); // 재고 감소와
+        try { //인증코드 및 음료정보 저장하고, 메시지 보내고, 재고 감소
+            service::PrepaymentService prepaySvc;
+            prepaySvc.saveCode(order); //선결제 코드 저장하는 메소드 호출(인증코드 저장)
+            sender_.send(resp); 
+            invSvc_.reduceDrink(order.drink().getCode()); 
         }
         catch(const std::exception& e){
             errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());
         }
-    }else{ //재고가 없을 때 불가능한 경우
+    }else{ //재고가 없을 때 불가능한 경우 메시지 보낸다. 
         network::Message resp;
         resp.msg_type = network::Message::Type::RESP_PREPAY;
         resp.src_id   = myId();
@@ -184,23 +194,27 @@ void MessageService::handleRespStock(const network::Message& msg)
     resp_cache_.push_back(msg);
     if(resp_cache_.size() >= kBroadcastRespMax)
         resp_cv_.notify_all();
+    
 }
 
+
+//UC 15 핸들러입니다
 void MessageService::handleReqPrepay(const network::Message& msg)
 {
     /*  msg → Order 파싱 후 respondPrepayReq(order) 호출 */
     try {
-        /* ① network::Message → domain::Order 매핑 */
-        domain::Drink d{"", 0, msg.msg_content.at("item_code")};    // 이름·가격 모름 → 0 찾아올 수 있으나 필요성 없지 않나
+        // 메세지 오면 order 객체 생성하고 코드 붙여서 저장 
+        domain::Drink d{"", 0, msg.msg_content.at("item_code")};    // 드링크 하나 만든다
         domain::Order order{
             msg.src_id,     // vmId  (보낸 쪽)
             d,
-            std::stoi(msg.msg_content.at("item_num")),
+            1,
             msg.msg_content.at("cert_code"),
             "Pending"
-        };
+        };//order만들었음
 
-        
+
+        //UC15으로 넘어감 
         respondPrepayReq(order);
     }
     catch (const std::exception& e) {

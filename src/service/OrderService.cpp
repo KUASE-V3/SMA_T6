@@ -11,15 +11,16 @@ void OrderService::approve(const std::string& paymentID, bool success) {
     } else {
         status = "Declined";
     }
-    std::cerr << "[?Š¹?¸ ?ƒ?ƒœ] " << status << std::endl;
+    std::cerr << "[?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½] " << status << std::endl;
 }
 
 void OrderService::createOrder(const std::string& code) {
     drinkCode = code;
-    std::cerr << "[ì£¼ë¬¸ ?ƒ?„±] DrinkCode: " << drinkCode << std::endl;
+    std::cerr << "[ì£¼ë¬¸ ?ï¿½ï¿½?ï¿½ï¿½] DrinkCode: " << drinkCode << std::endl;
 }
 
 void OrderService::attachPrePay(const std::string& code) {
     prepayCode = code;
-    std::cerr << "[?„ ê²°ì œ ì½”ë“œ ?—°ê²?] Code: " << prepayCode << std::endl;
+    std::cerr << "[?ï¿½ï¿½ê²°ì œ ì½”ë“œ ?ï¿½ï¿½ï¿½?] Code: " << prepayCode << std::endl;
 }
+

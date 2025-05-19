@@ -15,9 +15,10 @@ public:
     void promptCardInfo();
     std::string promptPrepayCode();
     bool promptPrepayConsent();
+    void display_SomeText(const std::string& text);
 
 
-    // ?�� UC7: ?���? 배출 메시�?
+    // ?�� UC7: ?���?? 배출 메시�??
     void dispense(const std::string& drinkCode);
 };
 
