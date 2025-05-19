@@ -1,5 +1,7 @@
 #include "service/InventoryService.hpp"
+
 #include "persistence/inventoryRepository.h"
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -37,6 +39,7 @@ Drink InventoryService::ReqReduceDrink(const std::string& drinkCode) {
 
 bool InventoryService::validOVMStock(const std::string& drinkName) {
     return true;
+
 }
 
 }

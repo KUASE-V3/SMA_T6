@@ -1,7 +1,10 @@
 #include "service/UserProcessController.hpp"
 #include <iostream>
+#include "persistence/inventoryRepository.cpp"
 
 int main() {
+
+    //시작
     std::cout << "? Smart Vending Machine System Starting...\n";
 
     // Initialize the UserProcessController

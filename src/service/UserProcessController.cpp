@@ -96,12 +96,19 @@ void UserProcessController::handlePrepayCode() {
 
 void UserProcessController::handleDrinkSelection() {
     string drinkName;
-    cout << "음료수를 입력하세요: ";
     cin >> drinkName;
 
     try {
         vector<inventory> drinks = inventoryRepository::getAllDrinks();
-        bool found = false;
+
+    bool valid = inventoryService.getSaleValid(drinkName);
+
+    std::cout << "유효성 검사 결과: " << (valid ? "유효함 -> UC4 payment" : "유효하지 않음 -> uc8 BroadCast") << std::endl;
+
+/*
+try {
+        vector<domain::inventory> drinks = inventoryRepository::getAllDrinks();
+
 
         for (const auto& drink : drinks) {
             if (drink.getDrink().getName() == drinkName) {
@@ -149,4 +156,7 @@ void UserProcessController::handleDrinkSelection() {
         ui.show_error_message(err);
         ui.display_Error(err);
     }
+
+*/
+    
 }

@@ -10,5 +10,6 @@ public:
     bool getSaleValid(const std::string& drinkCode);                  
     domain::Drink ReqReduceDrink(const std::string& drinkCode);       
     bool validOVMStock(const std::string& drinkName);                 
+
 };
 }
