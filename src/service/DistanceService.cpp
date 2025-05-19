@@ -1,10 +1,26 @@
-// DistanceService.cpp
-// ------------------------------
 #include "service/DistanceService.hpp"
+#include <cmath>
+#include <limits>
 #include <iostream>
 
-void DistanceService::getDistance(const std::vector<std::string>& list) {
-    std::cout << "[DistanceService] 거리 계산 요청됨: ";
-    for (const auto& item : list) std::cout << item << " ";
-    std::cout << std::endl;
+using namespace domain;
+
+std::pair<double, double> DistanceService::findNearest(double userX, double userY, const std::vector<VendingMachine>& machines) {
+    double minDistance = std::numeric_limits<double>::max();
+    std::pair<double, double> location;
+
+    for (const auto& vm : machines) {
+        auto [x, y] = vm.getLocation();  // 반환형: pair<int, int>
+        double dx = userX - x;
+        double dy = userY - y;
+        double distance = std::sqrt(dx * dx + dy * dy);
+
+        if (distance < minDistance || (distance == minDistance && vm.getId() < machines.front().getId())) {
+            minDistance = distance;
+            location = {static_cast<double>(x), static_cast<double>(y)};  // int → double
+        }
+    }
+
+    std::cerr << "[거리 계산] 가장 가까운 자판기 location: (" << location.first << ", " << location.second << "), 거리: " << minDistance << std::endl;
+    return location;
 }

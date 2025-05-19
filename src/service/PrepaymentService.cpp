@@ -1,18 +1,36 @@
-// PrepaymentService.cpp
 #include "service/PrepaymentService.hpp"
+#include "persistence/prepayCodeRepository.h"
 #include <iostream>
 
-namespace service {
+using namespace domain;
+using namespace service;
+using namespace persistence;
+
+// UC12: 단순 인증코드 생성
+PrepaymentCode PrepaymentService::isSueCode() {
+    PrepaymentCode code;
+    std::string generated = code.generate();
+
+    std::cerr << "[UC12] 인증코드 발급됨: " << generated << std::endl;
+    return code;
+}
+
+// UC15: 주문을 보관하고 저장소에 저장
+PrepaymentCode PrepaymentService::isSueCode(const Order& order) {
+    PrepaymentCode code;
+    std::string generated = code.generate();
+
+    std::cerr << "[UC15] 인증코드 발급 및 주문 보관: " << generated << std::endl;
+
+    PrepaymentCode held = code.hold(order);     // 주문 객체 연결
+    PrepaymentCodeRepository repo;
+    repo.save(held);  // 인스턴스 생성 후 save() 호출
+
+
+    return held;
+}
+
+// UC13: 인증코드 유효성 검사
 bool PrepaymentService::isValid(const std::string& code) {
-    std::cerr << "[선결제 코드 유효성 검사] 입력된 코드: " << code << std::endl;
-    return true;  // 임시 반환
-}
-
-void PrepaymentService::isSueCode() {
-    std::cerr << "[선결제 코드 발급] 실제 로직 없음 (임시 구현)" << std::endl;
-}
-
-// void PrepaymentService::issueCode(Order& order) {
-//     // Order 관련 로직 제거 또는 나중 구현
-// }
+    return PrepaymentCode::isUsable(code);  // 정적 검사
 }

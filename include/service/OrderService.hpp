@@ -2,19 +2,18 @@
 #define ORDER_SERVICE_HPP
 
 #include <string>
+#include "domain/order.h"
+#include "domain/drink.h"
 
 class OrderService {
 public:
-    OrderService(); // Order* order 삭제
+    OrderService();
 
-    void approve(const std::string& paymentID, bool success);
-    void createOrder(const std::string& drinkCode);  // 반환형 변경
-    void attachPrePay(const std::string& prepayCode); // 파라미터 변경
+    // UC5, UC6
+    void approve(domain::Order& order, bool success);
 
-private:
-    std::string status;
-    std::string drinkCode;
-    std::string prepayCode;
+    // UC16
+    domain::Order createOrder(const domain::Drink& drink);  // O
 };
 
 #endif

@@ -1,25 +1,23 @@
-// OrderService.cpp
-// ------------------------------
 #include "service/OrderService.hpp"
 #include <iostream>
 
+using namespace domain;
+
 OrderService::OrderService() {}
 
-void OrderService::approve(const std::string& paymentID, bool success) {
+void OrderService::approve(Order& order, bool success) {
     if (success) {
-        status = "Approved";
+        order.setStatus("Approved");
     } else {
-        status = "Declined";
+        order.setStatus("Declined");
     }
-    std::cerr << "[?Š¹?¸ ?ƒ?ƒœ] " << status << std::endl;
+
+    std::cerr << "[ê²°ì œ ìƒíƒœ ì²˜ë¦¬] certCode: " << order.certCode()
+              << ", ìƒíƒœ: " << (success ? "Approved" : "Declined") << std::endl;
 }
 
-void OrderService::createOrder(const std::string& code) {
-    drinkCode = code;
-    std::cerr << "[ì£¼ë¬¸ ?ƒ?„±] DrinkCode: " << drinkCode << std::endl;
-}
-
-void OrderService::attachPrePay(const std::string& code) {
-    prepayCode = code;
-    std::cerr << "[?„ ê²°ì œ ì½”ë“œ ?—°ê²?] Code: " << prepayCode << std::endl;
+Order OrderService::createOrder(const Drink& drink) {
+    Order order("T1", drink);  // ìžíŒê¸° IDëŠ” ì˜ˆì‹œë¡œ "T1"
+    std::cerr << "[UC16] ì£¼ë¬¸ ìƒì„± - ìŒë£Œ: " << drink.getName() << std::endl;
+    return order;
 }
