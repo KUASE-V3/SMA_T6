@@ -17,7 +17,7 @@ public:
     void handleMenu();
     void handlePrepayCode();
     void handleDrinkSelection();
-    void handlePayment(const std::string& cardInfo, domain::Order& order);
+    void handlePayment(const std::string& cardInfo);
 
 private:
     service::InventoryService inventoryService;
