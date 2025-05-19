@@ -12,12 +12,12 @@ public:
     void display_Error(const std::string& error);
     void showText(const std::string& prepaymentCode);
     void displayMessage(const std::string& msg);
-    std::string promptCardInfo();
+    void promptCardInfo();
     std::string promptPrepayCode();
     bool promptPrepayConsent();
 
 
-    // ?º UC7: ?Œë£? ë°°ì¶œ ë©”ì‹œì§?
+    // ?ï¿½ï¿½ UC7: ?ï¿½ï¿½ï¿½? ë°°ì¶œ ë©”ì‹œï¿½?
     void dispense(const std::string& drinkCode);
 };
 

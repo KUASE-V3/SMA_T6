@@ -1,5 +1,7 @@
 #include "presentation/UserInterface.hpp"
 #include <iostream>
+#include "service/UserProcessController.hpp"
+
 
 void UserInterface::displayMainMenu() {
     std::cout << "===== 자판기 메뉴 =====\n";
@@ -25,11 +27,14 @@ void UserInterface::displayMessage(const std::string& msg) {
     std::cout << msg << std::endl;
 }
 
-std::string UserInterface::promptCardInfo() {
+void UserInterface::promptCardInfo() {
     std::string info;
     std::cout << "카드 정보를 입력하세요: ";
     std::cin >> info;
-    return info;
+
+    UserProcessController controller;
+    // handlePayment 호출
+    controller.handlePayment(info);
 }
 
 std::string UserInterface::promptPrepayCode() {

@@ -1,6 +1,7 @@
 #include "service/UserProcessController.hpp"
 #include "persistence/inventoryRepository.h"
 #include <iostream>
+#include "network/PaymentCallbackReceiver.hpp"
 
 using namespace std;
 using namespace domain;
@@ -22,8 +23,23 @@ void UserProcessController::handleMenu() {
     }
 }
 
-void UserProcessController::handlePayment(const string& cardInfo, Order& order) {
+void UserProcessController::handlePayment(const std :: string& cardInfo) {
     try {
+        network::PaymentCallbackReceiver receiver;
+
+        receiver.simulatePrepayment( [](bool success) {
+                if (success) {
+                    std::cout << "결제가 승인되었습니다. -> UC5" << std::endl;
+                    // 결제 성공 후 처리
+                } else {
+                    std::cout << "결제가 거절되었습니다. -> UC6" << std::endl;
+                    // 결제 실패 후 처리
+                }
+            },
+            3  
+        );
+
+        /*
         string response = "Approve";  // 결제 ?��?�� �??��
 
         if (response == "Approve") {
@@ -34,6 +50,7 @@ void UserProcessController::handlePayment(const string& cardInfo, Order& order) 
             ui.displayMessage("결제 거절: " + order.drink().getName());
             handleMenu();
         }
+        */ 
     } catch (const exception& e) {
         string err = e.what();
         errorService.logError(err);
@@ -74,7 +91,13 @@ void UserProcessController::handleDrinkSelection() {
 
     bool valid = inventoryService.getSaleValid(drinkName);
 
-    std::cout << "유효성 검사 결과: " << (valid ? "유효함 -> UC4 payment" : "유효하지 않음 -> uc8 BroadCast") << std::endl;
+    if (valid) {    //UC3
+        ui.promptCardInfo();         //카드 정보를 cardInfo 변수에 저장
+        // 여기서 cardInfo를 사용한 추가 처리 가능
+
+    } else {    //UC 8 브로드캐스트 조회
+        std::cout << "유효하지 않음. -> UC8 " << std::endl;
+    }
 
 /*
 try {
