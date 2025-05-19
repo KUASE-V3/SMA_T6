@@ -3,8 +3,8 @@
 #include <string>
 #include "domain/drink.h"   
 
-namespace domain {
 
+namespace domain {
 class Order {
 public:
     Order() = default;
@@ -32,4 +32,4 @@ private:
     std::string pay_status_ {"Pending"};
 };
 
-} // namespace domain
+}

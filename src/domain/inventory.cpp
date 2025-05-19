@@ -1,4 +1,8 @@
-#include "../include/domain/inventory.h"
+#include "domain/inventory.h"
+#include "domain/drink.h"
+
+
+using namespace domain;
 
 inventory::inventory(const Drink& drink, int qty)
     : drink_(drink), qty_(qty) {}

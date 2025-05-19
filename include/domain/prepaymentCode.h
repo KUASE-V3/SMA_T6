@@ -4,7 +4,6 @@
 #include <string>
 #include "order.h"
 
-
 namespace domain {
 
 class PrepaymentCode {
@@ -29,7 +28,6 @@ public:
 };
 
 }
-
 
 
 #endif

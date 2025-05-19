@@ -3,8 +3,6 @@
 
 #include <string>
 
-
-
 namespace domain {
 
 class Drink {
@@ -18,9 +16,9 @@ class Drink {
         std::string getCode() const;
 
     private:
-        std:: string  name_;
+        std::string name_;
         int price_;
-        std:: string code_;
+        std::string code_;
 };
 
 }
