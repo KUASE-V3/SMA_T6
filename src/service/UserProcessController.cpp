@@ -159,7 +159,7 @@ try {
     
 }
 
-void nofifyError(const std::string& error) {
+void UserProcessController::nofityError(const std::string& error) {
     
     // Handle error notification
     UserInterface ui;
@@ -170,7 +170,7 @@ void nofifyError(const std::string& error) {
 
 }
 
-void nearestVM(const network::Message& msg) {
+void UserProcessController::nearestVM(const network::Message& msg) {
 
     // 사용자가 위치한 곳의 자판기에서 가장 가깝고 구매하고자 하는 음료의 재고가있는 자판기의 위치를 안내한다
     UserInterface ui;
@@ -181,11 +181,12 @@ void nearestVM(const network::Message& msg) {
     ui.display_SomeText("가장 가까운 자판기는 " +  vmId + "입니다.\n" + " 좌표는 " + x_coord + ", " + y_coord + "입니다.\n");
 }
 
-void showPrepaymentCode(const std::string& text) {//자판기 위치 호출 시스템 
+void UserProcessController::showPrepaymentCode(const std::string& text) {//자판기 위치 호출 시스템 
     UserInterface ui;
     ui.display_SomeText("귀하의 결제코드는 " + text + "입니다.");
 }
 
-void prepayFlow_UC12(){
+void UserProcessController::prepayFlow_UC12(){
+
 
 }
