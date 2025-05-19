@@ -23,20 +23,31 @@ void UserProcessController::handleMenu() {
     }
 }
 
-void UserProcessController::handlePayment(const std :: string& cardInfo) {
+void UserProcessController::handlePayment(const bool& isPrepay) {
     try {
         network::PaymentCallbackReceiver receiver;
+        bool isPre = isPrepay;
 
-        receiver.simulatePrepayment( [](bool success) {
+        receiver.simulatePrepayment([isPrepay, this](bool success) {
+             // 지금 문서상으로는 결제의 종류를 가져올 수는 있지만 어떤 종류의 결제인지는 알 수 없음 리팩토링 필요 
+             // 분기를 바깥에서 처리하고 이 함수에서는 결제 성공 여부만 처리하도록 리팩토링 필요
                 if (success) {
                     std::cout << "결제가 승인되었습니다. -> UC5" << std::endl;
-                    // 결제 성공 후 처리
+                    if(isPrepay){// 결제 성공 후 처리
+                        //선결제인경우
+                        std::cout << "재고 확보 요청을 전송합니다 -> UC16" << std::endl;
+                        OrderService orderService;
+                        std::cout << "인증코드를 발급합니다. -> UC12" << std::endl;
+                        prepayFlow_UC12();
+                    }else{
+                        std::cout << "음료를 배출합니다 -> UC7" << std::endl;
+                        //결제 후 음료 배출
+                    }
                 } else {
                     std::cout << "결제가 거절되었습니다. -> UC6" << std::endl;
                     // 결제 실패 후 처리
                 }
-            },
-            3  
+            }
         );
 
         /*
@@ -146,4 +157,35 @@ try {
 
 */
     
+}
+
+void nofifyError(const std::string& error) {
+    
+    // Handle error notification
+    UserInterface ui;
+    if (error != "error") {
+        ui.show_error_message(error); //에러 메시지가 일반적인 error가 아닐 때 사용자에게 표사
+    } 
+    ui.displayMainMenu(); //다시 진입점으로 이동
+
+}
+
+void nearestVM(const network::Message& msg) {
+
+    // 사용자가 위치한 곳의 자판기에서 가장 가깝고 구매하고자 하는 음료의 재고가있는 자판기의 위치를 안내한다
+    UserInterface ui;
+    std::string vmId = msg.src_id;
+    std::string x_coord = msg.msg_content.at("coor_x");
+    std::string y_coord = msg.msg_content.at("coor_y");
+    
+    ui.display_SomeText("가장 가까운 자판기는 " +  vmId + "입니다.\n" + " 좌표는 " + x_coord + ", " + y_coord + "입니다.\n");
+}
+
+void showPrepaymentCode(const std::string& text) {//자판기 위치 호출 시스템 
+    UserInterface ui;
+    ui.display_SomeText("귀하의 결제코드는 " + text + "입니다.");
+}
+
+void prepayFlow_UC12(){
+
 }
