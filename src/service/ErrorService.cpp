@@ -1,12 +1,12 @@
 // ----- ErrorService.cpp -----
 #include <iostream>
 #include "service/ErrorService.hpp"
-#include <iostream>
+#include "service/UserProcessController.hpp"
 
 using namespace service;
 
-std::string ErrorService::logError(const std::string& msg)
+void ErrorService::logError(const std::string& msg)
 {
-    std::cerr << "[ErrorService] " << msg << '\n';
-    return msg;
+    UserProcessController controller;
+    controller.nofityError(msg);
 }

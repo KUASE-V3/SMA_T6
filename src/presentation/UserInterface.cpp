@@ -28,13 +28,11 @@ void UserInterface::displayMessage(const std::string& msg) {
 }
 
 void UserInterface::promptCardInfo() {
-    std::string info;
-    std::cout << "카드 정보를 입력하세요: ";
-    std::cin >> info;
+
 
     UserProcessController controller;
     // handlePayment 호출
-    controller.handlePayment(info);
+    controller.handlePayment();
 }
 
 std::string UserInterface::promptPrepayCode() {
@@ -50,7 +48,6 @@ void UserInterface::dispense(const std::string& drinkCode) {
 
 
 bool UserInterface::promptPrepayConsent() {
-    //일단 임시로 구현
    //"[선결제 동의] 선결제 동의 여부를 입력하세요 (y/n) yes -> true 반환 
     char consent;
     std::cout << "선결제 동의 여부를 입력하세요 (y/n): ";
@@ -60,4 +57,8 @@ bool UserInterface::promptPrepayConsent() {
 
 void UserInterface::showText(const std::string& prepaymentCode) {
     std::cout << "선결제 코드: " << prepaymentCode << std::endl;
+}
+
+void UserInterface::display_SomeText(const std::string& text) {
+    std::cout << text << std::endl;
 }
