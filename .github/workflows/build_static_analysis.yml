@@ -169,6 +169,23 @@ jobs:
         cppcheck --errorlist > errorlist.xml
         cd build ; cmake --build . --target cppcheck
 
+    - name: Fix SARIF file
+      run: |
+          python3 -c "
+          import json
+          with open('cppcheck_report.sarif', 'r') as f:
+              data = json.load(f)
+          for run in data.get('runs', []):
+              for result in run.get('results', []):
+                  for location in result.get('locations', []):
+                      region = location.get('physicalLocation', {}).get('region', {})
+                      for key in ['startColumn', 'endColumn', 'startLine', 'endLine']:
+                          if region.get(key, 1) == 0:
+                              region[key] = 1
+          with open('cppcheck_report.sarif', 'w') as f:
+              json.dump(data, f, indent=2)
+          "
+
     - name: Upload CPPCheck report
       uses: actions/upload-artifact@v4
       with:
