@@ -1,0 +1,237 @@
+name: Build and Static Analysis
+
+run-name: BandS "#${{github.run_number}}" [ ${{github.run_attempt}} ] [ ${{github.event.head_commit.message}} ] 
+
+on:
+  push:
+    branches-ignore: "main"
+
+  pull_request:
+    branches: [ "master", "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    container:
+      image: sjaekim/kuase_dev:v0.8
+
+    env:
+        BUILD_TYPE: Release
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install Boost
+      run: |
+        apt-get update
+        apt-get install -y libboost-all-dev
+
+    - name: Configure Submodules
+      run: |
+        git config --global --add safe.directory '*'
+        git submodule update --init --recursive
+    
+    - name: Configure CMake Environment
+      run: cmake -B $GITHUB_WORKSPACE/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build the project
+      run: cmake --build $GITHUB_WORKSPACE/build --config ${{env.BUILD_TYPE}}
+            
+    - name: Upload build directory
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-dir
+        path: build/
+        if-no-files-found: error
+
+  GoogleTest:  
+    needs: build
+    runs-on: self-hosted
+    container:
+      image: sjaekim/kuase_dev:v0.8
+
+    env:
+        BUILD_TYPE: Release
+
+    steps:  
+    - name: Download build directory
+      uses: actions/download-artifact@v4
+      with:
+        name: build-dir
+        path: build/
+    
+    - name: Install Boost
+      run: |
+        apt-get update
+        apt-get install -y libboost-all-dev
+
+    - name: Prepare GoogleTest
+      run: |
+        cd build
+        cmake -DBUILD_TESTS=ON ..
+        cmake --build . --target googletest
+    - name: Run GoogleTest
+      run: |
+        cd build
+        ctest --output-on-failure --verbose
+
+  GCovr:  
+    needs: GoogleTest
+    runs-on: self-hosted
+    container:
+      image: sjaekim/kuase_dev:v0.8
+
+    env:
+        BUILD_TYPE: Release
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install Boost
+      run: |
+        apt-get update
+        apt-get install -y libboost-all-dev
+
+    - name: Prepare GCovr
+      run: |
+        git config --global --add safe.directory '*'
+        mkdir -p build
+        cd build
+        cmake .. -DENABLE_COVERAGE=ON -DBUILD_TESTS=ON
+        cmake --build . --target googletest
+
+    - name: Run GoogleTest
+      run: |
+        cd build
+        ctest --output-on-failure --verbose
+
+    - name: Run GCovr
+      run: |
+        git config --global --add safe.directory '*'
+        cd build
+        cmake --build . --target coverage
+
+    - name: Upload Test GCovr report
+      uses: actions/upload-artifact@v4
+      with:
+        name: Gcovr Html
+        path: build/coverage/
+        if-no-files-found: error
+
+    - name: Upload Test GCovr Coverall Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: Gcovr Coverall
+        path: build/coverage.json
+        if-no-files-found: error
+
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@v2
+      with:
+        file: build/coverage.json
+
+  CPPCheck:  
+    runs-on: self-hosted
+    container:
+      image: sjaekim/kuase_dev:v0.8
+
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    env:
+        BUILD_TYPE: Release
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install Boost
+      run: |
+        apt-get update
+        apt-get install -y libboost-all-dev
+
+    - name: Prepare CPPCheck
+      run: |
+        git config --global --add safe.directory '*'
+        mkdir -p build
+        cd build
+        cmake ..
+
+    - name: Run CPPCheck
+      run: |
+        cppcheck --errorlist > errorlist.xml
+        cd build ; cmake --build . --target cppcheck
+
+    - name: Upload CPPCheck report
+      uses: actions/upload-artifact@v4
+      with:
+        name: cppcheck_report
+        path: cppcheck_report.sarif
+    
+    - name: Upload SARIF report to Github
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: cppcheck_report.sarif
+        category: cppcheck
+      continue-on-error: true  # 이 옵션 추가
+
+  # SonarCloud:
+  #   needs: [GoogleTest, GCovr]
+  #   runs-on: self-hosted
+  #   container:
+  #     image: sjaekim/kuase_dev:v0.8
+
+  #   env:
+  #       BUILD_TYPE: Release
+  #       BUILD_WRAPPER_OUT_DIR: build
+
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v4
+
+  #   - name: Download GCovr html report
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: Gcovr Html
+  #       path: coverage/
+  #       if-no-files-found: error
+
+  #   - name: Prepare SonarCloud
+  #     run: |
+  #       git config --global --add safe.directory '*'
+  #       mkdir -p build
+  #       cd build
+  #       cmake .. -DENABLE_COVERAGE=ON -DBUILD_TESTS=ON
+  #       cmake --build . --target googletest
+  #       cmake --build .
+
+  #   - name: Install Build Wrapper
+  #     uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v5
+
+  #   - name: Run Build Wrapper
+  #     run: |
+  #       build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/
+
+  #   - name: SonarQube Scan
+  #     uses: SonarSource/sonarqube-scan-action@v5
+  #     env:
+  #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #     with:
+  #       args: >
+  #         --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+
+  #   # - name: Run SonarCloud Analysis
+  #   #   run: |
+  #   #     sonar-scanner \
+  #   #       -Dsonar.sources=src \
+  #   #       -Dsonar.tests=tests \
+  #   #       -Dsonar.cxx.gcov.reportPath=coverage/coverage.html \
+  #   #       -Dsonar.host.url=https://sonarcloud.io \
+  #   #       -Dsonar.login=${{ secrets.SONAR_TOKEN }}
