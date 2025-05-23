@@ -12,9 +12,10 @@ public:
     void display_Error(const std::string& error);
     void showText(const std::string& prepaymentCode);
     void displayMessage(const std::string& msg);
-    std::string promptCardInfo();
+    void promptCardInfo();
     std::string promptPrepayCode();
     bool promptPrepayConsent();
+    void display_SomeText(const std::string& text);
 
 
     void dispense(const std::string& drinkCode);

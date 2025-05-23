@@ -5,7 +5,7 @@ namespace service {
 
 class ErrorService {
 public:
-    std::string logError(const std::string& msg);
+    void logError(const std::string& msg);
 };
 
 } // namespace service

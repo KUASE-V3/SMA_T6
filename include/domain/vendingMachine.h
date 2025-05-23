@@ -23,5 +23,4 @@ class VendingMachine {
     };
     
 }
-
 #endif

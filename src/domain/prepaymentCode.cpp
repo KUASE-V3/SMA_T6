@@ -11,7 +11,7 @@ using namespace domain;
 
 PrepaymentCode::PrepaymentCode() {
     code = rand();         
-    status = "Unused";    
+    status = "Unused";     
     
 }
 
@@ -34,8 +34,8 @@ bool PrepaymentCode::isUsable( const std::string& code) {
     if (code.length() != 5) return false;
 
     for (char c : code) {
-        if (!std::isalnum(c)) return false;              
-        if (std::isalpha(c) && !std::isupper(c)) return false;    
+        if (!std::isalnum(c)) return false;               
+        if (std::isalpha(c) && !std::isupper(c)) return false;     
     }
 
     return true;
@@ -51,8 +51,11 @@ PrepaymentCode PrepaymentCode::hold(Order order) {
 
 
 
-void PrepaymentCode::setStatus( std::string& newStatus){
-    if (newStatus == "Used")    status = newStatus;
+//코드 사용
+void PrepaymentCode::use(std::string& code) {
+    if (this->code == code) {
+        status = "Used";
+    }
 }
 
 

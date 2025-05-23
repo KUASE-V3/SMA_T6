@@ -1,5 +1,8 @@
 // PrepaymentService.cpp
 #include "service/PrepaymentService.hpp"
+#include "domain/prepaymentCode.h"
+#include "persistence/prepayCodeRepository.h"
+
 #include <iostream>
 
 namespace service {
@@ -8,11 +11,19 @@ bool PrepaymentService::isValid(const std::string& code) {
     return true;  // 임시 반환
 }
 
-void PrepaymentService::isSueCode() {
-    std::cerr << "[선결제 코드 발급] 실제 로직 없음 (임시 구현)" << std::endl;
+std::string PrepaymentService::isSueCode() {
+    domain::PrepaymentCode prepayCode;
+    std::string code = prepayCode.generate();
+    return code;
+
 }
 
-// void PrepaymentService::issueCode(Order& order) {
-//     // Order 관련 로직 제거 또는 나중 구현
-// }
+
+//UC 15 선결제 요청 수신 - 인증코드 저장하는 함수
+void PrepaymentService::saveCode(const domain::Order& order) {
+    domain::PrepaymentCode prepayCode;
+    persistence::PrepaymentCodeRepository prepayCodeRepo;
+    prepayCode.hold(order);
+    prepayCodeRepo.save(prepayCode);
+}
 }

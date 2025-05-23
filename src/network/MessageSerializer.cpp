@@ -1,4 +1,5 @@
 #include "network/MessageSerializer.hpp"
+
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
@@ -34,3 +35,4 @@ Message MessageSerializer::fromJson(const std::string& s)
     }
     return m;
 }
+

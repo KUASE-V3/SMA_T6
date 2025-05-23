@@ -4,7 +4,6 @@
 #include <string>
 #include "order.h"
 
-
 namespace domain {
 
 class PrepaymentCode {
@@ -18,7 +17,7 @@ public:
 
     std::string getCode() const;
 
-    void setStatus(std::string& status);
+    void use(std::string& status);
     std::string getStatus();
 
 
@@ -29,7 +28,6 @@ public:
 };
 
 }
-
 
 
 #endif
