@@ -5,11 +5,11 @@
 
 class OrderService {
 public:
-    OrderService(); // Order* order 삭제
+    OrderService(); // Order* order ?��?��
 
     void approve(const std::string& paymentID, bool success);
-    void createOrder(const std::string& drinkCode);  // 반환형 변경
-    void attachPrePay(const std::string& prepayCode); // 파라미터 변경
+    void createOrder(const std::string& drinkCode);  
+    void attachPrePay(const std::string& prepayCode); 
 
 private:
     std::string status;

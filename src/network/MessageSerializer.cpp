@@ -7,7 +7,6 @@ using namespace network;
 
 std::string MessageSerializer::toJson(const Message& msg)
 {
-    // TODO: RapidJSON 按眉 积己 & 流纺拳
     rapidjson::StringBuffer buf;
     rapidjson::Writer<rapidjson::StringBuffer> w(buf);
     w.StartObject();
@@ -25,7 +24,6 @@ std::string MessageSerializer::toJson(const Message& msg)
 
 Message MessageSerializer::fromJson(const std::string& s)
 {
-    // TODO: Robust 颇教 + 抗寇
     rapidjson::Document d; d.Parse(s.c_str());
     Message m;
     m.msg_type = static_cast<Message::Type>(d["msg_type"].GetInt());

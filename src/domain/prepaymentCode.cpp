@@ -1,6 +1,6 @@
 #include "domain/prepaymentCode.h"
 
-#include <cstdlib>     // rand, srand
+#include <cstdlib>     
 #include <ctime>       // time
 #include <sstream>     // stringstream
 #include<string>
@@ -10,12 +10,11 @@
 using namespace domain;
 
 PrepaymentCode::PrepaymentCode() {
-    code = rand();         // 5?ë¦? ?œ?¤ ì½”ë“œ ?ƒ?„±
-    status = "Unused";     // ê¸°ë³¸ ?ƒ?ƒœ
+    code = rand();         
+    status = "Unused";    
     
 }
 
-// ?œ?¤ 5?ë¦? ë¬¸ì?—´ ?ƒ?„± ?•¨?ˆ˜
 std::string PrepaymentCode::generate() {
     static const char charset[] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -31,13 +30,12 @@ std::string PrepaymentCode::generate() {
 }
 
 
-//?¸ì¦ì½”?“œ ?˜•?‹ ê²??‚¬
 bool PrepaymentCode::isUsable( const std::string& code) {
     if (code.length() != 5) return false;
 
     for (char c : code) {
-        if (!std::isalnum(c)) return false;               // ?ˆ«??‚˜ ë¬¸ì ?•„?‹Œê²½ìš°,
-        if (std::isalpha(c) && !std::isupper(c)) return false;      // ?•Œ?ŒŒë²³ì¼ ?•Œ, ?†Œë¬¸ì?¼ ê²½ìš° false
+        if (!std::isalnum(c)) return false;              
+        if (std::isalpha(c) && !std::isupper(c)) return false;    
     }
 
     return true;
@@ -45,7 +43,6 @@ bool PrepaymentCode::isUsable( const std::string& code) {
 
 
 
-// ?“¤?–´?˜¨ ì£¼ë¬¸ ?œ?¤?ƒ?„±?œ ?¸ì¦ì½”?“œ prepaymentcode??? ?—°ê²?
 PrepaymentCode PrepaymentCode::hold(Order order) {
     heldOrder = order;
     return *this;
@@ -54,7 +51,6 @@ PrepaymentCode PrepaymentCode::hold(Order order) {
 
 
 
-//?‚¬?š©?¨?œ¼ë¡? ë³?ê²?
 void PrepaymentCode::setStatus( std::string& newStatus){
     if (newStatus == "Used")    status = newStatus;
 }

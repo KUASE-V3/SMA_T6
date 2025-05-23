@@ -13,17 +13,17 @@ MessageSender::MessageSender(boost::asio::io_context& io,
     : io_context_(io), endpoints_(endpoints), id_map_(id_map) {}
 
 void MessageSender::send(const Message& msg) {
-    if (msg.dst_id == "0") { //브로드캐스트인 경우 현재 가지고 있는 endpoint 목록으로 전송
+    if (msg.dst_id == "0") { // broadcast
         for (auto& ep : endpoints_) {
             try {
                 sendOne(ep, msg);
             } catch (const std::exception& e) {
-                // 연결 실패시 무시하고 넘어간다
+                // log error
                 std::cerr << "[Sender] warning: failed to send to "
                           << ep << ": " << e.what() << "\n";
             }
         }
-    } else { // 특정 ID로 전송하는 경우
+    } else { // unicast
         auto it = id_map_.find(msg.dst_id);
         if (it != id_map_.end()) {
             try {

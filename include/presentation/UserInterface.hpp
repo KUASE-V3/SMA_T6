@@ -17,7 +17,6 @@ public:
     bool promptPrepayConsent();
 
 
-    // ?º UC7: ?Œë£? ë°°ì¶œ ë©”ì‹œì§?
     void dispense(const std::string& drinkCode);
 };
 

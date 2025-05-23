@@ -26,7 +26,6 @@ namespace application {
 class MessageService {
 
 public:
-    /* 타임아웃 / 응답 최대치 (임시 상수) */
     static inline constexpr int kBroadcastTimeoutSec = 30;
     static inline constexpr int kBroadcastRespMax    = 7;
     static inline constexpr int kValidTimeoutSec     = 10;

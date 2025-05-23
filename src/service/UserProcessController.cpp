@@ -50,11 +50,11 @@ void UserProcessController::handlePrepayCode() {
         bool isValid = prepaymentService.isValid(code);
 
         if (isValid) {
-            cout << "[UC14] ?��증코?�� ?��?��?�� �??�� ?���?" << endl;
-            cout << "[UC7] ?���? 배출 ?���?" << endl;
-            cout << "[UC14] ?��?�� 코드 �?�? ?���? ?�� changeStatusCode(" << code << ")" << endl;
+            cout << "UserProcessController [UC14]" << endl;
+            cout << "UserProcessController [UC7]" << endl;
+            cout << "UserProcessController [UC14] changeStatusCode(" << code << ")" << endl;
         } else {
-            string err = "?��?��?���? ?��??? ?��증코?��?��?��?��.";
+            string err = "UserProcessController.Error";
             errorService.logError(err);
             ui.show_error_message(err);
             ui.display_Error(err);
@@ -69,7 +69,7 @@ void UserProcessController::handlePrepayCode() {
 
 void UserProcessController::handleDrinkSelection() {
     string drinkName;
-    cout << "?��료수�? ?��?��?��?��?��: ";
+    cout << "UserProcessController.handleDrinkSelection" << endl;
     cin >> drinkName;
 
     try {
@@ -93,7 +93,7 @@ void UserProcessController::handleDrinkSelection() {
                     }
                     return;
                 } else {
-                    string err = "?��고�?? �?족합?��?��.";
+                    string err = "UserProcessController.handleDrinkSelection: error";
                     errorService.logError(err);
                     ui.show_error_message(err);
                     ui.display_Error(err);
@@ -103,7 +103,7 @@ void UserProcessController::handleDrinkSelection() {
         }
 
         if (!found) {
-            string err = "?��?�� ?��료�?? 찾을 ?�� ?��?��?��?��.";
+            string err = "cannot find drink";
             errorService.logError(err);
             ui.show_error_message(err);
             ui.display_Error(err);
