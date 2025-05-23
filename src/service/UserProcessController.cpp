@@ -24,11 +24,11 @@ void UserProcessController::handleMenu() {
 
 void UserProcessController::handlePayment(const string& cardInfo, Order& order) {
     try {
-        string response = "Approve";  // 결제 ?��?�� �??��
+        string response = "Approve";  
 
         if (response == "Approve") {
             orderService.approve(order.vmId(), true); // UC5
-            ui.displayMessage("결제 ?���?: " + order.drink().getName());
+            ui.displayMessage("결제 승인: " + order.drink().getName());
         } else {
             orderService.approve(order.vmId(), false); // UC6
             ui.displayMessage("결제 거절: " + order.drink().getName());
@@ -83,11 +83,11 @@ void UserProcessController::handleDrinkSelection() {
 
                 bool valid = inventoryService.getSaleValid(drink.getDrink().getCode());
                 if (valid) {
-                    Order order("T1", drink.getDrink());  // ?��?���? ID?�� "T1" �??��
+                    Order order("T1", drink.getDrink());  
 
                     if (ui.promptPrepayConsent()) {
                         string cardInfo = ui.promptCardInfo();
-                        handlePayment(cardInfo, order);  // ?��메인 객체 ?��?��
+                        handlePayment(cardInfo, order); 
                     } else {
                         handleMenu();
                     }

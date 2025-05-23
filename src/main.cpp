@@ -2,7 +2,6 @@
 #include <iostream>
 
 int main() {
-    std::cout << "? Smart Vending Machine System Starting...\n";
 
     // Initialize the UserProcessController
     UserProcessController controller;
@@ -22,9 +21,6 @@ int main() {
         switch (choice) {
             case 1:
                 controller.handleMenu(); // UC1
-                break;
-            case 2:
-                controller.handleDrinkSelection(); // UC2~UC6
                 break;
             case 3:
                 controller.handlePrepayCode(); // UC14

@@ -4,19 +4,19 @@
 #include <string>
 namespace service {
 std::vector<std::pair<std::string, int>> InventoryService::CallInventorySer() {
-    return {};  // ?ž„?‹œ ë°˜í™˜
+    return {};  
 }
 
 bool InventoryService::getSaleValid(const std::string& drink) {
-    return true;  // ?ž„?‹œ ë°˜í™˜
+    return true; 
 }
 
 std::string InventoryService::reduceDrink(const std::string& drink) {
-    return drink;  // ?ž„?‹œ ë°˜í™˜
+    return drink;
 }
 
 bool InventoryService::validOVMStock(const std::string& drinkName) {
-    return true;  // ?ž„?‹œ ë°˜í™˜
+    return true;  
 }
 
 
