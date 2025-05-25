@@ -29,11 +29,9 @@ void UserProcessController::handlePayment(const bool& isPrepay) {
         network::PaymentCallbackReceiver receiver;
     
 
-        receiver.simulatePrepayment([isPrepay,this](bool success) {                                 //UC4 callReceiver()
+        receiver.simulatePrepayment([isPrepay,this](bool success) {
              // 지금 문서상으로는 결제의 종류를 가져올 수는 있지만 어떤 종류의 결제인지는 알 수 없음 리팩토링 필요 
              // 분기를 바깥에서 처리하고 이 함수에서는 결제 결과만 처리해야함 
-
-
                 if (success) {
                     std::cout << "결제가 승인되었습니다. -> UC5" << std::endl;
                     if(true){// 결제 성공 후 처리
@@ -63,8 +61,9 @@ void UserProcessController::handlePayment(const bool& isPrepay) {
                         //결제 후 음료 배출
                     }
                 } else {
-                    std::cout << "결제가 거절되었습니다. -> UC6" << std::endl;
+                    std::cout << "UC6" << std::endl;
                     // 결제 실패 후 처리
+                    UserInterface::displayMessage("결제가 거절되었습니다.");
                 }
             }
         );
@@ -126,7 +125,7 @@ void UserProcessController::handleDrinkSelection() {
         // 여기서 cardInfo를 사용한 추가 처리 가능
 
     } else {    //UC 8 브로드캐스트 조회
-        std::cout << "유효하지 않음. -> UC8 " << std::endl;
+        std::cout << "유효하지 않음. " << std::endl;
     }
 
 /*

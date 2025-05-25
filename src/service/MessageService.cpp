@@ -143,7 +143,7 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
             service::PrepaymentService prepaySvc;
             prepaySvc.saveCode(order); //������ �ڵ� �����ϴ� �޼ҵ� ȣ��(�����ڵ� ����)
             sender_.send(resp); 
-            invSvc_.ReqreduceDrink(order.drink().getCode()); 
+            invSvc_.ReqReduceDrink(order.drink().getCode()); 
         }
         catch(const std::exception& e){
             errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());
