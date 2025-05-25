@@ -37,7 +37,7 @@ void UserInterface::promptCardInfo() {
 
 std::string UserInterface::promptPrepayCode() {
     std::string code;
-    std::cout << "�씤利앹퐫�뱶瑜� �엯�젰�븯�꽭�슂: ";
+    std::cout << "선결제 코드를 입력하세요: ";
     std::cin >> code;
     return code;
 }
