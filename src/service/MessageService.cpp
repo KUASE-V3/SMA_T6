@@ -11,17 +11,17 @@
 
 
 
-/*  ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ Áö¿ª-½ºÄÚÇÁ Àü¿ª (ÀÓ½Ã) ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
-static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1Â÷ ¶§´Â ±×³É º¯¼ö »ç¿ë(º»ÀÎ ÀÚÆÇ±âÀÇ Á¤º¸¸¦ ÀúÀåÇÏ´Â ·¹Æ÷ÁöÅä¸® ¹®¼­»ó ±¸Çö ¾ÈÇÔ)  
+/*  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ó½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)  
 using service::MessageService;
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ Á¤Àû helper ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ helper ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 std::string MessageService::myId()            { return vm.getId();      }
 std::pair<int,int> MessageService::myCoord()  { return vm.getLocation();}
 
 
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ ctor ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ctor ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 MessageService::MessageService(network::MessageSender&              sender,
                                network::MessageReceiver&            receiver,
                                const persistence::OvmAddressRepository& repo,
@@ -45,16 +45,16 @@ MessageService::MessageService(network::MessageSender&              sender,
     receiver_.subscribe(T::RESP_PREPAY, [this](auto&m){ handleRespPrepay(m); });
 }
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ UC-8 : ºê·ÎµåÄ³½ºÆ® ¼Û½Å ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UC-8 : ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ® ï¿½Û½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void MessageService::broadcastStock(const domain::Drink& drink)
 {
     network::Message req;
     req.msg_type = network::Message::Type::REQ_STOCK;
     req.src_id   = myId();
-    req.dst_id   = "0";               // broadcast±â ¶§¹®¿¡ 0À¸·Î ¼³Á¤
+    req.dst_id   = "0";               // broadcastï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     req.msg_content = {
         {"item_code", drink.getCode()},
-        {"item_num",  "01"} // 1ÁÖ¹® 1°¹¼ö °íÁ¤
+        {"item_num",  "01"} // 1ï¿½Ö¹ï¿½ 1ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     };
 
     try { sender_.send(req); }
@@ -63,7 +63,7 @@ void MessageService::broadcastStock(const domain::Drink& drink)
     }
 }
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ UC-16 : REQ_PREPAY ¼Û½Å ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UC-16 : REQ_PREPAY ï¿½Û½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void MessageService::sendPrePayReq(const domain::Order& order)
 {
     network::Message msg;
@@ -79,7 +79,7 @@ void MessageService::sendPrePayReq(const domain::Order& order)
     try {
         sender_.send(msg);
 
-        /* pending µî·Ï & watchdog ½ÃÀÛ */
+        /* pending ï¿½ï¿½ï¿½ & watchdog ï¿½ï¿½ï¿½ï¿½ */
         pending_.emplace(PendingPrepay{order});
         startPrepayTimer();
     }
@@ -88,18 +88,18 @@ void MessageService::sendPrePayReq(const domain::Order& order)
     }
 }
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ Å¸ÀÌ¸Ó helpers ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
-void MessageService::startPrepayTimer() // ¸ðµç ¿äÃ»Àº 30ÃÊ ÀÌ³»¿¡ ÀÀ´äÀÌ ¿Í¾ßÇÔ
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ì¸ï¿½ helpers ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+void MessageService::startPrepayTimer() // ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ 30ï¿½ï¿½ ï¿½Ì³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Í¾ï¿½ï¿½ï¿½
 {
     if (pending_ && pending_->timer_future.valid())
-        cancelPrepayTimer();   // ±âÁ¸ Å¸ÀÌ¸Ó ÀÖÀ¸¸é Á¦°Å
+        cancelPrepayTimer();   // ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
     pending_->timer_future = std::async(std::launch::async, [this]{
         std::this_thread::sleep_for(std::chrono::seconds(30));
 
-        if (pending_) {                 // 30s ÀÌÈÄ¿¡µµ ÀÀ´ä X
-            errSvc_.logError("PREPAY timeout (30s)"); //¿¡·¯¹ß»ý
+        if (pending_) {                 // 30s ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ X
+            errSvc_.logError("PREPAY timeout (30s)"); //ï¿½ï¿½ï¿½ï¿½ï¿½ß»ï¿½
             pending_.reset();
         }
     });
@@ -108,27 +108,27 @@ void MessageService::startPrepayTimer() // ¸ðµç ¿äÃ»Àº 30ÃÊ ÀÌ³»¿¡ ÀÀ´äÀÌ ¿Í¾ßÇÔ
 void MessageService::cancelPrepayTimer()
 {
     if (pending_ && pending_->timer_future.valid())
-        pending_->timer_future.wait_for(std::chrono::seconds(0));   // Áï½Ã join
+        pending_->timer_future.wait_for(std::chrono::seconds(0));   // ï¿½ï¿½ï¿½ join
 }
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ UC-15 : REQ_PREPAY ¼ö½Å ÈÄ ÀÀ´äÇÚµé·¯ ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UC-15 : REQ_PREPAY ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Úµé·¯ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void MessageService::respondPrepayReq(const domain::Order& order) //
 {
 
         service::PrepaymentService prepaySvc;
-        prepaySvc.saveCode(order); //¼±°áÁ¦ ÄÚµå ÀúÀåÇÏ´Â ¸Þ¼Òµå È£Ãâ(ÀÎÁõÄÚµå ÀúÀå)
+        prepaySvc.saveCode(order); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµï¿½ È£ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½)
         
         
 
-    /* 1. ¼±°áÁ¦ ÄÚµå °ËÁõ */
+    /* 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ */
     
-    if(!prepaySvc_.isValid(order.certCode())){ //ÀÇµµ´Â ¹ß±ÞµÈ ÄÚµåÀÎÁö È®ÀÎÇÏ°í ÀúÀåÇÏ´Â °ÍÀÌ¾úÀ¸³ª PrepaymentService¿¡¼­ ÀÌ¸¦ À§ÇÑ ÄÚµå°¡ ¾ø¾î¼­ À¯È¿¼º °Ë»ç¸¸ ÁøÇà
+    if(!prepaySvc_.isValid(order.certCode())){ //ï¿½Çµï¿½ï¿½ï¿½ ï¿½ß±Þµï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ï¿½ï¿½ PrepaymentServiceï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå°¡ ï¿½ï¿½ï¿½î¼­ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ë»ç¸¸ ï¿½ï¿½ï¿½ï¿½
         errSvc_.logError("respondPrepayReq: invalid code");
         return;
     }
 
-    /*  3. Àç°í È®º¸ ¼º°ø, ½ÇÆÐ¿¡ µû¶ó¼­ ÀÀ´ä */
-    if(invSvc_.getSaleValid(order.drink().getCode())){ // Àç°í°¡ ÀÖÀ» ¶§ °¡´ÉÇÑ °æ¿ì T¸¦ º¸³¿
+    /*  3. ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½Ð¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+    if(invSvc_.getSaleValid(order.drink().getCode())){ // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Tï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         network::Message resp;
         resp.msg_type = network::Message::Type::RESP_PREPAY;
         resp.src_id   = myId();
@@ -136,19 +136,19 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
         resp.msg_content = {
         {"availability","T"},
         {"item_num",    std::to_string(order.quantity())},
-        {"item_code", order.drink().getCode()} //Ç¥ Çü½Ä µû¶ó¼­ ÀÛ¼º  //¸Þ½ÃÁö ¸¸µç´Ù
+        {"item_code", order.drink().getCode()} //Ç¥ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Û¼ï¿½  //ï¿½Þ½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
         };
 
-        try { //ÀÎÁõÄÚµå ¹× À½·áÁ¤º¸ ÀúÀåÇÏ°í, ¸Þ½ÃÁö º¸³»°í, Àç°í °¨¼Ò
+        try { //ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½, ï¿½Þ½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             service::PrepaymentService prepaySvc;
-            prepaySvc.saveCode(order); //¼±°áÁ¦ ÄÚµå ÀúÀåÇÏ´Â ¸Þ¼Òµå È£Ãâ(ÀÎÁõÄÚµå ÀúÀå)
+            prepaySvc.saveCode(order); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµï¿½ È£ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½)
             sender_.send(resp); 
-            invSvc_.reduceDrink(order.drink().getCode()); 
+            invSvc_.ReqreduceDrink(order.drink().getCode()); 
         }
         catch(const std::exception& e){
             errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());
         }
-    }else{ //Àç°í°¡ ¾øÀ» ¶§ ºÒ°¡´ÉÇÑ °æ¿ì ¸Þ½ÃÁö º¸³½´Ù. 
+    }else{ //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. 
         network::Message resp;
         resp.msg_type = network::Message::Type::RESP_PREPAY;
         resp.src_id   = myId();
@@ -156,7 +156,7 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
         resp.msg_content = {
         {"availability","F"},
         {"item_num",    std::to_string(order.quantity())},
-        {"item_code", order.drink().getCode()} //Ç¥ Çü½Ä µû¶ó¼­ ÀÛ¼º 
+        {"item_code", order.drink().getCode()} //Ç¥ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Û¼ï¿½ 
     };
 
         try { sender_.send(resp); }
@@ -168,10 +168,10 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
     
 }
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ ÇÚµé·¯µé ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµé·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ ºê·ÎµåÄ³½ºÆ® ¹Þ¾ÒÀ» ¶§ µ¹·ÁÁÖ´Â ÇÚµé·¯  ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ® ï¿½Þ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Úµé·¯  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void MessageService::handleReqStock(const network::Message& msg)
 {
     bool empty = !invSvc_.getSaleValid(msg.msg_content.at("item_code"));
@@ -179,10 +179,10 @@ void MessageService::handleReqStock(const network::Message& msg)
     network::Message resp;
     resp.msg_type = network::Message::Type::RESP_STOCK;
     resp.src_id   = myId();
-    resp.dst_id   = msg.src_id; //ºê·ÎµåÄ³½ºÆ® ¹Þ¾ÒÀ» ¶§ µ¹·ÁÁÖ´Â ÇÚµé·¯ 
+    resp.dst_id   = msg.src_id; //ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ® ï¿½Þ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Úµé·¯ 
     resp.msg_content = {
         {"item_code", msg.msg_content.at("item_code")},
-        {"item_num",  empty ? "0" : "1"}, //TODO : Áö±Ý ¿øÇÏ´Â À½·áÀÇ Àç°í ÀÜ·®À» È®ÀÎÇÏ´Â ¸Þ¼Òµå°¡ ¾øÀ½ ºñ¾îÀÖ´ÂÁö¸¸ ¾Ë ¼ö ÀÖÀ½.
+        {"item_num",  empty ? "0" : "1"}, //TODO : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ü·ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµå°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
     };
     try { sender_.send(resp); }
     catch(const std::exception& e){
@@ -190,7 +190,7 @@ void MessageService::handleReqStock(const network::Message& msg)
     }
 }
 
-/* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ ºê·ÎµåÄ³½ºÆ® ÀÀ´ä ¹Þ¾ÒÀ» ¶§ ¸ð¾Æ¼­ distanceService¿¡ ÁÖ´Â ÇÚµé·¯  ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ distanceServiceï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Úµé·¯  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 void MessageService::handleRespStock(const network::Message& msg)
 {
     std::lock_guard lg(resp_mtx_);
@@ -201,23 +201,23 @@ void MessageService::handleRespStock(const network::Message& msg)
 }
 
 
-//UC 15 ÇÚµé·¯ÀÔ´Ï´Ù
+//UC 15 ï¿½Úµé·¯ï¿½Ô´Ï´ï¿½
 void MessageService::handleReqPrepay(const network::Message& msg)
 {
-    /*  msg ¡æ Order ÆÄ½Ì ÈÄ respondPrepayReq(order) È£Ãâ */
+    /*  msg ï¿½ï¿½ Order ï¿½Ä½ï¿½ ï¿½ï¿½ respondPrepayReq(order) È£ï¿½ï¿½ */
     try {
-        // ¸Þ¼¼Áö ¿À¸é order °´Ã¼ »ý¼ºÇÏ°í ÄÚµå ºÙ¿©¼­ ÀúÀå 
-        domain::Drink d{"", 0, msg.msg_content.at("item_code")};    // µå¸µÅ© ÇÏ³ª ¸¸µç´Ù
+        // ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ order ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Úµï¿½ ï¿½Ù¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+        domain::Drink d{"", 0, msg.msg_content.at("item_code")};    // ï¿½å¸µÅ© ï¿½Ï³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
         domain::Order order{
-            msg.src_id,     // vmId  (º¸³½ ÂÊ)
+            msg.src_id,     // vmId  (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
             d,
             1,
             msg.msg_content.at("cert_code"),
             "Pending"
-        };//order¸¸µé¾úÀ½
+        };//orderï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
-        //UC15À¸·Î ³Ñ¾î°¨ 
+        //UC15ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾î°¨ 
         respondPrepayReq(order);
     }
     catch (const std::exception& e) {
@@ -227,7 +227,7 @@ void MessageService::handleReqPrepay(const network::Message& msg)
 
 void MessageService::handleRespPrepay(const network::Message& msg)
 {
-    /* pending_ ÀÌ ÀÖÀ¸¸é ³» ¿äÃ»¿¡ ´ëÇÑ ÀÀ´äÀÓÀ» ¾Ë°í ÀÌ°Í¸¸ ¿äÃ» -> µ¿½Ã¿¡ ÇÑ¸íÀÇ »ç¿ëÀÚ°¡ ÀÚÆÇ±â¸¦ »ç¿ëÇÑ´Ù°í °¡Á¤ÇÏ±â ¶§¹®¿¡ µ¿½Ã ´ë±â°¡ ¾øÀ½(ºê·ÎµåÄ³½ºÆ®Á¦¿Ü)*/
+    /* pending_ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë°ï¿½ ï¿½Ì°Í¸ï¿½ ï¿½ï¿½Ã» -> ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½Ñ¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½Ç±â¸¦ ï¿½ï¿½ï¿½ï¿½Ñ´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½)*/
     if (!pending_) {
         errSvc_.logError("unexpected RESP_PREPAY (no pending)");
         return;
@@ -237,7 +237,7 @@ void MessageService::handleRespPrepay(const network::Message& msg)
 
     const bool ok = (msg.msg_content.at("availability") == "T");
     if (ok) {
-        // TODO: Controller.onPrepayApproved(pending_->order); -> ÄÁÆ®·Ñ·¯ »ó¿¡¼­ ±¸Çö ¾ÈµÊ
+        // TODO: Controller.onPrepayApproved(pending_->order); -> ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ ï¿½ó¿¡¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Èµï¿½
         std::cout << "[MessageService] PREPAY approved\n";
     } else {
         errSvc_.logError("PREPAY declined (availability == F)");

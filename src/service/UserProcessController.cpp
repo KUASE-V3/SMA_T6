@@ -29,22 +29,28 @@ void UserProcessController::handlePayment(const bool& isPrepay) {
         network::PaymentCallbackReceiver receiver;
     
 
-        receiver.simulatePrepayment([isPrepay,this](bool success) {
+        receiver.simulatePrepayment([isPrepay,this](bool success) {                                 //UC4 callReceiver()
              // 지금 문서상으로는 결제의 종류를 가져올 수는 있지만 어떤 종류의 결제인지는 알 수 없음 리팩토링 필요 
              // 분기를 바깥에서 처리하고 이 함수에서는 결제 결과만 처리해야함 
+
+
                 if (success) {
                     std::cout << "결제가 승인되었습니다. -> UC5" << std::endl;
                     if(true){// 결제 성공 후 처리
+       
+
+
+
                         //선결제인경우
                         //UC12번  + 16번 
                         std::cout << "재고 확보 요청을 전송합니다 -> UC16" << std::endl;
     
                         std::cout << "인증코드를 발급합니다. -> UC12" << std::endl;
-                        std::string code = prepayFlow_UC12();
+                        std::string code = prepayFlow_UC12();           //인증코드 발급 uc12를 통해 code에 인증코드 값 저장
                         OrderService orderService;
-                        std::string temp_drink_id = "001"; // TODO : 임시로 넣은 값, 실제로는 선택한 음료의 ID를 가져와야 함
+                        std::string temp_drink_id = "001"; // TODO : 임시로 넣은 값, 실제로는 선택한 음료의 ID를 가져와야 함, order의 vmid는 어떻게 가져올건지?
                         domain::Order order = orderService.createOrder(temp_drink_id,code);
-                         // TODO : 지금 여기서 생성하는 것이 아닌 메인 플로우를 담당하는 함수가 필요할 듯 함 여기는 Drink를 가져오는 곳이 아님 
+                         // TODO : 지금 여기서 생성하는 것이 아닌 메인 플로우를 담당하는 함수가 필요할 듯 함-> prepayflow_uc12 / 여기는 Drink를 가져오는 곳이 아님 
                         //위 코드 문제점 : 도착지가 상대방 vm이 아닌 나한테 옴, 인수 갯수 문서랑 맞지 않음
                         
                         //TODO : UC16 중간 
@@ -115,7 +121,7 @@ void UserProcessController::handleDrinkSelection() {
 
     bool valid = inventoryService.getSaleValid(drinkName);
 
-    if (valid) {    //UC3
+    if (valid) {    //UC4
         ui.promptCardInfo();         //카드 정보를 cardInfo 변수에 저장
         // 여기서 cardInfo를 사용한 추가 처리 가능
 
@@ -205,7 +211,7 @@ std::string UserProcessController::prepayFlow_UC12(){
     ui.display_SomeText(prepayCode); // 발급된 선결제 코드 표시
 
     // 결제 요청
-    handlePayment(true); // 선결제 처리
+
 
     return prepayCode;
 }
