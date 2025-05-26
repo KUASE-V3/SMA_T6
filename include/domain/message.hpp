@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 
 #include <string>
 #include <unordered_map>
 namespace network { 
-//¸Þ½ÃÁö ±¸Á¶Ã¼ Á¤ÀÇ 
+//ï¿½Þ½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ 
 struct Message{
     enum class Type{
         REQ_STOCK = 0,
@@ -12,10 +12,10 @@ struct Message{
         RESP_PREPAY = 3,
     };
 
-    Type msg_type{}; // ¸Þ½ÃÁö Å¸ÀÔ ±âº»°ª ¼³Á¤(»ý¼º½Ã µû·Î ¼³Á¤ÇØ¾ßÇÔ)
+    Type msg_type{}; // ï¿½Þ½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½âº»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½)
     std::string src_id = "T5"; 
-    std::string dst_id = "0"; // 0 : ºê·ÎµåÄ³½ºÆ®
-    std::unordered_map<std::string, std::string> msg_content; // ¸Þ½ÃÁö Å¸ÀÔ¿¡ µû¸¥ ³»¿ë
+    std::string dst_id = "0"; // 0 : ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ®
+    std::unordered_map<std::string, std::string> msg_content; // ï¿½Þ½ï¿½ï¿½ï¿½ Å¸ï¿½Ô¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 };
 }

@@ -1,4 +1,4 @@
-#ifndef PREPAYMENTCODE_H
+﻿#ifndef PREPAYMENTCODE_H
 #define PREPAYMENTCODE_H
 
 #include <string>

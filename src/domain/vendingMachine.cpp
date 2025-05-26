@@ -1,4 +1,4 @@
-
+﻿
 #include "domain/vendingMachine.h"
 #include <cmath>
 

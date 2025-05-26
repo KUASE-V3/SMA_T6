@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 
 #include "network/message.hpp"
@@ -26,7 +26,7 @@ namespace service {
 class MessageService {
 
 public:
-    /* Å¸ÀÓ¾Æ¿ô / ÀÀ´ä ÃÖ´ëÄ¡ (ÀÓ½Ã »ó¼ö) */
+    /* Å¸ï¿½Ó¾Æ¿ï¿½ / ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½Ä¡ (ï¿½Ó½ï¿½ ï¿½ï¿½ï¿½) */
     static inline constexpr int kBroadcastTimeoutSec = 30;
     static inline constexpr int kBroadcastRespMax    = 7;
     static inline constexpr int kValidTimeoutSec     = 10;
@@ -43,7 +43,7 @@ public:
     /* UC-8  */
     void broadcastStock(const domain::Drink& drink);
 
-    /* UC-16 (¼Û½ÅÃø) */
+    /* UC-16 (ï¿½Û½ï¿½ï¿½ï¿½) */
     void sendPrePayReq(const domain::Order& order);
 
     /* UC-17 */
@@ -52,7 +52,7 @@ public:
                        int qty);
 
 private:
-    /* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ internal helpers ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ internal helpers ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     static std::string           myId();
     static std::pair<int,int>    myCoord();
 
@@ -62,21 +62,21 @@ private:
     void handleReqPrepay(const network::Message& msg);
     void handleRespPrepay(const network::Message& msg);
 
-    /* ¿ÜºÎ¿¡¼­ Á÷Á¢ È£Ãâ ¾È ÇÔ */
+    /* ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ */
     void respondPrepayReq(const domain::Order& order);
     void onMessage(const network::Message&);            // (unused)
 
-    /* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ pending PREPAY 1-shot °ü¸® ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pending PREPAY 1-shot ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     struct PendingPrepay {
         domain::Order      order;
         std::future<void>  timer_future;   // 30s watchdog
     };
-    std::optional<PendingPrepay> pending_;              // option 3 : 1°Ç¸¸
+    std::optional<PendingPrepay> pending_;              // option 3 : 1ï¿½Ç¸ï¿½
 
     void startPrepayTimer();
     void cancelPrepayTimer();
 
-    /* ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ data members ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ data members ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     network::MessageSender&                sender_;
     network::MessageReceiver&              receiver_;
     const persistence::OvmAddressRepository& repo_;
@@ -85,9 +85,9 @@ private:
     service::InventoryService&             invSvc_;
     service::PrepaymentService&            prepaySvc_;
 
-    domain::inventory&                    drink_; // Àç°í Á¤º¸
+    domain::inventory&                    drink_; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    /* RESP_STOCK º´·Ä ¼öÁý¿ë */
+    /* RESP_STOCK ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     std::vector<network::Message>          resp_cache_;
     std::mutex                             resp_mtx_;
     std::condition_variable                resp_cv_;

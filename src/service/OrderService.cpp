@@ -1,4 +1,4 @@
-// OrderService.cpp
+﻿// OrderService.cpp
 // ------------------------------
 #include "service/OrderService.hpp"
 #include "domain/order.h"
@@ -12,7 +12,7 @@ void OrderService::approve(const std::string& paymentID, bool success) {
     } else {
         status = "Declined";
     }
-    std::cerr << "[?��?�� ?��?��] " << status << std::endl;
+    std::cerr << "[결제 상태]" << status << std::endl;
 }
 
 domain::Order OrderService::createOrder(const std::string& drinkcode, const std::string& precode) {

@@ -6,16 +6,16 @@ set(RAPIDJSON_INCLUDE_DIR "/home/linuxbrew/.linuxbrew/include")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(BOOST_ROOT /opt/homebrew)
-set(BOOST_INCLUDEDIR /opt/homebrew/include)
-set(BOOST_LIBRARYDIR /opt/homebrew/lib)
+# set(BOOST_ROOT /opt/homebrew)
+# set(BOOST_INCLUDEDIR /opt/homebrew/include)
+# set(BOOST_LIBRARYDIR /opt/homebrew/lib)
 
 if(UNIX)
     set(CMAKE_EXECUTABLE_SUFFIX ".out")
 endif()
 
-find_package(Threads REQUIRED 
-            Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
+find_package(Threads REQUIRED)
 
 # ───────────── Include Paths ─────────────
 include_directories(

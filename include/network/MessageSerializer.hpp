@@ -1,14 +1,14 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include "message.hpp"
 
 namespace network {
 
-/** Message <-> JSON ¹®ÀÚ¿­ Á÷·ÄÈ­ À¯Æ¿ (RapidJSON ±â¹Ý) */
+/** Message <-> JSON ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½È­ ï¿½ï¿½Æ¿ (RapidJSON ï¿½ï¿½ï¿½) */
 class MessageSerializer {
 public:
-    static std::string toJson(const Message& msg);     // TODO: ±¸Çö
-    static Message fromJson(const std::string& json);// TODO: ±¸Çö
+    static std::string toJson(const Message& msg);     // TODO: ï¿½ï¿½ï¿½ï¿½
+    static Message fromJson(const std::string& json);// TODO: ï¿½ï¿½ï¿½ï¿½
 };
 
 } // namespace network
