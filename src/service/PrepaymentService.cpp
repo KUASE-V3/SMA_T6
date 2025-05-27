@@ -6,9 +6,8 @@
 #include <iostream>
 
 namespace service {
-bool PrepaymentService::isValid(const std::string& code) {
-    std::cerr << "[선결제 코드 유효성 검사] 입력된 코드: " << code << std::endl;
-    return true;  // 임시 반환
+bool PrepaymentService::isValid(const std::string& code) {              //UC13 인증코드 입력 처리
+    return domain::PrepaymentCode::isUsable(code);
 }
 
 std::string PrepaymentService::isSueCode() {
@@ -22,8 +21,7 @@ std::string PrepaymentService::isSueCode() {
 //UC 15 선결제 요청 수신 - 인증코드 저장하는 함수
 void PrepaymentService::saveCode(const domain::Order& order) {
     domain::PrepaymentCode prepayCode;
-    persistence::PrepaymentCodeRepository prepayCodeRepo;
-    prepayCode.hold(order);
-    prepayCodeRepo.save(prepayCode);
+    prepayCode = prepayCode.hold(order);
+    persistence::PrepaymentCodeRepository::save(prepayCode);
 }
 }

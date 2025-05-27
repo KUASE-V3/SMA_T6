@@ -84,6 +84,7 @@ void UserInterface::promptCardInfo() {
 std::string UserInterface::promptPrepayCode() {
     std::string code;
     std::cout << "인증코드를 입력하세요: ";
+
     std::cin >> code;
     return code;
 }

@@ -10,6 +10,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(BOOST_INCLUDEDIR /opt/homebrew/include)
 # set(BOOST_LIBRARYDIR /opt/homebrew/lib)
 
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+
+if(Boost_FOUND)
+    message(STATUS "Boost include dirs: ${Boost_INCLUDE_DIRS}")
+    include_directories(${Boost_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "Boost not found!")
+endif()
+
+
 if(UNIX)
     set(CMAKE_EXECUTABLE_SUFFIX ".out")
 endif()

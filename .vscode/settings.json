@@ -83,5 +83,11 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "xstring": "cpp"
+        "__hash_table": "cpp",
+        "__node_handle": "cpp",
+        "ios": "cpp",
+        "print": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     }
 }

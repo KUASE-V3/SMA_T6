@@ -10,7 +10,7 @@
 using namespace domain;
 
 PrepaymentCode::PrepaymentCode() {
-    code = rand();         // 5?? ?? 코드 ??
+    code = generate();         // 5?? ?? 코드 ??
     status = "Unused";     // 기본 ??
     
 }
@@ -48,14 +48,14 @@ bool PrepaymentCode::isUsable( const std::string& code) {
 // ??? 주문 ????? ?증코? prepaymentcode??? ??
 PrepaymentCode PrepaymentCode::hold(Order order) {
     heldOrder = order;
-    return *this;
+    return *this;               //prepaymentcode 반환. 후에 레퍼지토리에 order를 붙인 code객체를 저장할 용도
 }
 
 
 
 
 //코드 사용
-void PrepaymentCode::use(std::string& code) {
+void PrepaymentCode::use(const std::string& code) {
     if (this->code == code) {
         status = "Used";
     }

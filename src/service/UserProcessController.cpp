@@ -55,6 +55,7 @@ void UserProcessController::handlePayment(const bool& isPrepay) {
                 } else {
                     std::cout << "음료를 배출합니다" << std::endl;
                     // TODO: 재고 감소 로직 추가 예정
+
                 }
 
             } else {
@@ -98,7 +99,6 @@ void UserProcessController::handlePrepayCode() {
     }
 }
 
-// ✅ 여기가 공백 있는 입력 처리 핵심!
 void UserProcessController::handleDrinkSelection() {
     std::string drinkName;
     std::cout << "음료수를 선택하세요: ";
@@ -141,5 +141,6 @@ std::string UserProcessController::prepayFlow_UC12() {
     std::string prepayCode = prepaymentService.isSueCode();
     ui.display_SomeText(prepayCode);
     handlePayment(true); // 선결제 처리
+
     return prepayCode;
 }

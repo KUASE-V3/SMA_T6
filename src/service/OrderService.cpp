@@ -13,13 +13,14 @@ void OrderService::approve(const std::string& paymentID, bool success) {
         status = "Declined";
     }
     std::cerr << "[결제 상태]" << status << std::endl;
+
 }
 
-domain::Order OrderService::createOrder(const std::string& drinkcode, const std::string& precode) {
-    domain::Drink drink("",0,drinkcode);
-    domain::Order order("T5", drink, 1, "Pending");
+domain::Order OrderService::createOrder(const std::string& drinkID, const std::string& precode) {
+    
 
-    order.attachPrePay(precode);
+    domain::Order order; 
+    order = order.attachPrePay(drinkID, precode);       //드링크 id와 인증코드를 붙인다 -> 선택한 drink의 drinkID는 어떻게 가져올것인가?
 
     return order; 
 }
