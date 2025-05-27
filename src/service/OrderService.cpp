@@ -12,7 +12,7 @@ void OrderService::approve(const std::string& paymentID, bool success) {
     } else {
         status = "Declined";
     }
-    std::cerr << "[?듅?씤 ?긽?깭] " << status << std::endl;
+    std::cerr << "orderservice.approve " << status << std::endl;
 }
 
 domain::Order OrderService::createOrder(const std::string& drinkcode, const std::string& precode) {

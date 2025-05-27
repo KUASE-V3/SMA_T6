@@ -63,18 +63,7 @@ void UserProcessController::handlePayment(const bool& isPrepay) {
             }
         );
 
-        /*
-        string response = "Approve";  // 결제 ?��?�� �??��
-
-        if (response == "Approve") {
-            orderService.approve(order.vmId(), true); // UC5
-            ui.displayMessage("결제 승인: " + order.drink().getName());
-        } else {
-            orderService.approve(order.vmId(), false); // UC6
-            ui.displayMessage("결제 거절: " + order.drink().getName());
-            handleMenu();
-        }
-        */ 
+       
     } catch (const exception& e) {
         string err = e.what();
         errorService.logError(err);
@@ -123,53 +112,6 @@ void UserProcessController::handleDrinkSelection() {
         std::cout << "유효하지 않음. -> UC8 " << std::endl;
     }
 
-/*
-try {
-        vector<domain::inventory> drinks = inventoryRepository::getAllDrinks();
-
-        bool found = false;
-
-        for (const auto& drink : drinks) {
-            if (drink.getDrink().getName() == drinkName) {
-                found = true;
-
-                bool valid = inventoryService.getSaleValid(drink.getDrink().getCode());
-                if (valid) {
-                    Order order("T1", drink.getDrink());  
-
-                    if (ui.promptPrepayConsent()) {
-                        string cardInfo = ui.promptCardInfo();
-                        handlePayment(cardInfo, order); 
-                    } else {
-                        handleMenu();
-                    }
-                    return;
-                } else {
-                    string err = "UserProcessController.handleDrinkSelection: error";
-                    errorService.logError(err);
-                    ui.show_error_message(err);
-                    ui.display_Error(err);
-                    return;
-                }
-            }
-        }
-
-        if (!found) {
-            string err = "cannot find drink";
-            errorService.logError(err);
-            ui.show_error_message(err);
-            ui.display_Error(err);
-        }
-
-    } catch (const exception& e) {
-        string err = e.what();
-        errorService.logError(err);
-        ui.show_error_message(err);
-        ui.display_Error(err);
-    }
-
-*/
-    
 }
 
 void UserProcessController::nofityError(const std::string& error) {
