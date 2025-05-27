@@ -1,4 +1,4 @@
-// OrderService.cpp
+﻿// OrderService.cpp
 // ------------------------------
 #include "service/OrderService.hpp"
 #include "domain/order.h"
@@ -6,8 +6,14 @@
 
 OrderService::OrderService() {}
 
-void OrderService::approve(const std::string& paymentID) {                  //개선 필요
-      
+void OrderService::approve(const std::string& paymentID, bool success) {
+    if (success) {
+        status = "Approved";
+    } else {
+        status = "Declined";
+    }
+    std::cerr << "[결제 상태]" << status << std::endl;
+
 }
 
 domain::Order OrderService::createOrder(const std::string& drinkID, const std::string& precode) {

@@ -1,4 +1,4 @@
-#include "network/MessageSender.hpp"
+ï»¿#include "network/MessageSender.hpp"
 #include "network/MessageSerializer.hpp"
 #include <boost/asio/connect.hpp>
 #include <boost/asio/write.hpp>
@@ -13,17 +13,17 @@ MessageSender::MessageSender(boost::asio::io_context& io,
     : io_context_(io), endpoints_(endpoints), id_map_(id_map) {}
 
 void MessageSender::send(const Message& msg) {
-    if (msg.dst_id == "0") { //ºê·ÎµåÄ³½ºÆ®ÀÎ °æ¿ì ÇöÀç °¡Áö°í ÀÖ´Â endpoint ¸ñ·ÏÀ¸·Î Àü¼Û
+    if (msg.dst_id == "0") { //ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ endpoint ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         for (auto& ep : endpoints_) {
             try {
                 sendOne(ep, msg);
             } catch (const std::exception& e) {
-                // ¿¬°á ½ÇÆÐ½Ã ¹«½ÃÇÏ°í ³Ñ¾î°£´Ù
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ð½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ñ¾î°£ï¿½ï¿½
                 std::cerr << "[Sender] warning: failed to send to "
                           << ep << ": " << e.what() << "\n";
             }
         }
-    } else { // Æ¯Á¤ ID·Î Àü¼ÛÇÏ´Â °æ¿ì
+    } else { // Æ¯ï¿½ï¿½ IDï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½
         auto it = id_map_.find(msg.dst_id);
         if (it != id_map_.end()) {
             try {

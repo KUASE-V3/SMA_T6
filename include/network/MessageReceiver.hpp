@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <functional>
 #include <string>
@@ -10,7 +10,7 @@
 
 
 namespace network {
-// Enum class¿¡ ´ëÇÑ ÇØ½Ã Áö¿ø
+// Enum classï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½ ï¿½ï¿½ï¿½ï¿½
 struct EnumClassHash {
     template <typename T>
     size_t operator()(T t) const noexcept {
@@ -19,8 +19,8 @@ struct EnumClassHash {
     }
 };
 
-// MessageReceiver: TCP ¼­¹ö¸¦ ¿­¾î µé¾î¿À´Â JSON ¸Þ½ÃÁö¸¦ ¼ö½Å
-// - msg_typeº° handler¸¦ µî·ÏÇÏ¿© ºÐ±â Ã³¸®
+// MessageReceiver: TCP ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ JSON ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+// - msg_typeï¿½ï¿½ handlerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ð±ï¿½ Ã³ï¿½ï¿½
 class MessageReceiver {
     friend class test_MessageReceiver_subscribe;  
 
@@ -37,7 +37,7 @@ private:
 
     boost::asio::io_context& io_context_;
     unsigned short port_;
-    boost::asio::ip::tcp::acceptor acceptor_;  // acceptor¸¦ ¸â¹ö·Î »ý¼º
+    boost::asio::ip::tcp::acceptor acceptor_;  // acceptorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     std::unordered_map<Message::Type, Handler, EnumClassHash> handlers_;
 };
 }

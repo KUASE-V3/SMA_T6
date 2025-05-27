@@ -1,4 +1,4 @@
-#ifndef USER_INTERFACE_HPP
+﻿#ifndef USER_INTERFACE_HPP
 #define USER_INTERFACE_HPP
 
 #include <vector>
@@ -16,9 +16,10 @@ public:
     std::string promptPrepayCode();
     bool promptPrepayConsent();
     void display_SomeText(const std::string& text);
+    bool isValidCardNumber(const std::string& cardNumber);
 
 
-    // ?�� UC7: ?���?? 배출 메시�??
+    // ?�� UC7: ?���?? 배출 메시�??
     void dispense(const std::string& drinkCode);
 };
 

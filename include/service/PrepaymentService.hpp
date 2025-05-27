@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include <domain/order.h>
 
@@ -6,7 +6,7 @@ namespace service {
 class PrepaymentService {
 public:
     bool isValid(const std::string& code);
-    std::string isSueCode();  // ¿ÀÅ¸ÁÖÀÇ: issueCode °¡ ¾Æ´Ï¶ó isSueCode ·Î µÅÀÖÀ½
+    std::string isSueCode();  // ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½: issueCode ï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ isSueCode ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     void saveCode(const domain::Order& order);
     
 };

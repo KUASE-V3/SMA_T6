@@ -1,4 +1,4 @@
-// DistanceService.hpp
+﻿// DistanceService.hpp
 // ------------------------------
 #ifndef DISTANCE_SERVICE_HPP
 #define DISTANCE_SERVICE_HPP

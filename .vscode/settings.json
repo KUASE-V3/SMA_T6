@@ -82,6 +82,7 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeindex": "cpp",
+        "xstring": "cpp"
         "__hash_table": "cpp",
         "__node_handle": "cpp",
         "ios": "cpp",
