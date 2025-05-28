@@ -1,86 +1,69 @@
 #pragma once
 
 #include <string>
-#include <map> // ErrorInfo의 contextDetails 용도 (선택적)
-// #include <chrono> // timestamp는 현재 제외
+#include <vector>
+#include <functional>
+#include <unordered_map>
+// --- 전체 정의가 필요한 헤더 파일들을 먼저 포함 ---
+#include "network/message.hpp"         // network::Message 및 network::Message::Type 정의
+#include "network/MessageSender.hpp"   // network::MessageSender 정의
+#include "network/MessageReceiver.hpp" // network::MessageReceiver 및 network::EnumClassHash 정의
+#include "service/ErrorService.hpp"    // service::ErrorService 정의
+
+// --- 전방 선언 (이제 최소화되거나 필요 없을 수 있음) ---
+// 위에서 이미 전체 헤더를 포함했으므로, 아래 전방 선언들은 대부분 불필요합니다.
+// namespace network {
+//     // struct Message; // 이미 위에서 message.hpp 포함
+//     // class MessageSender; // 이미 위에서 MessageSender.hpp 포함
+//     // class MessageReceiver; // 이미 위에서 MessageReceiver.hpp 포함
+// }
+// namespace service {
+//     // class ErrorService; // 이미 위에서 ErrorService.hpp 포함
+// }
+
 
 namespace service {
 
-// 발생 가능한 구체적인 오류 유형들 (지속적으로 업데이트)
-enum class ErrorType {
-    // User Input/Interaction Errors
-    INVALID_MENU_CHOICE,
-    INVALID_DRINK_CODE_FORMAT, // 형식 오류 (예: 숫자가 아닌 값)
-    USER_RESPONSE_TIMEOUT,
+// 콜백 함수 타입 정의 (이제 network::Message가 완전한 타입임)
+using GenericMessageHandler = std::function<void(const network::Message& message)>;
 
-    // Inventory/Stock Errors
-    DRINK_NOT_FOUND,        // 입력한 음료 코드가 전체 20종에 없음
-    DRINK_OUT_OF_STOCK,     // 현재 자판기 재고 없음
-    INSUFFICIENT_STOCK_FOR_DECREASE, // 재고 차감 시도 시 실제 재고 부족 (내부 오류 가능성)
-
-    // Payment Errors
-    PAYMENT_PROCESSING_FAILED,
-    PAYMENT_TIMEOUT,
-    PAYMENT_SYSTEM_UNAVAILABLE, // 외부 결제 시스템 연동 실패
-
-    // Prepayment/AuthCode Errors
-    AUTH_CODE_INVALID_FORMAT,   // 입력된 인증 코드 형식 오류
-    AUTH_CODE_NOT_FOUND,        // 존재하지 않는 인증 코드
-    AUTH_CODE_ALREADY_USED,     // 이미 사용된 인증 코드
-    AUTH_CODE_GENERATION_FAILED,// 인증 코드 생성 실패 (내부 오류)
-    STOCK_RESERVATION_FAILED_AT_OTHER_VM, // 다른 자판기 선결제 재고 확보 실패 응답
-
-    // Network/Message Errors
-    NETWORK_COMMUNICATION_ERROR,// 일반 통신 오류
-    MESSAGE_SEND_FAILED,
-    MESSAGE_RECEIVE_FAILED,
-    INVALID_MESSAGE_FORMAT,     // 수신 메시지 파싱/형식 오류
-    RESPONSE_TIMEOUT_FROM_OTHER_VM, // 다른 자판기 응답 시간 초과
-
-    // System/Internal Errors
-    REPOSITORY_ACCESS_ERROR,    // 레포지토리 접근 중 오류 (파일 I/O 등)
-    UNEXPECTED_SYSTEM_ERROR,    // 예상치 못한 내부 시스템 오류
-    INITIALIZATION_FAILED       // 시스템 초기화 실패
-};
-
-// 오류 처리 후 UserProcessController가 취해야 할 행동 수준
-enum class ErrorResolutionLevel {
-    RETRY_INPUT,              // 사용자에게 입력 재시도 요청 (현재 상태 유지)
-    RETURN_TO_PREVIOUS_STEP,  // 이전 논리적 단계로 돌아가기
-    RETURN_TO_MAIN_MENU,      // 메인 메뉴(음료 목록 표시)로 돌아가기
-    NOTIFY_AND_STAY,          // 사용자에게 알리고 현재 상태 유지 (예: 단순 정보 메시지)
-    SYSTEM_FATAL_ERROR        // 복구 불가능, 시스템 중단 또는 안전 모드 진입
-};
-
-// ErrorService에 전달될 오류 정보 및 처리 결과
-struct ErrorInfo {
-    ErrorType type;
-    std::string userFriendlyMessage; // 사용자에게 보여줄 메시지
-    ErrorResolutionLevel resolutionLevel;
-    // std::map<std::string, std::string> details; // (선택적) 오류 상세 정보
-
-    ErrorInfo(ErrorType t, std::string msg, ErrorResolutionLevel level)
-        : type(t), userFriendlyMessage(std::move(msg)), resolutionLevel(level) {}
-};
-
-class ErrorService {
+class MessageService {
 public:
-    ErrorService() = default;
-    // ~ErrorService() = default; // 상속 고려 안 함
+    MessageService(
+        network::MessageSender& sender,     // OK: MessageSender.hpp 포함됨
+        network::MessageReceiver& receiver, // OK: MessageReceiver.hpp 포함됨
+        service::ErrorService& errorService, // OK: ErrorService.hpp 포함됨
+        const std::string& myVmId,
+        int myCoordX,
+        int myCoordY
+    );
 
-    /**
-     * @brief 발생한 오류 타입과 추가 정보를 바탕으로 ErrorInfo 객체를 생성하여 반환합니다.
-     * UserProcessController는 이 ErrorInfo를 받아 후속 조치를 결정합니다.
-     * @param occurredErrorType 발생한 구체적인 오류의 타입.
-     * @param additionalContext (선택적) 오류 메시지에 포함될 추가적인 문맥 정보 (예: 음료 이름).
-     * @return 생성된 ErrorInfo 객체.
-     */
-    ErrorInfo processOccurredError(ErrorType occurredErrorType, const std::string& additionalContext = "");
+    void startReceivingMessages();
+
+    // --- 메시지 송신 메소드 ---
+    // network::Message 타입을 인자나 반환값으로 사용하는 메소드들은
+    // network/message.hpp가 포함되어 있으므로 문제 없음.
+    void sendStockRequestBroadcast(const std::string& drinkCode);
+    void sendPrepaymentReservationRequest(const std::string& targetVmId, const std::string& drinkCode, const std::string& authCode);
+    void sendStockResponse(const std::string& destinationVmId, const std::string& drinkCode, int currentStock);
+    void sendPrepaymentReservationResponse(const std::string& destinationVmId, const std::string& drinkCode, bool available);
+
+    // --- 메시지 수신 핸들러 등록 ---
+    void registerMessageHandler(network::Message::Type type, GenericMessageHandler handler); // network::Message::Type 사용
 
 private:
-    // ErrorType에 따라 기본 userFriendlyMessage와 ErrorResolutionLevel을 결정하는 내부 로직
-    std::string getDefaultUserMessageForError(ErrorType type, const std::string& context);
-    ErrorResolutionLevel getDefaultResolutionLevelForError(ErrorType type);
+    network::MessageSender& messageSender_;     // OK
+    network::MessageReceiver& messageReceiver_; // OK
+    service::ErrorService& errorService_;       // OK
+
+    std::string myVmId_;
+    int myCoordX_;
+    int myCoordY_;
+
+    void onMessageReceived(const network::Message& msg); // network::Message 사용
+
+    // network::Message::Type과 network::EnumClassHash 사용
+    std::unordered_map<network::Message::Type, GenericMessageHandler, network::EnumClassHash> messageHandlers_;
 };
 
 } // namespace service

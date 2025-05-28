@@ -1,248 +1,131 @@
 ﻿#include "service/MessageService.hpp"
+// MessageService.hpp 에서 이미 필요한 헤더들을 include 하고 있음 (MessageSender, MessageReceiver, Message, ErrorService 등)
 
-#include "domain/vendingMachine.h"
-
-#include <iostream>
-#include <algorithm>
-#include <cmath>
-#include <thread>
-
-#include <service/PrepaymentService.hpp>
+#include <functional> // std::bind 등 사용 가능성
+#include <iostream>   // 디버깅용
 
 
+namespace service {
 
-/*  ───────────── 지역-스코프 전역 (임시) ───────────── */
-static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1차 때는 그냥 변수 사용(본인 자판기의 정보를 저장하는 레포지토리 문서상 구현 안함)  
-using service::MessageService;
-
-/* ───────────── 정적 helper ───────────── */
-std::string MessageService::myId()             { return vm.getId();      }
-std::pair<int,int> MessageService::myCoord()  { return vm.getLocation();}
-
-
-
-/* ───────────── ctor ───────────── */
-MessageService::MessageService(network::MessageSender&              sender,
-                               network::MessageReceiver&            receiver,
-                               const persistence::OvmAddressRepository& repo,
-                               service::ErrorService&               err,
-                               service::InventoryService&           inv,
-                               service::PrepaymentService&          prepay,
-                               domain::inventory&                   drink) 
-    : sender_(sender)
-    , receiver_(receiver)
-    , repo_(repo)
-    , errSvc_(err)
-    , invSvc_(inv)
-    , prepaySvc_(prepay)
-    , drink_(drink)
-
-{
-    using T = network::Message::Type;
-    receiver_.subscribe(T::REQ_STOCK,   [this](auto&m){ handleReqStock(m);   });
-    receiver_.subscribe(T::RESP_STOCK,  [this](auto&m){ handleRespStock(m);  });
-    receiver_.subscribe(T::REQ_PREPAY,  [this](auto&m){ handleReqPrepay(m);  });
-    receiver_.subscribe(T::RESP_PREPAY, [this](auto&m){ handleRespPrepay(m); });
+MessageService::MessageService(
+    network::MessageSender& sender,
+    network::MessageReceiver& receiver,
+    service::ErrorService& errorService,
+    const std::string& myVmId,
+    int myCoordX,
+    int myCoordY
+) : messageSender_(sender),
+    messageReceiver_(receiver),
+    errorService_(errorService),
+    myVmId_(myVmId),
+    myCoordX_(myCoordX),
+    myCoordY_(myCoordY) {
+    // 생성자에서는 핸들러 등록이나 수신 시작을 하지 않음.
+    // startReceivingMessages() 메소드가 그 역할을 담당.
 }
 
-/* ───────────── UC-8 : 브로드캐스트 송신 ───────────── */
-void MessageService::broadcastStock(const domain::Drink& drink)
-{
-    network::Message req;
-    req.msg_type = network::Message::Type::REQ_STOCK;
-    req.src_id   = myId();
-    req.dst_id   = "0";               // broadcast기 때문에 0으로 설정
-    req.msg_content = {
-        {"item_code", drink.getCode()},
-        {"item_num",  "01"} // 1주문 1갯수 고정
-    };
+void MessageService::startReceivingMessages() {
+    // Message.hpp에 정의된 모든 Message::Type에 대해
+    // onMessageReceived를 호출하는 람다를 MessageReceiver에 등록합니다.
+    messageReceiver_.subscribe(network::Message::Type::REQ_STOCK,
+        [this](const network::Message& msg){ this->onMessageReceived(msg); });
+    messageReceiver_.subscribe(network::Message::Type::RESP_STOCK,
+        [this](const network::Message& msg){ this->onMessageReceived(msg); });
+    messageReceiver_.subscribe(network::Message::Type::REQ_PREPAY,
+        [this](const network::Message& msg){ this->onMessageReceived(msg); });
+    messageReceiver_.subscribe(network::Message::Type::RESP_PREPAY,
+        [this](const network::Message& msg){ this->onMessageReceived(msg); });
 
-    try { sender_.send(req); }
-    catch(const std::exception& e){
-        errSvc_.logError(std::string("broadcastStock failed: ")+e.what());
+    // MessageReceiver의 수신 시작 메소드 호출
+    try {
+        messageReceiver_.start();
+    } catch (const std::exception& e) {
+        // ErrorService.hpp 에 정의된 ErrorType 사용
+        errorService_.processOccurredError(ErrorType::NETWORK_COMMUNICATION_ERROR, "메시지 수신 시작 실패: " + std::string(e.what()));
     }
 }
 
-/* ───────────── UC-16 : REQ_PREPAY 송신 ───────────── */
-void MessageService::sendPrePayReq(const domain::Order& order)
-{
+// --- 메시지 송신 메소드 ---
+
+void MessageService::sendStockRequestBroadcast(const std::string& drinkCode) {
+    network::Message msg;
+    msg.msg_type = network::Message::Type::REQ_STOCK;
+    msg.src_id = myVmId_;
+    msg.dst_id = "0"; // 브로드캐스트
+    msg.msg_content["item_code"] = drinkCode;
+    msg.msg_content["item_num"] = "1"; // 기능 요구사항 PFR - 표1 참조
+
+    try {
+        messageSender_.send(msg);
+    } catch (const std::exception& e) {
+        errorService_.processOccurredError(ErrorType::NETWORK_COMMUNICATION_ERROR, "재고 조회 브로드캐스트 실패: " + std::string(e.what()));
+    }
+}
+
+void MessageService::sendPrepaymentReservationRequest(const std::string& targetVmId, const std::string& drinkCode, const std::string& authCode) {
     network::Message msg;
     msg.msg_type = network::Message::Type::REQ_PREPAY;
-    msg.src_id   = myId();
-    msg.dst_id   = order.vmId();
-    msg.msg_content = {
-        {"item_code", order.drink().getCode()},
-        {"item_num",  std::to_string(order.quantity())}, 
-        {"cert_code", order.certCode()}
-    };
+    msg.src_id = myVmId_;
+    msg.dst_id = targetVmId;
+    msg.msg_content["item_code"] = drinkCode;
+    msg.msg_content["item_num"] = "1"; // 기능 요구사항 PFR - 표3 참조 (선결제 요청 시 수량은 보통 1)
+    msg.msg_content["cert_code"] = authCode;
 
     try {
-        sender_.send(msg);
-
-        /* pending 등록 & watchdog 시작 */
-        pending_.emplace(PendingPrepay{order});
-        startPrepayTimer();
-    }
-    catch(const std::exception& e){
-        errSvc_.logError(std::string("sendPrePayReq failed: ")+e.what());
+        messageSender_.send(msg);
+    } catch (const std::exception& e) {
+        errorService_.processOccurredError(ErrorType::NETWORK_COMMUNICATION_ERROR, "선결제 예약 요청 실패 (" + targetVmId + "): " + std::string(e.what()));
     }
 }
 
-/* ───────────── 타이머 helpers ───────────── */
-void MessageService::startPrepayTimer() // 모든 요청은 30초 이내에 응답이 와야함
-{
-    if (pending_ && pending_->timer_future.valid())
-        cancelPrepayTimer();   // 기존 타이머 있으면 제거
+void MessageService::sendStockResponse(const std::string& destinationVmId, const std::string& drinkCode, int currentStock) {
+    network::Message msg;
+    msg.msg_type = network::Message::Type::RESP_STOCK;
+    msg.src_id = myVmId_;
+    msg.dst_id = destinationVmId;
+    msg.msg_content["item_code"] = drinkCode;
+    msg.msg_content["item_num"] = std::to_string(currentStock);
+    msg.msg_content["coor_x"] = std::to_string(myCoordX_);
+    msg.msg_content["coor_y"] = std::to_string(myCoordY_);
+    // 기능 요구사항 PFR - 표2 참조
 
-
-    pending_->timer_future = std::async(std::launch::async, [this]{
-        std::this_thread::sleep_for(std::chrono::seconds(30));
-
-        if (pending_) {                 // 30s 이후에도 응답 X
-            errSvc_.logError("PREPAY timeout (30s)"); //에러발생
-            pending_.reset();
-        }
-    });
-}
-
-void MessageService::cancelPrepayTimer()
-{
-    if (pending_ && pending_->timer_future.valid())
-        pending_->timer_future.wait_for(std::chrono::seconds(0));   // 즉시 join
-}
-
-/* ───────────── UC-15 : REQ_PREPAY 수신 후 응답핸들러 ───────────── */
-void MessageService::respondPrepayReq(const domain::Order& order) //
-{
-
-        service::PrepaymentService prepaySvc;
-        prepaySvc.saveCode(order); //선결제 코드 저장하는 메소드 호출(인증코드 저장)
-        
-        
-
-    /* 1. 선결제 코드 검증 */
-    
-    if(!prepaySvc_.isValid(order.certCode())){ //의도는 발급된 코드인지 확인하고 저장하는 것이었으나 PrepaymentService에서 이를 위한 코드가 없어서 유효성 검사만 진행
-        errSvc_.logError("respondPrepayReq: invalid code");
-        return;
-    }
-
-    /*  3. 재고 확보 성공, 실패에 따라서 응답 */
-    if(invSvc_.getSaleValid(order.drink().getCode())){ // 재고가 있을 때 가능한 경우 T를 보냄
-        network::Message resp;
-        resp.msg_type = network::Message::Type::RESP_PREPAY;
-        resp.src_id   = myId();
-        resp.dst_id   = order.vmId();
-        resp.msg_content = {
-        {"availability","T"},
-        {"item_num",    std::to_string(order.quantity())},
-        {"item_code", order.drink().getCode()} //표 형식 따라서 작성  //메시지 만든다
-        };
-
-        try { //인증코드 및 음료정보 저장하고, 메시지 보내고, 재고 감소
-            service::PrepaymentService prepaySvc;
-            prepaySvc.saveCode(order); //선결제 코드 저장하는 메소드 호출(인증코드 저장)
-            sender_.send(resp); 
-            invSvc_.ReqReduceDrink(order.drink().getCode()); 
-        }
-        catch(const std::exception& e){
-            errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());
-        }
-    }else{ //재고가 없을 때 불가능한 경우 메시지 보낸다. 
-        network::Message resp;
-        resp.msg_type = network::Message::Type::RESP_PREPAY;
-        resp.src_id   = myId();
-        resp.dst_id   = order.vmId();
-        resp.msg_content = {
-        {"availability","F"},
-        {"item_num",    std::to_string(order.quantity())},
-        {"item_code", order.drink().getCode()} //표 형식 따라서 작성 
-    };
-
-        try { sender_.send(resp); }
-        catch(const std::exception& e){
-            errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());
-        }
-    }
-   
-    
-}
-
-/* ───────────── 핸들러들 ───────────── */
-
-
-/* ───────────── 브로드캐스트 받았을 때 돌려주는 핸들러  ───────────── */
-void MessageService::handleReqStock(const network::Message& msg)
-{
-    bool empty = !invSvc_.getSaleValid(msg.msg_content.at("item_code"));
-
-    network::Message resp;
-    resp.msg_type = network::Message::Type::RESP_STOCK;
-    resp.src_id   = myId();
-    resp.dst_id   = msg.src_id; //브로드캐스트 받았을 때 돌려주는 핸들러 
-    resp.msg_content = {
-        {"item_code", msg.msg_content.at("item_code")},
-        {"item_num",  empty ? "0" : "1"}, //TODO : 지금 원하는 음료의 재고 잔량을 확인하는 메소드가 없음 비어있는지만 알 수 있음.
-    };
-    try { sender_.send(resp); }
-    catch(const std::exception& e){
-        errSvc_.logError(std::string("handleReqStock send() failed: ")+e.what());
-    }
-}
-
-/* ───────────── 브로드캐스트 응답 받았을 때 모아서 distanceService에 주는 핸들러  ───────────── */
-void MessageService::handleRespStock(const network::Message& msg)
-{
-    std::lock_guard lg(resp_mtx_);
-    resp_cache_.push_back(msg);
-    if(resp_cache_.size() >= kBroadcastRespMax)
-        resp_cv_.notify_all();
-    
-}
-
-
-//UC 15 핸들러입니다
-void MessageService::handleReqPrepay(const network::Message& msg)
-{
-    /*  msg → Order 파싱 후 respondPrepayReq(order) 호출 */
     try {
-        // 메세지 오면 order 객체 생성하고 코드 붙여서 저장 
-        domain::Drink d{"", 0, msg.msg_content.at("item_code")};    // 드링크 하나 만든다
-        domain::Order order{
-            msg.src_id,     // vmId  (보낸 쪽)
-            d,
-            1,
-            msg.msg_content.at("cert_code"),
-            "Pending"
-        };//order만들었음
-
-
-        //UC15으로 넘어감 
-        respondPrepayReq(order);
-    }
-    catch (const std::exception& e) {
-        errSvc_.logError(std::string("handleReqPrepay parse error: ") + e.what());
+        messageSender_.send(msg);
+    } catch (const std::exception& e) {
+        errorService_.processOccurredError(ErrorType::NETWORK_COMMUNICATION_ERROR, "재고 응답 전송 실패 (" + destinationVmId + "): " + std::string(e.what()));
     }
 }
 
-void MessageService::handleRespPrepay(const network::Message& msg)
-{
-    /* pending_ 이 있으면 내 요청에 대한 응답임을 알고 이것만 요청 -> 동시에 한명의 사용자가 자판기를 사용한다고 가정하기 때문에 동시 대기가 없음(브로드캐스트제외)*/
-    if (!pending_) {
-        errSvc_.logError("unexpected RESP_PREPAY (no pending)");
-        return;
+void MessageService::sendPrepaymentReservationResponse(const std::string& destinationVmId, const std::string& drinkCode, bool available) {
+    network::Message msg;
+    msg.msg_type = network::Message::Type::RESP_PREPAY;
+    msg.src_id = myVmId_;
+    msg.dst_id = destinationVmId;
+    msg.msg_content["item_code"] = drinkCode;
+    msg.msg_content["item_num"] = available ? "1" : "0"; // 기능 요구사항 PFR - 표4 참조
+    msg.msg_content["availability"] = available ? "T" : "F";
+
+    try {
+        messageSender_.send(msg);
+    } catch (const std::exception& e) {
+        errorService_.processOccurredError(ErrorType::NETWORK_COMMUNICATION_ERROR, "선결제 예약 응답 전송 실패 (" + destinationVmId + "): " + std::string(e.what()));
     }
+}
 
-    cancelPrepayTimer();
+void MessageService::registerMessageHandler(network::Message::Type type, GenericMessageHandler handler) {
+    messageHandlers_[type] = std::move(handler);
+}
 
-    const bool ok = (msg.msg_content.at("availability") == "T");
-    if (ok) {
-        // TODO: Controller.onPrepayApproved(pending_->order); -> 컨트롤러 상에서 구현 안됨
-        std::cout << "[MessageService] PREPAY approved\n";
+void MessageService::onMessageReceived(const network::Message& msg) {
+    auto it = messageHandlers_.find(msg.msg_type);
+    if (it != messageHandlers_.end()) {
+        it->second(msg); // 등록된 핸들러 호출
     } else {
-        errSvc_.logError("PREPAY declined (availability == F)");
+        std::cerr << "[MessageService] Warning: No handler registered for message type "
+                  << static_cast<int>(msg.msg_type) << " from " << msg.src_id << std::endl;
+        // 이 경우 ErrorService를 통해 UNEXPECTED_SYSTEM_ERROR 또는 특정 오류 타입을 보고할 수 있습니다.
+        // errorService_.processOccurredError(ErrorType::INVALID_MESSAGE_FORMAT, "처리 핸들러가 없는 메시지 타입 수신: " + std::to_string(static_cast<int>(msg.msg_type)));
     }
-    pending_.reset();
 }
 
- 
+} // namespace service

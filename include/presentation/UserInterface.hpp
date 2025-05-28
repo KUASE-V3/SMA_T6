@@ -9,6 +9,7 @@
 
 #include "domain/drink.h"
 #include "domain/inventory.h"
+#include "domain/vendingMachine.h"
 
 namespace presentation {
 

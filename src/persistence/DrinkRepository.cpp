@@ -41,12 +41,7 @@ domain::Drink DrinkRepository::findByDrinkCode(const std::string& drinkCode) {
             return drink;
         }
     }
-    // 이 부분은 유효한 drinkCode (01-20)가 항상 전달된다고 가정합니다.
-    // 만약 그럼에도 불구하고 이 지점에 도달한다면, 이는 시스템 내부 로직 오류 또는
-    // 가정과 다른 drinkCode가 전달된 경우를 의미합니다.
-    // 사용자 입력 오류나 일반적인 "찾을 수 없음" 오류는 여기서 처리하지 않습니다.
-    // 개발 중 디버깅을 돕기 위해 예외를 발생시킵니다.
-    throw std::logic_error("유효하지 않은 음료코드");
+    // drinkCode가 유효하지 않은 경우 예외 처리
 }
 // findAll 메소드 구현
 std::vector<domain::Drink> DrinkRepository::findAll() {

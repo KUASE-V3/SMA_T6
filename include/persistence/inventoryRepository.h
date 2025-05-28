@@ -1,31 +1,34 @@
 ﻿#pragma once
 
 #include <string>
-#include <map> // 재고 저장을 위해 사용
+#include <map>
+#include <optional> // std::optional 사용 가능
 
-#include "domain/inventory.h" // domain::Inventory 사용
+#include "domain/inventory.h"
+
 namespace persistence {
 
 class InventoryRepository {
 public:
     InventoryRepository() = default;
 
-    // 1. 초기 재고 설정 (또는 기존 재고에 아이템 추가/업데이트)
     void addOrUpdateStock(const domain::Inventory& inventoryItem);
-
-    // 2. 특정 음료가 현재 자판기에서 취급(판매)하는 음료인지 확인
     bool isDrinkHandled(const std::string& drinkCode) const;
-
-    // 3. 특정 음료의 재고가 1 이상인지 확인 (취급하는 음료 대상)
-    bool hasStock(const std::string& drinkCode) const;
-
-    // 4. 특정 음료의 재고를 1 감소 (판매 완료 또는 선결제 재고 확보 시)
-    //    성공하면 true, 실패(해당 음료 없음, 재고 부족 등) 시 false.
+    bool hasStock(const std::string& drinkCode) const; // 재고가 1개 이상인지
     bool decreaseStockByOne(const std::string& drinkCode);
 
+    /**
+     * @brief 특정 음료 코드에 해당하는 Inventory 객체를 반환합니다.
+     * 해당 음료를 취급하지 않거나 Inventory 객체를 찾을 수 없는 경우,
+     * qty가 0이거나 drinkCode가 비어있는 기본 Inventory 객체를 반환할 수 있습니다.
+     * 또는 std::optional<domain::Inventory>를 사용할 수도 있습니다.
+     * 여기서는 domain::Inventory를 직접 반환하고, 호출부에서 유효성을 확인합니다.
+     * @param drinkCode 조회할 음료 코드.
+     * @return 해당 음료의 Inventory 객체. 찾지 못하면 기본 생성된 Inventory 객체.
+     */
+    domain::Inventory getInventoryByDrinkCode(const std::string& drinkCode) const;
+
 private:
-    // 메모리 내 재고 저장소 (자판기당 최대 7종류 음료)
-    // std::string은 drinkCode
     std::map<std::string, domain::Inventory> stock_;
 };
 

@@ -2,8 +2,7 @@
 
 #include <string>
 #include <unordered_map>
-
-namespace network {
+namespace network { 
 struct Message{
     enum class Type{
         REQ_STOCK = 0,
@@ -13,10 +12,9 @@ struct Message{
     };
 
     Type msg_type{}; 
-    std::string src_id = "T6"; 
-    std::string dst_id = "0"; // 0일 때는 브로드캐스트
+    std::string src_id = "T5"; 
+    std::string dst_id = "0"; 
     std::unordered_map<std::string, std::string> msg_content; 
 
 };
-
 }

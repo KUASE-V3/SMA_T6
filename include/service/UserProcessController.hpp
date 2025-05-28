@@ -4,8 +4,17 @@
 #include <vector>
 #include <memory>   // 참조를 사용하지만, 의존성 주입 명시를 위해 포함 (습관적)
 #include <optional> // currentActiveOrder_ 등에 사용
+#include <chrono>   // std::chrono 사용
 
-// Forward declarations (네임스페이스와 함께)
+// --- 필요한 타입들의 전체 정의를 먼저 포함 ---
+#include "domain/drink.h"          // 또는 .hpp
+#include "domain/order.h"          // 또는 .hpp
+#include "domain/vendingMachine.h" // 또는 .hpp
+#include "network/message.hpp"     // network::Message 정의
+
+// --- 서비스 및 UI 클래스들은 전방 선언 가능 (참조 또는 포인터로만 사용 시) ---
+// 하지만 생성자에서 참조로 받고 멤버로 저장하므로, 실제로는 .cpp에서 include 하거나,
+// 여기서도 include 하는 것이 더 안전할 수 있음 (특히 Presentation/UserInterface)
 namespace presentation { class UserInterface; }
 namespace service {
     class InventoryService;
@@ -13,23 +22,14 @@ namespace service {
     class PrepaymentService;
     class MessageService;
     class DistanceService;
-    class ErrorService; // ErrorService.hpp에 정의된 구체 클래스
-    struct ErrorInfo;   // ErrorService.hpp에 정의됨
-    // enum class ErrorType; // ErrorService.hpp에 정의됨
-    struct OtherVendingMachineInfo; // DistanceService.hpp 에 정의됨
+    class ErrorService;
+    struct ErrorInfo;
+    struct OtherVendingMachineInfo; // from DistanceService.hpp
 }
-namespace domain {
-    class Drink;
-    class Order;
-    class VendingMachine;
-}
-namespace network {
-    struct Message; // Message.hpp 에 정의됨
-    // enum class MessageType; // Message.hpp 에 Message::Type 으로 정의됨
-}
+// network::Message 는 위에서 이미 include 함.
 
-// Boost.Asio io_context (타임아웃 처리 등 비동기 작업용)
 namespace boost { namespace asio { class io_context; }}
+
 
 namespace service {
 
@@ -40,6 +40,7 @@ enum class ControllerState {
     SYSTEM_READY,
     DISPLAYING_MAIN_MENU,       // UC1: 주 음료 메뉴 표시 (음료 목록 + 인증 코드 입력 옵션)
     AWAITING_MAIN_MENU_CHOICE,  // 주 메뉴 선택 대기 (음료 선택 또는 인증 코드 입력)
+    SYSTEM_HALTED_REQUEST, // 시스템 정지 요청 (사용자 또는 내부 오류로 인한)
 
     // 음료 직접 구매 흐름
     AWAITING_DRINK_SELECTION,   // 음료 코드 입력 대기 (메뉴에서 음료 선택 시)
@@ -109,6 +110,10 @@ private:
     std::optional<domain::Drink> pendingDrinkSelection_; // 사용자가 선택했지만 아직 주문 확정 전인 음료
     std::vector<service::OtherVendingMachineInfo> availableOtherVmsForDrink_; // 다른 자판기 재고 조회 결과
     std::optional<domain::VendingMachine> selectedTargetVmForPrepayment_; // 선결제 대상 자판기
+
+    std::optional<std::chrono::steady_clock::time_point> timeout_start_time_; // 'UserProcessController::' 제거
+    std::chrono::seconds current_timeout_duration_;                             // 'UserProcessController::' 제거
+    int total_other_vms_ = 7; // 주변 자판기 수 (이 선언은 문제 없어 보입니다)
 
 
     // --- 상태별 처리 메소드 ---
