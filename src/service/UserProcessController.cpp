@@ -67,8 +67,14 @@ void UserProcessController::handlePayment(const bool& isPrepay) {
             }
         });
 
+<<<<<<< HEAD
+       
+    } catch (const exception& e) {
+        string err = e.what();
+=======
     } catch (const std::exception& e) {
         std::string err = e.what();
+>>>>>>> main
         errorService.logError(err);
         ui.show_error_message(err);
         ui.display_Error(err);
@@ -82,11 +88,19 @@ void UserProcessController::handlePrepayCode() {
         bool isValid = prepaymentService.isValid(code);
 
         if (isValid) {
+<<<<<<< HEAD
+            cout << "UserProcessController [UC14]" << endl;
+            cout << "UserProcessController [UC7]" << endl;
+            cout << "UserProcessController [UC14] changeStatusCode(" << code << ")" << endl;
+        } else {
+            string err = "UserProcessController.Error";
+=======
             cout << "[UC14] 인증코드 유효함 확인됨" << endl;
             cout << "[UC7] 음료 배출 진행" << endl;
             cout << "[UC14] 인증코드 상태 변경 중: changeStatusCode(" << code << ")" << endl;
         } else {
             string err = "유효하지 않은 인증코드입니다.";
+>>>>>>> main
             errorService.logError(err);
             ui.show_error_message(err);
             ui.display_Error(err);

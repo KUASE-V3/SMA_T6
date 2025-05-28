@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map> // 선결제 코드 저장을 위해 사용
 
 #include "domain/prepaymentCode.h" // domain::PrePaymentCode 사용
 
@@ -18,6 +19,9 @@ public:
     void save(const domain::PrePaymentCode& prepayCode);
     // 선결제 코드 상태 변경 (예: ACTIVE -> USED)
     bool updateStatus(const std::string& code, domain::CodeStatus newStatus); // domain::CodeStatus 명시
+private:
+    std::map<std::string, domain::PrePaymentCode> codes_;
+
 };
 
 } // namespace persistence
