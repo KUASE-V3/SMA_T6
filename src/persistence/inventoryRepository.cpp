@@ -46,4 +46,28 @@ domain::Inventory InventoryRepository::getInventoryByDrinkCode(const std::string
     return domain::Inventory();
 }
 
+/**
+ * @brief 특정 음료의 재고를 지정된 수량만큼 감소시킵니다.
+ * @param drinkCode 재고를 감소시킬 음료의 코드.
+ * @param amount 감소시킬 수량.
+ * @return 성공 시 true, 실패(해당 음료 없음, 재고 부족 등) 시 false.
+ */
+bool InventoryRepository::decreaseStockByAmount(const std::string& drinkCode, int amount) {
+    if (amount <= 0) { // 감소량이 0 이하면 처리 안 함
+        return false;
+    }
+    auto it = stock_.find(drinkCode);
+    if (it != stock_.end()) {
+        try {
+            it->second.decreaseQuantity(amount); // domain::Inventory의 메소드 사용
+            return true; // 성공
+        } catch (const std::out_of_range&) {
+            // domain::Inventory에서 재고 부족으로 예외 발생
+            return false; // 실패 알림
+        }
+    }
+    return false; // 해당 음료를 찾을 수 없음
+}
+
+
 } // namespace persistence

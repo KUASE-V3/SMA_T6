@@ -21,6 +21,7 @@ void MessageReceiver::start() {
 }
 
 void MessageReceiver::doAccept() {
+    std::cout << " Accepting connections on port " << port_ << std::endl;
     auto sock = std::make_shared<tcp::socket>(io_context_);
     acceptor_.async_accept(*sock, [this, sock](boost::system::error_code ec) {
         if (!ec) {

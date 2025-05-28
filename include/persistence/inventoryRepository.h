@@ -27,6 +27,15 @@ public:
      * @return 해당 음료의 Inventory 객체. 찾지 못하면 기본 생성된 Inventory 객체.
      */
     domain::Inventory getInventoryByDrinkCode(const std::string& drinkCode) const;
+    
+    /**
+     * @brief 특정 음료의 재고를 지정된 수량만큼 감소시킵니다.
+     * @param drinkCode 재고를 감소시킬 음료의 코드.
+     * @param amount 감소시킬 수량.
+     * @return 성공 시 true, 실패(해당 음료 없음, 재고 부족 등) 시 false.
+     */
+    bool decreaseStockByAmount(const std::string& drinkCode, int amount);
+
 
 private:
     std::map<std::string, domain::Inventory> stock_;
