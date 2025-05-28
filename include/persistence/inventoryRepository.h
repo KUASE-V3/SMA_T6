@@ -1,54 +1,32 @@
-﻿#ifndef INVENTORYREPOSITORY_H
-#define INVENTORYREPOSITORY_H
+﻿#pragma once
 
 #include <string>
+#include <map> // 재고 저장을 위해 사용
 
-#include "../domain/drink.h"
-#include "../domain/inventory.h"
-#include <vector>
-
+#include "domain/inventory.h" // domain::Inventory 사용
 namespace persistence {
-class inventoryRepository {
 
-    public:
-        void setAllDrinks(const std::vector<domain::inventory>& drinks);
-        static const std::vector<domain::inventory>& getAllDrinks();;
+class InventoryRepository {
+public:
+    InventoryRepository() = default;
 
-        std::vector<std :: pair<std::string, int>> getList();
+    // 1. 초기 재고 설정 (또는 기존 재고에 아이템 추가/업데이트)
+    void addOrUpdateStock(const domain::Inventory& inventoryItem);
 
-        static bool isValid(const std:: string& drink);
-        void changeQty(const domain::Drink& drink);
-        bool isEmptyRepo(const domain::Drink& drink) const;
+    // 2. 특정 음료가 현재 자판기에서 취급(판매)하는 음료인지 확인
+    bool isDrinkHandled(const std::string& drinkCode) const;
 
-        
+    // 3. 특정 음료의 재고가 1 이상인지 확인 (취급하는 음료 대상)
+    bool hasStock(const std::string& drinkCode) const;
 
-    private:
-        static std::vector<domain::inventory> allDrinks;
+    // 4. 특정 음료의 재고를 1 감소 (판매 완료 또는 선결제 재고 확보 시)
+    //    성공하면 true, 실패(해당 음료 없음, 재고 부족 등) 시 false.
+    bool decreaseStockByOne(const std::string& drinkCode);
 
-        
+private:
+    // 메모리 내 재고 저장소 (자판기당 최대 7종류 음료)
+    // std::string은 drinkCode
+    std::map<std::string, domain::Inventory> stock_;
 };
-}
-#endif
- 
-/*
- Drink("콜라", 1.50, "D001"),
-    Drink("사이다", 1.50, "D002"),
-    Drink("환타 오렌지", 1.60, "D003"),
-    Drink("환타 포도", 1.60, "D004"),
-    Drink("몬스터", 2.50, "D005"),
-    Drink("레드불", 2.70, "D006"),
-    Drink("게토레이", 1.80, "D007"),
-    Drink("파워에이드", 1.80, "D008"),
-    Drink("이프로", 1.70, "D009"),
-    Drink("비타500", 1.00, "D010"),
-    Drink("보성녹차", 1.50, "D011"),
-    Drink("옥수수수염차", 1.50, "D012"),
-    Drink("코코팜", 1.60, "D013"),
-    Drink("트로피카나", 1.60, "D014"),
-    Drink("핫식스", 2.00, "D015"),
-    Drink("아메리카노 캔커피", 1.20, "D016"),
-    Drink("조지아 오리지널", 1.30, "D017"),
-    Drink("TOP 스위트 아메리카노", 1.40, "D018"),
-    Drink("밀키스", 1.50, "D019"),
-    Drink("칸타타", 1.60, "D020")
-*/
+
+} // namespace persistence

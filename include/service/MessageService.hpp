@@ -1,95 +1,86 @@
 #pragma once
 
-
-#include "network/message.hpp"
-#include "network/MessageSender.hpp"
-#include "network/MessageReceiver.hpp"
-
-#include "persistence/OvmAddressRepository.hpp"
-#include "service/ErrorService.hpp"
-#include "service/InventoryService.hpp"
-#include "service/PrepaymentService.hpp"
-
-#include "domain/drink.h"
-#include "domain/order.h"
-#include "domain/inventory.h"
-
-#include <vector>
-#include <mutex>
-#include <condition_variable>
-#include <optional>
-#include <future>
-#include <chrono>
+#include <string>
+#include <map> // ErrorInfoÀÇ contextDetails ¿ëµµ (¼±ÅÃÀû)
+// #include <chrono> // timestamp´Â ÇöÀç Á¦¿Ü
 
 namespace service {
 
-class MessageService {
+// ¹ß»ý °¡´ÉÇÑ ±¸Ã¼ÀûÀÎ ¿À·ù À¯Çüµé (Áö¼ÓÀûÀ¸·Î ¾÷µ¥ÀÌÆ®)
+enum class ErrorType {
+    // User Input/Interaction Errors
+    INVALID_MENU_CHOICE,
+    INVALID_DRINK_CODE_FORMAT, // Çü½Ä ¿À·ù (¿¹: ¼ýÀÚ°¡ ¾Æ´Ñ °ª)
+    USER_RESPONSE_TIMEOUT,
 
-public:
-    static inline constexpr int kBroadcastTimeoutSec = 30;
-    static inline constexpr int kBroadcastRespMax    = 7;
-    static inline constexpr int kValidTimeoutSec     = 10;
+    // Inventory/Stock Errors
+    DRINK_NOT_FOUND,        // ÀÔ·ÂÇÑ À½·á ÄÚµå°¡ ÀüÃ¼ 20Á¾¿¡ ¾øÀ½
+    DRINK_OUT_OF_STOCK,     // ÇöÀç ÀÚÆÇ±â Àç°í ¾øÀ½
+    INSUFFICIENT_STOCK_FOR_DECREASE, // Àç°í Â÷°¨ ½Ãµµ ½Ã ½ÇÁ¦ Àç°í ºÎÁ· (³»ºÎ ¿À·ù °¡´É¼º)
 
-    /* ctor */
-    MessageService(network::MessageSender&              sender,
-                   network::MessageReceiver&            receiver,
-                   const persistence::OvmAddressRepository& repo,
-                   service::ErrorService&               err,
-                   service::InventoryService&           inv,
-                   service::PrepaymentService&          prepay,
-                   domain::inventory&                   drink);
+    // Payment Errors
+    PAYMENT_PROCESSING_FAILED,
+    PAYMENT_TIMEOUT,
+    PAYMENT_SYSTEM_UNAVAILABLE, // ¿ÜºÎ °áÁ¦ ½Ã½ºÅÛ ¿¬µ¿ ½ÇÆÐ
 
-    /* UC-8  */
-    void broadcastStock(const domain::Drink& drink);
+    // Prepayment/AuthCode Errors
+    AUTH_CODE_INVALID_FORMAT,   // ÀÔ·ÂµÈ ÀÎÁõ ÄÚµå Çü½Ä ¿À·ù
+    AUTH_CODE_NOT_FOUND,        // Á¸ÀçÇÏÁö ¾Ê´Â ÀÎÁõ ÄÚµå
+    AUTH_CODE_ALREADY_USED,     // ÀÌ¹Ì »ç¿ëµÈ ÀÎÁõ ÄÚµå
+    AUTH_CODE_GENERATION_FAILED,// ÀÎÁõ ÄÚµå »ý¼º ½ÇÆÐ (³»ºÎ ¿À·ù)
+    STOCK_RESERVATION_FAILED_AT_OTHER_VM, // ´Ù¸¥ ÀÚÆÇ±â ¼±°áÁ¦ Àç°í È®º¸ ½ÇÆÐ ÀÀ´ä
 
-    /* UC-16 (ï¿½Û½ï¿½ï¿½ï¿½) */
-    void sendPrePayReq(const domain::Order& order);
+    // Network/Message Errors
+    NETWORK_COMMUNICATION_ERROR,// ÀÏ¹Ý Åë½Å ¿À·ù
+    MESSAGE_SEND_FAILED,
+    MESSAGE_RECEIVE_FAILED,
+    INVALID_MESSAGE_FORMAT,     // ¼ö½Å ¸Þ½ÃÁö ÆÄ½Ì/Çü½Ä ¿À·ù
+    RESPONSE_TIMEOUT_FROM_OTHER_VM, // ´Ù¸¥ ÀÚÆÇ±â ÀÀ´ä ½Ã°£ ÃÊ°ú
 
-    /* UC-17 */
-    bool validOVMStock(const std::string& vm_id,
-                       const domain::Drink& drink,
-                       int qty);
-
-private:
-    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ internal helpers ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
-    static std::string           myId();
-    static std::pair<int,int>    myCoord();
-
-    /* msg handlers (subscribe callback) */
-    void handleReqStock (const network::Message& msg);
-    void handleRespStock(const network::Message& msg);
-    void handleReqPrepay(const network::Message& msg);
-    void handleRespPrepay(const network::Message& msg);
-
-    /* ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ */
-    void respondPrepayReq(const domain::Order& order);
-    void onMessage(const network::Message&);            // (unused)
-
-    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pending PREPAY 1-shot ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
-    struct PendingPrepay {
-        domain::Order      order;
-        std::future<void>  timer_future;   // 30s watchdog
-    };
-    std::optional<PendingPrepay> pending_;              // option 3 : 1ï¿½Ç¸ï¿½
-
-    void startPrepayTimer();
-    void cancelPrepayTimer();
-
-    /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ data members ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
-    network::MessageSender&                sender_;
-    network::MessageReceiver&              receiver_;
-    const persistence::OvmAddressRepository& repo_;
-
-    service::ErrorService&                 errSvc_;
-    service::InventoryService&             invSvc_;
-    service::PrepaymentService&            prepaySvc_;
-
-    domain::inventory&                    drink_; // ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½
-
-    /* RESP_STOCK ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
-    std::vector<network::Message>          resp_cache_;
-    std::mutex                             resp_mtx_;
-    std::condition_variable                resp_cv_;
+    // System/Internal Errors
+    REPOSITORY_ACCESS_ERROR,    // ·¹Æ÷ÁöÅä¸® Á¢±Ù Áß ¿À·ù (ÆÄÀÏ I/O µî)
+    UNEXPECTED_SYSTEM_ERROR,    // ¿¹»óÄ¡ ¸øÇÑ ³»ºÎ ½Ã½ºÅÛ ¿À·ù
+    INITIALIZATION_FAILED       // ½Ã½ºÅÛ ÃÊ±âÈ­ ½ÇÆÐ
 };
 
-} // namespace application
+// ¿À·ù Ã³¸® ÈÄ UserProcessController°¡ ÃëÇØ¾ß ÇÒ Çàµ¿ ¼öÁØ
+enum class ErrorResolutionLevel {
+    RETRY_INPUT,              // »ç¿ëÀÚ¿¡°Ô ÀÔ·Â Àç½Ãµµ ¿äÃ» (ÇöÀç »óÅÂ À¯Áö)
+    RETURN_TO_PREVIOUS_STEP,  // ÀÌÀü ³í¸®Àû ´Ü°è·Î µ¹¾Æ°¡±â
+    RETURN_TO_MAIN_MENU,      // ¸ÞÀÎ ¸Þ´º(À½·á ¸ñ·Ï Ç¥½Ã)·Î µ¹¾Æ°¡±â
+    NOTIFY_AND_STAY,          // »ç¿ëÀÚ¿¡°Ô ¾Ë¸®°í ÇöÀç »óÅÂ À¯Áö (¿¹: ´Ü¼ø Á¤º¸ ¸Þ½ÃÁö)
+    SYSTEM_FATAL_ERROR        // º¹±¸ ºÒ°¡´É, ½Ã½ºÅÛ Áß´Ü ¶Ç´Â ¾ÈÀü ¸ðµå ÁøÀÔ
+};
+
+// ErrorService¿¡ Àü´ÞµÉ ¿À·ù Á¤º¸ ¹× Ã³¸® °á°ú
+struct ErrorInfo {
+    ErrorType type;
+    std::string userFriendlyMessage; // »ç¿ëÀÚ¿¡°Ô º¸¿©ÁÙ ¸Þ½ÃÁö
+    ErrorResolutionLevel resolutionLevel;
+    // std::map<std::string, std::string> details; // (¼±ÅÃÀû) ¿À·ù »ó¼¼ Á¤º¸
+
+    ErrorInfo(ErrorType t, std::string msg, ErrorResolutionLevel level)
+        : type(t), userFriendlyMessage(std::move(msg)), resolutionLevel(level) {}
+};
+
+class ErrorService {
+public:
+    ErrorService() = default;
+    // ~ErrorService() = default; // »ó¼Ó °í·Á ¾È ÇÔ
+
+    /**
+     * @brief ¹ß»ýÇÑ ¿À·ù Å¸ÀÔ°ú Ãß°¡ Á¤º¸¸¦ ¹ÙÅÁÀ¸·Î ErrorInfo °´Ã¼¸¦ »ý¼ºÇÏ¿© ¹ÝÈ¯ÇÕ´Ï´Ù.
+     * UserProcessController´Â ÀÌ ErrorInfo¸¦ ¹Þ¾Æ ÈÄ¼Ó Á¶Ä¡¸¦ °áÁ¤ÇÕ´Ï´Ù.
+     * @param occurredErrorType ¹ß»ýÇÑ ±¸Ã¼ÀûÀÎ ¿À·ùÀÇ Å¸ÀÔ.
+     * @param additionalContext (¼±ÅÃÀû) ¿À·ù ¸Þ½ÃÁö¿¡ Æ÷ÇÔµÉ Ãß°¡ÀûÀÎ ¹®¸Æ Á¤º¸ (¿¹: À½·á ÀÌ¸§).
+     * @return »ý¼ºµÈ ErrorInfo °´Ã¼.
+     */
+    ErrorInfo processOccurredError(ErrorType occurredErrorType, const std::string& additionalContext = "");
+
+private:
+    // ErrorType¿¡ µû¶ó ±âº» userFriendlyMessage¿Í ErrorResolutionLevelÀ» °áÁ¤ÇÏ´Â ³»ºÎ ·ÎÁ÷
+    std::string getDefaultUserMessageForError(ErrorType type, const std::string& context);
+    ErrorResolutionLevel getDefaultResolutionLevelForError(ErrorType type);
+};
+
+} // namespace service

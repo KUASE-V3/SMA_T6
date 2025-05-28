@@ -1,76 +1,39 @@
 ﻿#include "domain/prepaymentCode.h"
+#include "domain/order.h" 
+#include <memory>                  // std::shared_ptr 사용
+#include <string>                  // std::string 사용
 
-#include <cstdlib>     
-#include <ctime>       // time
-#include <sstream>     // stringstream
-#include<string>
-#include <cctype> // std::isalnum, std::isupper
+namespace domain {
 
+//PrePaymentCode.h 헤더 파일에 이미 인라인으로 구현되어 있습니다.
+/*
+PrePaymentCode::PrePaymentCode(std::string code, CodeStatus status, std::shared_ptr<domain::Order> order)
+    : code_attribute(code), status_attribute(status), heldOrder_attribute(order) {}
+*/
 
-using namespace domain;
+/*
+std::string PrePaymentCode::getCode() const { return code_attribute; }
+CodeStatus PrePaymentCode::getStatus() const { return status_attribute; }
+std::shared_ptr<domain::Order> PrePaymentCode::getHeldOrder() const { return heldOrder_attribute; }
+*/
 
-PrepaymentCode::PrepaymentCode() {
-<<<<<<< HEAD
-    code = rand();         
-    status = "Unused";     
-=======
-    code = generate();         // 5?? ?? 코드 ??
-    status = "Unused";     // 기본 ??
->>>>>>> main
-    
+/*
+bool PrePaymentCode::isUsable() const {
+    return status_attribute == CodeStatus::ACTIVE;
 }
+*/
 
-std::string PrepaymentCode::generate() {
-    static const char charset[] =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "0123456789";
-
-    std::string result;
-    for (int i = 0; i < 5; ++i) {
-        int index = std::rand() % (sizeof(charset) - 1);
-        result += charset[index];
-    }
-
-    return result;
+/*
+void PrePaymentCode::markAsUsed() {
+    status_attribute = CodeStatus::USED;
 }
+*/
 
-
-bool PrepaymentCode::isUsable( const std::string& code) {
-    if (code.length() != 5) return false;
-
-    for (char c : code) {
-        if (!std::isalnum(c)) return false;               
-        if (std::isalpha(c) && !std::isupper(c)) return false;     
-    }
-
-    return true;
+/*
+void PrePaymentCode::setHeldOrder(std::shared_ptr<domain::Order> order) {
+    heldOrder_attribute = order;
 }
+*/
 
 
-
-PrepaymentCode PrepaymentCode::hold(Order order) {
-    heldOrder = order;
-    return *this;               //prepaymentcode 반환. 후에 레퍼지토리에 order를 붙인 code객체를 저장할 용도
-}
-
-
-
-
-//코드 사용
-void PrepaymentCode::use(const std::string& code) {
-    if (this->code == code) {
-        status = "Used";
-    }
-}
-
-
-
-std::string PrepaymentCode :: getCode() const {
-    return code;
-}
-
-
-
-std::string PrepaymentCode :: getStatus() {
-    return status;
-}
+} // namespace domain

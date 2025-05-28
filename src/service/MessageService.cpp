@@ -16,7 +16,7 @@ static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1차 때는 그�
 using service::MessageService;
 
 /* ───────────── 정적 helper ───────────── */
-std::string MessageService::myId()            { return vm.getId();      }
+std::string MessageService::myId()             { return vm.getId();      }
 std::pair<int,int> MessageService::myCoord()  { return vm.getLocation();}
 
 

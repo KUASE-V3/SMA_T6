@@ -1,31 +1,34 @@
-﻿
-#include "domain/vendingMachine.h"
-#include <cmath>
+﻿#include "domain/vendingMachine.h" 
+#include <string>                  // std::string 사용
+#include <utility>                 // std::pair, std::make_pair 사용
 
-using namespace domain;
+namespace domain {
 
-// 초기화시 : id, location을 "T5", {123, 123}으로 설정합니다.
-VendingMachine::VendingMachine(const std::string& id, const std::pair<int, int>& location, const std::string& port)
-    : id(id), location(location), port(port){}
+// VendingMachine.h 헤더 파일에 이미 인라인으로 구현되어 있습니다.
+/*
+VendingMachine::VendingMachine(std::string vmId, int x, int y, std::string port)
+    : id_attribute(vmId),
+      location_attribute(std::make_pair(x, y)),
+      port_attribute(port) {}
+*/
 
-std::string VendingMachine::getId() const {
-    return id;
+/*
+std::string VendingMachine::getId() const { return id_attribute; }
+std::pair<int, int> VendingMachine::getLocation() const { return location_attribute; }
+std::string VendingMachine::getPort() const { return port_attribute; }
+*/
+
+/*
+void VendingMachine::setLocation(int x, int y) {
+    if (x >= 0 && x <= 99 && y >= 0 && y <= 99) { // 좌표 범위 0-99 [cite: PFR - DVM (202503) (1).pdf, page 3, source 18]
+        location_attribute = std::make_pair(x,y);
+    }
 }
 
-std::pair<int, int> VendingMachine::getLocation() const {
-    return location;
-}
-
-std::string VendingMachine::getPort() const {
-    return port;
-}
-
-/*         
-double VendingMachine::calculateDistance(const VendingMachine& other) const {
-    double dx = location.first - other.location.first;
-    double dy = location.second - other.location.second;
-    return std::sqrt(dx * dx + dy * dy);        //怨꾩궛��� �븣�븘�꽌 �옉�꽦
+void VendingMachine::setPort(const std::string& newPort) {
+    port_attribute = newPort;
 }
 */
 
 
+}

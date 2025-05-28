@@ -1,32 +1,11 @@
 ﻿#include "domain/drink.h"
-#include <string>
 
-using namespace domain;
+namespace domain {
 
-#include "../include/domain/drink.h"
-#include <string>
+// Drink 클래스의 생성자와 getter 메소드들은 이미 Drink.h 헤더 파일 내에
+// 인라인 형태로 정의됨.
 
-//기본생성자
-Drink::Drink()
-    : name_(""), price_(0), code_("") {}
+// 만약 Drink 클래스에 정적 멤버 변수가 있다면, 여기서 초기화할 수 있습니다.
 
 
-Drink::Drink(std::string name, int price, std::string code)
-    : name_(name), price_(price), code_(code) {}
-
-
-
-    std::string Drink::getName() const {
-        return name_;
-    }
-    
-    int Drink:: getPrice() const {
-        return price_;
-    }
-    
-    std::string Drink::getCode() const {
-        return code_;
-    }
-    
-
-    
+} // namespace domain

@@ -24,11 +24,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install Boost
-      run: |
-        apt-get update
-        apt-get install -y libboost-all-dev
-    
         
     - name: Configure Submodules
       run: |

@@ -1,48 +1,37 @@
-
-#include "domain/order.h"
-#include "persistence/inventoryRepository.h"
-
+#include "domain/order.h" // Order Å¬·¡½º Á¤ÀÇ¸¦ Æ÷ÇÔ
+#include <string> // setPayStatus, setCertCode µî¿¡¼­ std::string »ç¿ë
 
 namespace domain {
 
+// Order.h Çì´õ ÆÄÀÏ¿¡ ÀÌ¹Ì ÀÎ¶óÀÎÀ¸·Î ±¸ÇöµÇ¾î ÀÖ½À´Ï´Ù.
+/*
+Order::Order(std::string vmid, std::string dCode, int qty, std::string cCode, std::string pStatus)
+    : vmid_attribute(vmid),
+      drinkCode_attribute(dCode),
+      qty_attribute(qty),
+      certCode_attribute(cCode),
+      paystatus_attribute(pStatus) {
+    // ±âº»°ªÀ¸·Î qty=1, pStatus="PENDING" µîÀÌ Çì´õ¿¡ ¸í½ÃµÊ
+}
+*/
 
-Order::Order(std::string  vmId,
-             Drink        drink,
-             int          qty,
-             std::string  certCode,
-             std::string  payStatus)        //ê¸°ë³¸ê°’ : Pending
-    : vm_id_(std::move(vmId))
-    , drink_(std::move(drink))
-    , qty_(qty)
-    , cert_code_(std::move(certCode))
-    , pay_status_(std::move(payStatus))
-{}
+/*
+std::string Order::getVmid() const { return vmid_attribute; }
+std::string Order::getDrinkCode() const { return drinkCode_attribute; }
+int Order::getQty() const { return qty_attribute; }
+std::string Order::getCertCode() const { return certCode_attribute; }
+std::string Order::getPayStatus() const { return paystatus_attribute; }
+*/
 
-Order Order::attachPrePay(const std::string& drinkID, const std::string& code) { //ì„ ê²°ì œë¡œ ì „í™˜ì‹œ 
-
-    for (const auto& inventory : persistence::inventoryRepository::getAllDrinks()) {                //ë“œë§í¬ idë¥¼ ë ˆí¼ì§€í† ë¦¬ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì°¾ì•„ì„œ ë“œë§í¬ ê°ì²´ë¥¼ ê°€ì ¸ì˜´
-        if (inventory.getDrink().getCode() == drinkID) {
-            
-            return Order(vm_id_, inventory.getDrink(), qty_, code, pay_status_);
-        }
-    }
-    //ì°¾ì§€ëª»í–ˆì„ ê²½ìš°
-    return Order(vm_id_, Drink(), qty_, code, pay_status_);
-
+/*
+void Order::setPayStatus(const std::string& newStatus) {
+    paystatus_attribute = newStatus;
 }
 
-void Order::setStatus(const std::string& status) { 
-    if (status == "Approved" || status == "Declined")
-        pay_status_ = status;
+void Order::setCertCode(const std::string& newCertCode) {
+    certCode_attribute = newCertCode;
 }
-
-void Order::setVmId(const std::string& vmId) {
-    vm_id_ = vmId;
-}
+*/
 
 
-
-
-
-
-}
+} // namespace domain

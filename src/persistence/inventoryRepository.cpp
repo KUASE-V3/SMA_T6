@@ -1,81 +1,42 @@
-﻿#include "../include/persistence/inventoryRepository.h"
-#include <string>
-
-using namespace domain;
+﻿#include "persistence/inventoryRepository.h" // InventoryRepository 헤더 파일 포함
+#include "domain/inventory.h" // domain::Inventory 사용
+#include <stdexcept>      // std::out_of_range 등 예외 사용 가능성 (Inventory 내부에서)
 
 namespace persistence {
 
-std::vector<domain::inventory> inventoryRepository::allDrinks = {
-    inventory(Drink("Pepsi", 1500, "D001"), 1),
-    inventory(Drink("Sprite", 1500, "D002"), 1),
-    inventory(Drink("Vita500", 1600, "D003"), 1),
-    inventory(Drink("Powerade", 1600, "D004"), 1),
-    inventory(Drink("Monster", 2500, "D005"), 1),
-    inventory(Drink("Orange Juice", 2700, "D006"), 1),
-    inventory(Drink("Gatorade", 1800, "D007"), 1),
-    inventory(Drink("Corn Silk Tea", 1800, "D008"), 1),
-    inventory(Drink("Bacchus", 1700, "D009"), 1),
-    inventory(Drink("Vitamin Drink", 1000, "D010"), 1),
-    inventory(Drink("Boseong Green Tea", 1500, "D011"), 1),
-    inventory(Drink("Milkis", 1500, "D012"), 1),
-    inventory(Drink("Cocopalm", 1600, "D013"), 1),
-    inventory(Drink("Tropicana", 1600, "D014"), 1),
-    inventory(Drink("Cafe Latte Can", 1200, "D015"), 1),
-    inventory(Drink("Americano Can", 1200, "D016"), 1),
-    inventory(Drink("Let's Be", 1300, "D017"), 1),
-    inventory(Drink("Pocari Sweat", 1400, "D018"), 1),
-    inventory(Drink("Fanta Orange", 1500, "D019"), 1),
-    inventory(Drink("Cantata", 1600, "D020"), 1)
-};
+// InventoryRepository::InventoryRepository() {} // 기본 생성자
 
-
-void inventoryRepository::setAllDrinks(const std::vector<domain::inventory>& drinks) {
-    allDrinks = drinks;
+void InventoryRepository::addOrUpdateStock(const domain::Inventory& inventoryItem) {
+    stock_[inventoryItem.getDrinkCode()] = inventoryItem;
 }
 
-const std::vector<domain::inventory>& inventoryRepository::getAllDrinks() {
-    return allDrinks;
+bool InventoryRepository::isDrinkHandled(const std::string& drinkCode) const {
+    return stock_.count(drinkCode) > 0;
 }
- 
 
-//uc1 ? getList메소?
-std::vector<std::pair<std::string, int>> inventoryRepository::getList() {
-    std::vector<std::pair<std::string, int>> List;
-    for (const auto& inventory : allDrinks) {
-        List.emplace_back(inventory.getDrink().getName(), inventory.getDrink().getPrice());
+bool InventoryRepository::hasStock(const std::string& drinkCode) const {
+    auto it = stock_.find(drinkCode);
+    if (it != stock_.end()) {
+        return it->second.getQty() >= 1;
     }
-    return List;
+    return false; // 취급하지 않는 음료는 재고 없음
 }
 
-
-//unit 테스트 기록 필요.
-bool inventoryRepository::isValid(const std::string& drink) {
-    for (const auto& inventory : allDrinks) {
-        if (inventory.getDrink().getName() == drink) {
-            return inventory.getQty() > 0;
+bool InventoryRepository::decreaseStockByOne(const std::string& drinkCode) {
+    auto it = stock_.find(drinkCode);
+    if (it != stock_.end()) {
+        // it->second는 domain::Inventory 객체입니다.
+        // domain::Inventory의 decreaseQuantity는 재고 부족 시 예외를 발생시킵니다.
+        try {
+            it->second.decreaseQuantity(1); // 재고 1 감소 시도
+            return true; // 성공
+        } catch (const std::out_of_range& /* e */) { // 예외 객체 e는 사용하지 않음
+            // domain::Inventory에서 재고 부족으로 예외 발생
+            // 서비스 계층으로 예외를 전파하지 않고 false를 반환하여 실패를 알림.
+            return false;
         }
     }
-    return false;  // 음료를 찾지 못한 경우
+    return false; // 해당 음료를 찾을 수 없음 (취급 안 함)
 }
 
-
-
-
-void inventoryRepository::changeQty(const domain::Drink& drink) {
-    for (auto& inventory : allDrinks) {
-        if (inventory.getDrink().getName() == drink.getName()) {
-            inventory.reduceDrink(drink);
-            break;
-        }
-    }
-}
-
-bool inventoryRepository::isEmptyRepo(const domain::Drink& drink) const {
-    for (const auto& inventory : allDrinks) {
-        if (inventory.getDrink().getName() == drink.getName()) {
-            return inventory.isEmpty();
-        }
-    }
-    return true;  // 음료를 찾지 못한 경우도 true 반환
-}
-}
+} // namespace persistence
