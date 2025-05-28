@@ -1,4 +1,4 @@
-#ifndef INVENTORYREPOSITORY_H
+﻿#ifndef INVENTORYREPOSITORY_H
 #define INVENTORYREPOSITORY_H
 
 #include <string>

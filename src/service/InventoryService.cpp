@@ -1,4 +1,4 @@
-// InventoryService.cpp
+﻿// InventoryService.cpp
 #include "service/InventoryService.hpp"
 #include "../include/persistence/inventoryRepository.h"
 #include <vector>
@@ -14,8 +14,8 @@ bool InventoryService::getSaleValid(const std::string& drinkname) {
     return result;  
 }
 
-std::string InventoryService::reduceDrink(const std::string& drink) {
-    return drink; 
+std::string InventoryService::ReqReduceDrink(const std::string& drink) {
+    return drink;  // ?��?�� 반환
 }
 
 bool InventoryService::validOVMStock(const std::string& drinkName) {

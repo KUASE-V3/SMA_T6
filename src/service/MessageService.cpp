@@ -1,4 +1,4 @@
-#include "service/MessageService.hpp"
+﻿#include "service/MessageService.hpp"
 
 #include "domain/vendingMachine.h"
 
@@ -15,11 +15,9 @@
 static domain::VendingMachine vm{"T5", {123, 123}};   // TODO: 1차 때는 그냥 변수 사용(본인 자판기의 정보를 저장하는 레포지토리 문서상 구현 안함)  
 using service::MessageService;
 
-/* ��������������������������������������� �젙�쟻 helper ��������������������������������������� */
+/* ───────────── 정적 helper ───────────── */
 std::string MessageService::myId()            { return vm.getId();      }
 std::pair<int,int> MessageService::myCoord()  { return vm.getLocation();}
-
-
 
 
 
@@ -47,16 +45,16 @@ MessageService::MessageService(network::MessageSender&              sender,
     receiver_.subscribe(T::RESP_PREPAY, [this](auto&m){ handleRespPrepay(m); });
 }
 
-/* ��������������������������������������� UC-8 : 釉뚮줈�뱶罹먯뒪�듃 �넚�떊 ��������������������������������������� */
+/* ───────────── UC-8 : 브로드캐스트 송신 ───────────── */
 void MessageService::broadcastStock(const domain::Drink& drink)
 {
     network::Message req;
     req.msg_type = network::Message::Type::REQ_STOCK;
     req.src_id   = myId();
-    req.dst_id   = "0";               // broadcast湲� �븣臾몄뿉 0�쑝濡� �꽕�젙
+    req.dst_id   = "0";               // broadcast기 때문에 0으로 설정
     req.msg_content = {
         {"item_code", drink.getCode()},
-        {"item_num",  "01"} // 1二쇰Ц 1媛��닔 怨좎젙
+        {"item_num",  "01"} // 1주문 1갯수 고정
     };
 
     try { sender_.send(req); }
@@ -65,7 +63,7 @@ void MessageService::broadcastStock(const domain::Drink& drink)
     }
 }
 
-/* ��������������������������������������� UC-16 : REQ_PREPAY �넚�떊 ��������������������������������������� */
+/* ───────────── UC-16 : REQ_PREPAY 송신 ───────────── */
 void MessageService::sendPrePayReq(const domain::Order& order)
 {
     network::Message msg;
@@ -81,7 +79,7 @@ void MessageService::sendPrePayReq(const domain::Order& order)
     try {
         sender_.send(msg);
 
-        /* pending �벑濡� & watchdog �떆�옉 */
+        /* pending 등록 & watchdog 시작 */
         pending_.emplace(PendingPrepay{order});
         startPrepayTimer();
     }
@@ -90,18 +88,18 @@ void MessageService::sendPrePayReq(const domain::Order& order)
     }
 }
 
-/* ��������������������������������������� ����씠癒� helpers ��������������������������������������� */
-void MessageService::startPrepayTimer() // 紐⑤뱺 �슂泥���� 30珥� �씠�궡�뿉 �쓳�떟�씠 ����빞�븿
+/* ───────────── 타이머 helpers ───────────── */
+void MessageService::startPrepayTimer() // 모든 요청은 30초 이내에 응답이 와야함
 {
     if (pending_ && pending_->timer_future.valid())
-        cancelPrepayTimer();   // 湲곗〈 ����씠癒� �엳�쑝硫� �젣嫄�
+        cancelPrepayTimer();   // 기존 타이머 있으면 제거
 
 
     pending_->timer_future = std::async(std::launch::async, [this]{
         std::this_thread::sleep_for(std::chrono::seconds(30));
 
-        if (pending_) {                 // 30s �씠�썑�뿉�룄 �쓳�떟 X
-            errSvc_.logError("PREPAY timeout (30s)"); //�뿉�윭諛쒖깮
+        if (pending_) {                 // 30s 이후에도 응답 X
+            errSvc_.logError("PREPAY timeout (30s)"); //에러발생
             pending_.reset();
         }
     });
@@ -110,10 +108,10 @@ void MessageService::startPrepayTimer() // 紐⑤뱺 �슂泥���� 30珥
 void MessageService::cancelPrepayTimer()
 {
     if (pending_ && pending_->timer_future.valid())
-        pending_->timer_future.wait_for(std::chrono::seconds(0));   // 利됱떆 join
+        pending_->timer_future.wait_for(std::chrono::seconds(0));   // 즉시 join
 }
 
-/* ��������������������������������������� UC-15 : REQ_PREPAY �닔�떊 �썑 �쓳�떟�빖�뱾�윭 ��������������������������������������� */
+/* ───────────── UC-15 : REQ_PREPAY 수신 후 응답핸들러 ───────────── */
 void MessageService::respondPrepayReq(const domain::Order& order) //
 {
 
@@ -124,13 +122,13 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
 
     /* 1. 선결제 코드 검증 */
     
-    if(!prepaySvc_.isValid(order.certCode())){ //�쓽�룄�뒗 諛쒓툒�맂 肄붾뱶�씤吏� �솗�씤�븯怨� ����옣�븯�뒗 寃껋씠�뿀�쑝�굹 PrepaymentService�뿉�꽌 �씠瑜� �쐞�븳 肄붾뱶媛� �뾾�뼱�꽌 �쑀�슚�꽦 寃��궗留� 吏꾪뻾
+    if(!prepaySvc_.isValid(order.certCode())){ //의도는 발급된 코드인지 확인하고 저장하는 것이었으나 PrepaymentService에서 이를 위한 코드가 없어서 유효성 검사만 진행
         errSvc_.logError("respondPrepayReq: invalid code");
         return;
     }
 
-    /*  3. �옱怨� �솗蹂� �꽦怨�, �떎�뙣�뿉 �뵲�씪�꽌 �쓳�떟 */
-    if(invSvc_.getSaleValid(order.drink().getCode())){ // �옱怨좉�� �엳�쓣 �븣 媛��뒫�븳 寃쎌슦 T瑜� 蹂대깂
+    /*  3. 재고 확보 성공, 실패에 따라서 응답 */
+    if(invSvc_.getSaleValid(order.drink().getCode())){ // 재고가 있을 때 가능한 경우 T를 보냄
         network::Message resp;
         resp.msg_type = network::Message::Type::RESP_PREPAY;
         resp.src_id   = myId();
@@ -145,7 +143,7 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
             service::PrepaymentService prepaySvc;
             prepaySvc.saveCode(order); //선결제 코드 저장하는 메소드 호출(인증코드 저장)
             sender_.send(resp); 
-            invSvc_.reduceDrink(order.drink().getCode()); 
+            invSvc_.ReqReduceDrink(order.drink().getCode()); 
         }
         catch(const std::exception& e){
             errSvc_.logError(std::string("RESP_PREPAY send() failed: ")+e.what());
@@ -158,7 +156,7 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
         resp.msg_content = {
         {"availability","F"},
         {"item_num",    std::to_string(order.quantity())},
-        {"item_code", order.drink().getCode()} //�몴 �삎�떇 �뵲�씪�꽌 �옉�꽦 
+        {"item_code", order.drink().getCode()} //표 형식 따라서 작성 
     };
 
         try { sender_.send(resp); }
@@ -170,10 +168,10 @@ void MessageService::respondPrepayReq(const domain::Order& order) //
     
 }
 
-/* ��������������������������������������� �빖�뱾�윭�뱾 ��������������������������������������� */
+/* ───────────── 핸들러들 ───────────── */
 
 
-/* ��������������������������������������� 釉뚮줈�뱶罹먯뒪�듃 諛쏆븯�쓣 �븣 �룎�젮二쇰뒗 �빖�뱾�윭  ��������������������������������������� */
+/* ───────────── 브로드캐스트 받았을 때 돌려주는 핸들러  ───────────── */
 void MessageService::handleReqStock(const network::Message& msg)
 {
     bool empty = !invSvc_.getSaleValid(msg.msg_content.at("item_code"));
@@ -181,7 +179,7 @@ void MessageService::handleReqStock(const network::Message& msg)
     network::Message resp;
     resp.msg_type = network::Message::Type::RESP_STOCK;
     resp.src_id   = myId();
-    resp.dst_id   = msg.src_id; //釉뚮줈�뱶罹먯뒪�듃 諛쏆븯�쓣 �븣 �룎�젮二쇰뒗 �빖�뱾�윭 
+    resp.dst_id   = msg.src_id; //브로드캐스트 받았을 때 돌려주는 핸들러 
     resp.msg_content = {
         {"item_code", msg.msg_content.at("item_code")},
         {"item_num",  empty ? "0" : "1"}, //TODO : 지금 원하는 음료의 재고 잔량을 확인하는 메소드가 없음 비어있는지만 알 수 있음.
@@ -192,7 +190,7 @@ void MessageService::handleReqStock(const network::Message& msg)
     }
 }
 
-/* ��������������������������������������� 釉뚮줈�뱶罹먯뒪�듃 �쓳�떟 諛쏆븯�쓣 �븣 紐⑥븘�꽌 distanceService�뿉 二쇰뒗 �빖�뱾�윭  ��������������������������������������� */
+/* ───────────── 브로드캐스트 응답 받았을 때 모아서 distanceService에 주는 핸들러  ───────────── */
 void MessageService::handleRespStock(const network::Message& msg)
 {
     std::lock_guard lg(resp_mtx_);
@@ -206,12 +204,12 @@ void MessageService::handleRespStock(const network::Message& msg)
 //UC 15 핸들러입니다
 void MessageService::handleReqPrepay(const network::Message& msg)
 {
-    /*  msg �넂 Order �뙆�떛 �썑 respondPrepayReq(order) �샇異� */
+    /*  msg → Order 파싱 후 respondPrepayReq(order) 호출 */
     try {
         // 메세지 오면 order 객체 생성하고 코드 붙여서 저장 
         domain::Drink d{"", 0, msg.msg_content.at("item_code")};    // 드링크 하나 만든다
         domain::Order order{
-            msg.src_id,     // vmId  (蹂대궦 履�)
+            msg.src_id,     // vmId  (보낸 쪽)
             d,
             1,
             msg.msg_content.at("cert_code"),
@@ -229,7 +227,7 @@ void MessageService::handleReqPrepay(const network::Message& msg)
 
 void MessageService::handleRespPrepay(const network::Message& msg)
 {
-    /* pending_ �씠 �엳�쑝硫� �궡 �슂泥��뿉 ����븳 �쓳�떟�엫�쓣 �븣怨� �씠寃껊쭔 �슂泥� -> �룞�떆�뿉 �븳紐낆쓽 �궗�슜�옄媛� �옄�뙋湲곕�� �궗�슜�븳�떎怨� 媛��젙�븯湲� �븣臾몄뿉 �룞�떆 ���湲곌�� �뾾�쓬(釉뚮줈�뱶罹먯뒪�듃�젣�쇅)*/
+    /* pending_ 이 있으면 내 요청에 대한 응답임을 알고 이것만 요청 -> 동시에 한명의 사용자가 자판기를 사용한다고 가정하기 때문에 동시 대기가 없음(브로드캐스트제외)*/
     if (!pending_) {
         errSvc_.logError("unexpected RESP_PREPAY (no pending)");
         return;

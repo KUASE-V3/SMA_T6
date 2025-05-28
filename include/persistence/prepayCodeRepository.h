@@ -1,4 +1,4 @@
-#ifndef PREPAYMENTCODEREPOSITORY_H
+﻿#ifndef PREPAYMENTCODEREPOSITORY_H
 #define PREPAYMENTCODEREPOSITORY_H
 
 #include <vector>
@@ -11,11 +11,12 @@ namespace persistence {
 
 class PrepaymentCodeRepository {
 public:
-    void save(const domain::PrepaymentCode& code);
-    bool isSameCode(const std::string& code) const;
+    static void save(const domain::PrepaymentCode& code);
+    static bool isSameCode(const std::string& code);
+    static void changeStatus(const std::string& code);
 
 private:
-    std::vector<domain::PrepaymentCode> prepaymentCodeList; // ���� ĳ��
+    static std::vector<domain::PrepaymentCode> prepaymentCodeList; // ���� ĳ��
 };
 }
 

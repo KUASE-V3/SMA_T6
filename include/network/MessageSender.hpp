@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <vector>
 #include <string>
@@ -8,9 +8,9 @@
 
 namespace network {
 
-// MessageSender: ¸Þ½ÃÁö¸¦ ºê·ÎµåÄ³½ºÆ® ¶Ç´Â À¯´ÏÄ³½ºÆ®·Î Àü¼Û
-// - dst_id == "0" ÀÎ °æ¿ì endpoints_ ÀüÃ¼·Î Àü¼Û
-// - ¾Æ´Ñ °æ¿ì id_map_À» ÅëÇØ Æ¯Á¤ endpoint·Î Àü¼Û
+// MessageSender: ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Îµï¿½Ä³ï¿½ï¿½Æ® ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+// - dst_id == "0" ï¿½ï¿½ ï¿½ï¿½ï¿½ endpoints_ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+// - ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½ id_map_ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ endpointï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 class MessageSender {
 public:
     MessageSender(boost::asio::io_context& io,

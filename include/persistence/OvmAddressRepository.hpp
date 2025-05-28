@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <string>
 #include <vector>
@@ -6,16 +6,16 @@
 
 namespace persistence {
 
-// OvmAddressRepository: Other Vending Machine ÁÖ¼Ò(È£½ºÆ®:Æ÷Æ®) ¸ÅÇÎÀ» Á¦°ø
-// - 10°³ Á¤µµ ¹Ì¸® ¿¹½Ã ÀÛ¼ºÇÒ°ÅÀÓ
+// OvmAddressRepository: Other Vending Machine ï¿½Ö¼ï¿½(È£ï¿½ï¿½Æ®:ï¿½ï¿½Æ®) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+// - 10ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Û¼ï¿½ï¿½Ò°ï¿½ï¿½ï¿½
 class OvmAddressRepository {
 public:
     OvmAddressRepository();
 
-    // OVM ID -> "host:port" ¹ÝÈ¯ (¾øÀ¸¸é ºó ¹®ÀÚ¿­)
+    // OVM ID -> "host:port" ï¿½ï¿½È¯ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½)
     std::string getEndpoint(const std::string& id) const;
 
-    // Broadcast¿ë ÀüÃ¼ endpoint ¸ñ·Ï ¹ÝÈ¯
+    // Broadcastï¿½ï¿½ ï¿½ï¿½Ã¼ endpoint ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
     std::vector<std::string> getAllEndpoints() const;
 
 private:

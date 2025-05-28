@@ -1,4 +1,4 @@
-#include "domain/inventory.h"
+﻿#include "domain/inventory.h"
 #include "domain/drink.h"
 
 
@@ -23,7 +23,7 @@ bool inventory::isEmpty() const {
 }
 
 
-// Reduce quantity only if the input drink matches the stored drink
+
 void inventory::reduceDrink(const Drink& selecteddrink) {
     if (selecteddrink.getName() == drink_.getName() && qty_ > 0) {
         qty_--;

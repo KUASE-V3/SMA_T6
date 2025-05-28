@@ -1,33 +1,48 @@
-#ifndef PREPAYMENTCODE_H
-#define PREPAYMENTCODE_H
+﻿#ifndef PREPAYMENT_CODE_H
+#define PREPAYMENT_CODE_H
 
 #include <string>
-#include "order.h"
+#include <memory> // For std::shared_ptr
+
+// Forward declaration (Order.h에 정의된 domain::Order를 가리킴)
+namespace domain { class Order; }
 
 namespace domain {
 
-class PrepaymentCode {
-public:
-    PrepaymentCode(); // 생성자
-
-    std::string generate();          // 5자리 코드 생성
-    PrepaymentCode hold(Order order);      // Order 객체 홀드
-
-    static bool isUsable( const std::string& code);        //객체생성 없이 문자열 입력 후 메소드호출 가능
-
-    std::string getCode() const;
-
-    void use(std::string& status);
-    std::string getStatus();
-
-
-    private:
-        std::string code;
-        std::string status;
-        Order heldOrder;
+enum class CodeStatus { 
+    ACTIVE,
+    USED
 };
 
-}
+class PrePaymentCode {
+private:
+    std::string code_attribute;
+    CodeStatus status_attribute; // 이 enum도 domain::CodeStatus 또는 그냥 CodeStatus (같은 네임스페이스 내)
+    std::shared_ptr<domain::Order> heldOrder_attribute; // domain::Order 명시
 
+public:
+    PrePaymentCode(std::string code = "",
+                   CodeStatus status = CodeStatus::ACTIVE, // domain::CodeStatus 또는 CodeStatus
+                   std::shared_ptr<domain::Order> order = nullptr) // domain::Order 명시
+        : code_attribute(code), status_attribute(status), heldOrder_attribute(order) {}
 
-#endif
+    std::string getCode() const { return code_attribute; }
+    CodeStatus getStatus() const { return status_attribute; } // domain::CodeStatus 또는 CodeStatus
+    std::shared_ptr<domain::Order> getHeldOrder() const { return heldOrder_attribute; } // domain::Order 명시
+
+    bool isUsable() const {
+        return status_attribute == CodeStatus::ACTIVE; // CodeStatus::ACTIVE 또는 domain::CodeStatus::ACTIVE
+    }
+
+    void markAsUsed() {
+        status_attribute = CodeStatus::USED; // CodeStatus::USED 또는 domain::CodeStatus::USED
+    }
+
+    void setHeldOrder(std::shared_ptr<domain::Order> order) { // domain::Order 명시
+        heldOrder_attribute = order;
+    }
+};
+
+} // namespace domain
+
+#endif // PREPAYMENT_CODE_H

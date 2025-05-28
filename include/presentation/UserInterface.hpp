@@ -11,11 +11,12 @@ public:
     void show_error_message(const std::string& error);
     void display_Error(const std::string& error);
     void showText(const std::string& prepaymentCode);
-    void displayMessage(const std::string& msg);
+    static void displayMessage(const std::string& msg);
     void promptCardInfo();
     std::string promptPrepayCode();
     bool promptPrepayConsent();
     void display_SomeText(const std::string& text);
+    bool isValidCardNumber(const std::string& cardNumber);
 
 
     void dispense(const std::string& drinkCode);
