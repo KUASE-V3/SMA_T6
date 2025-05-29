@@ -6,7 +6,7 @@
 
 namespace persistence {
 
-// ÀÎÁõ ÄÚµå·Î ÁÖ¹® Á¶È¸
+// ì¸ì¦ ì½”ë“œë¡œ ì£¼ë¬¸ ì¡°íšŒ
 domain::Order OrderRepository::findByCertCode(const std::string& certCode) {
     auto it = std::find_if(orders_.begin(), orders_.end(),
                            [&certCode](const domain::Order& order) {
@@ -14,13 +14,13 @@ domain::Order OrderRepository::findByCertCode(const std::string& certCode) {
                            });
 
     if (it != orders_.end()) {
-        return *it; // Ã£¾ÒÀ¸¸é ÇØ´ç Order °´Ã¼ ¹İÈ¯
+        return *it; // ì°¾ì•˜ìœ¼ë©´ í•´ë‹¹ Order ê°ì²´ ë°˜í™˜
     }
-    return domain::Order(); // ºó Order °´Ã¼ ¹İÈ¯
+    return domain::Order(); // ë¹ˆ Order ê°ì²´ ë°˜í™˜
 
 }
 
-// ÁÖ¹® Á¤º¸ ÀúÀå/¾÷µ¥ÀÌÆ®
+// ì£¼ë¬¸ ì •ë³´ ì €ì¥/ì—…ë°ì´íŠ¸
 void OrderRepository::save(const domain::Order& order) {
 
     if (!order.getCertCode().empty()) {
@@ -29,15 +29,15 @@ void OrderRepository::save(const domain::Order& order) {
                                    return o.getCertCode() == order.getCertCode();
                                });
         if (it != orders_.end()) {
-            *it = order; // µ¿ÀÏÇÑ certCode°¡ ÀÖ´Â ÁÖ¹®ÀÌ¸é ¾÷µ¥ÀÌÆ®
+            *it = order; // ë™ì¼í•œ certCodeê°€ ìˆëŠ” ì£¼ë¬¸ì´ë©´ ì—…ë°ì´íŠ¸
             return;
         }
     }
-    // ±×·¸Áö ¾Ê°Å³ª, certCode°¡ ¾ø´Â ÁÖ¹®ÀÌ¸é »õ·Î Ãß°¡
+    // ê·¸ë ‡ì§€ ì•Šê±°ë‚˜, certCodeê°€ ì—†ëŠ” ì£¼ë¬¸ì´ë©´ ìƒˆë¡œ ì¶”ê°€
     orders_.push_back(order);
 }
 
-// ÁÖ¹® »óÅÂ ¾÷µ¥ÀÌÆ®
+// ì£¼ë¬¸ ìƒíƒœ ì—…ë°ì´íŠ¸
 bool OrderRepository::updateStatus(const std::string& vmid,
                                    const std::string& drinkCode,
                                    const std::string& certCode,
@@ -48,10 +48,10 @@ bool OrderRepository::updateStatus(const std::string& vmid,
                                if (!certCode.empty()) {
                                    return o.getCertCode() == certCode;
                                }
-                               // certCode°¡ ¾ø´Â °æ¿ì, °¡Àå ÃÖ±ÙÀÇ PENDING »óÅÂÀÎ ÇØ´ç À½·á ÁÖ¹®À» Ã£´Â´Ù°í °¡Á¤.
+                               // certCodeê°€ ì—†ëŠ” ê²½ìš°, ê°€ì¥ ìµœê·¼ì˜ PENDING ìƒíƒœì¸ í•´ë‹¹ ìŒë£Œ ì£¼ë¬¸ì„ ì°¾ëŠ”ë‹¤ê³  ê°€ì •.
                                return o.getVmid() == vmid &&
                                       o.getDrinkCode() == drinkCode &&
-                                      o.getPayStatus() == "PENDING"; // ¿¹½Ã: PENDING »óÅÂÀÇ ÁÖ¹®¸¸ ¾÷µ¥ÀÌÆ®
+                                      o.getPayStatus() == "PENDING"; // ì˜ˆì‹œ: PENDING ìƒíƒœì˜ ì£¼ë¬¸ë§Œ ì—…ë°ì´íŠ¸
                            });
 
     if (it != orders_.end()) {
@@ -59,7 +59,7 @@ bool OrderRepository::updateStatus(const std::string& vmid,
         (*it).setPayStatus(newStatus);
         return true;
     }
-    return false; // ¾÷µ¥ÀÌÆ®ÇÒ ÁÖ¹®À» Ã£Áö ¸øÇÔ
+    return false; // ì—…ë°ì´íŠ¸í•  ì£¼ë¬¸ì„ ì°¾ì§€ ëª»í•¨
 }
 
 

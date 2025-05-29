@@ -1,4 +1,4 @@
-﻿#include "service/UserProcessController.hpp"
+#include "service/UserProcessController.hpp"
 #include "presentation/UserInterface.hpp"
 #include "service/InventoryService.hpp"
 #include "service/OrderService.hpp"
@@ -409,21 +409,21 @@ void UserProcessController::state_processingPayment() {
         userInterface_.displayPaymentResult(true, "결제가 성공적으로 완료되었습니다!");
         
         orderService_.processOrderApproval(*currentActiveOrder_, isPrepay); // (S) UC5.2
-        // <<< 디버그 로그 추가 >>>
-        std::cout << "[" << myVendingMachineId_ << "] DEBUG: state_processingPayment - Payment success. isPrepay: " << isPrepay << std::endl;
-        if (selectedTargetVmForPrepayment_) {
-            std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment ID: " << selectedTargetVmForPrepayment_->getId() << std::endl;
-        } else {
-            std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment_ is NOT set." << std::endl;
-        }
+        // // <<< 디버그 로그 추가 >>>
+        // std::cout << "[" << myVendingMachineId_ << "] DEBUG: state_processingPayment - Payment success. isPrepay: " << isPrepay << std::endl;
+        // if (selectedTargetVmForPrepayment_) {
+        //     std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment ID: " << selectedTargetVmForPrepayment_->getId() << std::endl;
+        // } else {
+        //     std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment_ is NOT set." << std::endl;
+        // }
 
         if (isPrepay) { // (S) UC5.2
             if (!selectedTargetVmForPrepayment_) {
-                std::cout << "[" << myVendingMachineId_ << "] ERROR: 선결제 대상 자판기 미선택 상태로 UC16 진입 시도!" << std::endl; 
+                // std::cout << "[" << myVendingMachineId_ << "] ERROR: 선결제 대상 자판기 미선택 상태로 UC16 진입 시도!" << std::endl; 
                 last_error_info_ = errorService_.processOccurredError(ErrorType::UNEXPECTED_SYSTEM_ERROR, "선결제 대상 자판기 미선택");
                 currentState_ = ControllerState::HANDLING_ERROR;
             } else {
-                std::cout << "[" << myVendingMachineId_ << "] DEBUG: Changing state to ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION" << std::endl; // <<< 로그 추가
+                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: Changing state to ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION" << std::endl; // <<< 로그 추가
                 currentState_ = ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION; // UC16으로
             }
         } else { // (S) UC5.3
@@ -579,11 +579,11 @@ void UserProcessController::state_issuingAuthCodeAndRequestingReservation() {
     { // 공유 변수 읽기 보호
       // <<< 각 정보 유효성 검사 로그 추가 >>>
         std::lock_guard<std::mutex> lock(mtx_);
-        if (!currentActiveOrder_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: currentActiveOrder_ 없음" << std::endl;
-        else if (currentActiveOrder_->getCertCode().empty())  std::cout << "[" << myVendingMachineId_ << "] DEBUG: currentActiveOrder_에 certCode 없음" << std::endl;
-        if (!pendingDrinkSelection_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: pendingDrinkSelection_ 없음" << std::endl;
-        if (!selectedTargetVmForPrepayment_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment_ 없음" << std::endl;
-        if (!isCurrentOrderPrepayment_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: isCurrentOrderPrepayment_가 false임" << std::endl;
+        // if (!currentActiveOrder_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: currentActiveOrder_ 없음" << std::endl;
+        // else if (currentActiveOrder_->getCertCode().empty())  std::cout << "[" << myVendingMachineId_ << "] DEBUG: currentActiveOrder_에 certCode 없음" << std::endl;
+        // if (!pendingDrinkSelection_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: pendingDrinkSelection_ 없음" << std::endl;
+        // if (!selectedTargetVmForPrepayment_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment_ 없음" << std::endl;
+        // if (!isCurrentOrderPrepayment_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: isCurrentOrderPrepayment_가 false임" << std::endl;
 
         if (!currentActiveOrder_ || currentActiveOrder_->getCertCode().empty() || !pendingDrinkSelection_ || !selectedTargetVmForPrepayment_ || !isCurrentOrderPrepayment_) {
             last_error_info_ = errorService_.processOccurredError(ErrorType::UNEXPECTED_SYSTEM_ERROR, "선결제 요청: 정보 부족");
@@ -724,17 +724,17 @@ void UserProcessController::onReqStockReceived(const network::Message& msg) { //
 
 void UserProcessController::onRespStockReceived(const network::Message& msg) { // UC9
     std::lock_guard<std::mutex> lock(mtx_);
-    // <<< 디버그 로그 추가 >>>
-    std::cout << "[" << myVendingMachineId_ << "] onRespStockReceived: 메시지 수신됨 (from: " << msg.src_id << ", type: " << static_cast<int>(msg.msg_type) << ")" << std::endl;
-    if (msg.msg_content.count("item_code")) {
-        std::cout << "  - item_code: " << msg.msg_content.at("item_code") << std::endl;
-    }
+    // // <<< 디버그 로그 추가 >>>
+    // std::cout << "[" << myVendingMachineId_ << "] onRespStockReceived: 메시지 수신됨 (from: " << msg.src_id << ", type: " << static_cast<int>(msg.msg_type) << ")" << std::endl;
+    // if (msg.msg_content.count("item_code")) {
+    //     std::cout << "  - item_code: " << msg.msg_content.at("item_code") << std::endl;
+    // }
 
-    if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) {
-        // <<< 디버그 로그 추가 >>>
-        std::cout << "  - 현재 상태 AWAITING_STOCK_RESPONSES 아님. 메시지 무시." << std::endl;
-        return;
-    }
+    // if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) {
+    //     // <<< 디버그 로그 추가 >>>
+    //     std::cout << "  - 현재 상태 AWAITING_STOCK_RESPONSES 아님. 메시지 무시." << std::endl;
+    //     return;
+    // }
     if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) return;
 
     try {
@@ -750,11 +750,11 @@ void UserProcessController::onRespStockReceived(const network::Message& msg) { /
             if(alreadyReceived) return;
 
             availableOtherVmsForDrink_.push_back({vmId, x, y, true});
-            // <<< 디버그 로그 추가 >>>
-            std::cout << "  - 유효한 재고 응답. availableOtherVmsForDrink_ 크기: " << availableOtherVmsForDrink_.size() << "/" << total_other_vms_ << std::endl;
+            // // <<< 디버그 로그 추가 >>>
+            // std::cout << "  - 유효한 재고 응답. availableOtherVmsForDrink_ 크기: " << availableOtherVmsForDrink_.size() << "/" << total_other_vms_ << std::endl;
 
-            // <<< 디버그 로그 추가 >>>
-            std::cout << "  - 모든 다른 VM으로부터 응답 수신 완료 또는 지정된 수만큼 받음. 타이머 취소 및 상태 변경 시도." << std::endl;
+            // // <<< 디버그 로그 추가 >>>
+            // std::cout << "  - 모든 다른 VM으로부터 응답 수신 완료 또는 지정된 수만큼 받음. 타이머 취소 및 상태 변경 시도." << std::endl;
             
         
             if (availableOtherVmsForDrink_.size() >= total_other_vms_) {
@@ -764,10 +764,10 @@ void UserProcessController::onRespStockReceived(const network::Message& msg) { /
                 cv_.notify_one();
             }else{
                 
-             // <<< 디버그 로그 추가 >>>
-             std::cout << "  - 유효하지 않은 재고 응답 또는 조건 불일치 (요청 음료: "
-               << (pendingDrinkSelection_ ? pendingDrinkSelection_->getDrinkCode() : "N/A")
-                  << ", 수신 음료: " << drinkCode << ", 재고: " << stockQty << ")" << std::endl;
+            //  // <<< 디버그 로그 추가 >>>
+            //  std::cout << "  - 유효하지 않은 재고 응답 또는 조건 불일치 (요청 음료: "
+            //    << (pendingDrinkSelection_ ? pendingDrinkSelection_->getDrinkCode() : "N/A")
+            //       << ", 수신 음료: " << drinkCode << ", 재고: " << stockQty << ")" << std::endl;
     
             }
         }
@@ -780,7 +780,7 @@ void UserProcessController::onRespStockReceived(const network::Message& msg) { /
 }
 
 void UserProcessController::onReqPrepayReceived(const network::Message& msg) { // UC15
-    std::cout << "[" << myVendingMachineId_ << "] DEBUG: onReqPrepayReceived 진입 (from: " << msg.src_id << ")" << std::endl; // <<< 로그 추가
+    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: onReqPrepayReceived 진입 (from: " << msg.src_id << ")" << std::endl; // <<< 로그 추가
     std::lock_guard<std::mutex> lock(mtx_);
     try { // (S) UC15.1
         std::string drinkCode = msg.msg_content.at("item_code");
@@ -811,7 +811,6 @@ void UserProcessController::onReqPrepayReceived(const network::Message& msg) { /
             inventoryService_.decreaseStockByAmount(drinkCode, requestedItemNum);
             prepaymentService_.recordIncomingPrepayment(certCode, drinkCode, requestingVmId);
             reservationSuccess = true;
-            // userInterface_.displayMessage(...); // UI 직접 호출 주의
         } else { /* (A1) UC15 */ }
         messageService_.sendPrepaymentReservationResponse(requestingVmId, drinkCode, (reservationSuccess ? requestedItemNum : 0), reservationSuccess); // (S) UC15.3
     } catch (const std::exception& e) {
@@ -834,7 +833,6 @@ void UserProcessController::onRespPrepayReceived(const network::Message& msg) { 
             currentActiveOrder_ && !currentActiveOrder_->getCertCode().empty() &&
             selectedTargetVmForPrepayment_ && selectedTargetVmForPrepayment_->getId() == msg.src_id) {
             if (availability == "T") { // (S) UC16.2
-                // userInterface_.displayMessage(...); // UI 직접 호출 주의
                 currentState_ = ControllerState::DISPLAYING_AUTH_CODE_INFO; // UC12로
             } else { // (E1) UC16
                 last_error_info_ = errorService_.processOccurredError(ErrorType::STOCK_RESERVATION_FAILED_AT_OTHER_VM, msg.src_id);

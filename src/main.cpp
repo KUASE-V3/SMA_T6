@@ -1,4 +1,4 @@
-﻿#include "domain/drink.h"
+#include "domain/drink.h"
 #include "domain/inventory.h"
 #include "domain/order.h"
 #include "domain/vendingMachine.h"
@@ -45,7 +45,7 @@ const std::vector<domain::VendingMachine> ALL_VENDING_MACHINES_IN_SYSTEM = {
 };
 
 // --- 현재 실행될 자판기의 기본 정보 (명령행 인자로 덮어쓸 수 있음) ---
-std::string THIS_VM_ID = "T1"; // 기본 실행 ID
+std::string THIS_VM_ID = "T5"; // 기본 실행 ID
 int THIS_VM_X = 10;
 int THIS_VM_Y = 10;
 unsigned short THIS_VM_PORT = 12345;

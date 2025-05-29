@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 #include "network/message.hpp" // network::Message 구조체 사용을 위해 포함

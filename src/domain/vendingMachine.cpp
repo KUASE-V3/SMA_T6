@@ -1,4 +1,4 @@
-﻿#include "domain/vendingMachine.h" 
+#include "domain/vendingMachine.h" 
 #include <string>                  // std::string 사용
 #include <utility>                 // std::pair, std::make_pair 사용
 

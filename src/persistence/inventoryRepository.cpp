@@ -1,4 +1,4 @@
-﻿#include "persistence/inventoryRepository.h"
+#include "persistence/inventoryRepository.h"
 #include "domain/inventory.h"
 #include <stdexcept>
 

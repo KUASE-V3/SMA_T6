@@ -1,9 +1,9 @@
-#include "domain/order.h" // Order Å¬·¡½º Á¤ÀÇ¸¦ Æ÷ÇÔ
-#include <string> // setPayStatus, setCertCode µî¿¡¼­ std::string »ç¿ë
+#include "domain/order.h" // Order í´ë˜ìŠ¤ ì •ì˜ë¥¼ í¬í•¨
+#include <string> // setPayStatus, setCertCode ë“±ì—ì„œ std::string ì‚¬ìš©
 
 namespace domain {
 
-// Order.h Çì´õ ÆÄÀÏ¿¡ ÀÌ¹Ì ÀÎ¶óÀÎÀ¸·Î ±¸ÇöµÇ¾î ÀÖ½À´Ï´Ù.
+// Order.h í—¤ë” íŒŒì¼ì— ì´ë¯¸ ì¸ë¼ì¸ìœ¼ë¡œ êµ¬í˜„ë˜ì–´ ìˆìŠµë‹ˆë‹¤.
 /*
 Order::Order(std::string vmid, std::string dCode, int qty, std::string cCode, std::string pStatus)
     : vmid_attribute(vmid),
@@ -11,7 +11,7 @@ Order::Order(std::string vmid, std::string dCode, int qty, std::string cCode, st
       qty_attribute(qty),
       certCode_attribute(cCode),
       paystatus_attribute(pStatus) {
-    // ±âº»°ªÀ¸·Î qty=1, pStatus="PENDING" µîÀÌ Çì´õ¿¡ ¸í½ÃµÊ
+    // ê¸°ë³¸ê°’ìœ¼ë¡œ qty=1, pStatus="PENDING" ë“±ì´ í—¤ë”ì— ëª…ì‹œë¨
 }
 */
 

@@ -1,4 +1,4 @@
-﻿#ifndef VENDING_MACHINE_H
+#ifndef VENDING_MACHINE_H
 #define VENDING_MACHINE_H
 
 #include <string>

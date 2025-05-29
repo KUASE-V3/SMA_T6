@@ -1,4 +1,4 @@
-﻿#include "domain/drink.h"
+#include "domain/drink.h"
 
 namespace domain {
 

@@ -11,14 +11,14 @@ class OrderRepository {
 public:
     OrderRepository() = default;
 
-    domain::Order findByCertCode(const std::string& certCode); // ¼±°áÁ¦ ÁÖ¹® Á¶È¸¿ë
-    void save(const domain::Order& order); // ÁÖ¹® Á¤º¸ ÀúÀå/¾÷µ¥ÀÌÆ®
-    // ÁÖ¹® »óÅÂ ¾÷µ¥ÀÌÆ®
+    domain::Order findByCertCode(const std::string& certCode); // ì„ ê²°ì œ ì£¼ë¬¸ ì¡°íšŒìš©
+    void save(const domain::Order& order); // ì£¼ë¬¸ ì •ë³´ ì €ì¥/ì—…ë°ì´íŠ¸
+    // ì£¼ë¬¸ ìƒíƒœ ì—…ë°ì´íŠ¸
     bool updateStatus(const std::string& vmid, const std::string& drinkCode, const std::string& certCode, const std::string& newStatus);
 private:
-    std::vector<domain::Order> orders_; // ¸Ş¸ğ¸® ³» ÁÖ¹® ÀúÀå¼Ò
-    // ÁÖ¹®Àº ÀÎÁõ ÄÚµå(certCode)·Î ½Äº°µÇ¸ç, µ¿ÀÏÇÑ ÀÎÁõ ÄÚµå°¡ ÀÖ´Â ÁÖ¹®Àº ¾÷µ¥ÀÌÆ®µÊ.
-    // certCode°¡ ¾ø´Â °æ¿ì, vmid¿Í drinkCode·Î °¡Àå ÃÖ±ÙÀÇ PENDING »óÅÂÀÎ ÁÖ¹®À» Ã£¾Æ ¾÷µ¥ÀÌÆ®ÇÔ.
+    std::vector<domain::Order> orders_; // ë©”ëª¨ë¦¬ ë‚´ ì£¼ë¬¸ ì €ì¥ì†Œ
+    // ì£¼ë¬¸ì€ ì¸ì¦ ì½”ë“œ(certCode)ë¡œ ì‹ë³„ë˜ë©°, ë™ì¼í•œ ì¸ì¦ ì½”ë“œê°€ ìˆëŠ” ì£¼ë¬¸ì€ ì—…ë°ì´íŠ¸ë¨.
+    // certCodeê°€ ì—†ëŠ” ê²½ìš°, vmidì™€ drinkCodeë¡œ ê°€ì¥ ìµœê·¼ì˜ PENDING ìƒíƒœì¸ ì£¼ë¬¸ì„ ì°¾ì•„ ì—…ë°ì´íŠ¸í•¨.
 };
 
 } // namespace persistence

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 #include <unordered_map>
@@ -13,7 +13,7 @@ struct Message{
     };
 
     Type msg_type{}; 
-    std::string src_id = "T6"; 
+    std::string src_id = "T5"; 
     std::string dst_id = "0"; // 0일 때는 브로드캐스트
     std::unordered_map<std::string, std::string> msg_content; 
 

@@ -1,4 +1,4 @@
-﻿#include "network/PaymentCallbackReceiver.hpp"
+#include "network/PaymentCallbackReceiver.hpp"
 
 void network::PaymentCallbackReceiver::simulatePrepayment(Callback cb,int delay_seconds) const {
     std::this_thread::sleep_for(std::chrono::seconds(delay_seconds));
