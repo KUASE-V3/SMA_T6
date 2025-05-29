@@ -5,10 +5,10 @@
 #include "domain/prepaymentCode.h"
 
 #include "persistence/DrinkRepository.hpp"
-#include "persistence/inventoryRepository.h"
+#include "persistence/inventoryRepository.h"    // .h 또는 .hpp 프로젝트에 맞게 확인
 #include "persistence/OrderRepository.hpp"
 #include "persistence/OvmAddressRepository.hpp"
-#include "persistence/prepayCodeRepository.h"
+#include "persistence/prepayCodeRepository.h" // .h 또는 .hpp 프로젝트에 맞게 확인
 
 #include "network/message.hpp"
 #include "network/MessageSender.hpp"
@@ -43,51 +43,104 @@ const std::vector<domain::VendingMachine> ALL_VENDING_MACHINES_IN_SYSTEM = {
     domain::VendingMachine("T7", 35, 25, "12351"), domain::VendingMachine("T8", 45, 35, "12352")
 };
 
-// --- 현재 실행될 자판기 정보 ---
-std::string THIS_VM_ID = ""; // 명령행 인자로 설정
-int THIS_VM_X = 0;
-int THIS_VM_Y = 0;
-unsigned short THIS_VM_PORT = 0;
-
-// --- 고정된 테스트 대상 ---
-const std::string PRIMARY_TEST_VM_ID = "T5";
-const std::string SECONDARY_TEST_VM_ID = "T1";
-
+// --- 현재 실행될 자판기의 정보 (명령행 인자로 덮어쓰일 수 있음) ---
+std::string THIS_VM_ID = "T5"; // T5
+int THIS_VM_X = 50;            // T5의 기본 X 좌표
+int THIS_VM_Y = 50;            // T5의 기본 Y 좌표
+unsigned short THIS_VM_PORT = 12349; // T5의 기본 포트
 
 // 함수 선언
 domain::VendingMachine findVmDefinitionInList(const std::string& vmId, const std::vector<domain::VendingMachine>& vmList);
-void setupFocusedInventory(const std::string& currentVmId, persistence::InventoryRepository& inventoryRepo);
+void setupGeneralInventory(const std::string& currentVmId, persistence::InventoryRepository& inventoryRepo);
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        std::cerr << "사용법: " << argv[0] << " [실행할 자판기 ID (예: T1 또는 T5)]" << std::endl;
-        std::cerr << "이 테스트 빌드에서는 T1과 T5 간의 통신에 집중합니다." << std::endl;
+
+
+    // 1. 명령행 인자 파싱
+    if (argc >= 2 && (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")) {
+        std::cout << "사용법: " << argv[0] << " [자판기ID [X Y Port | Port]]" << std::endl;
+        std::cout << "  옵션 없음        : 기본 자판기(" << THIS_VM_ID << ")가 기본 설정으로 실행됩니다." << std::endl;
+        std::cout << "  [Port]           : 기본 자판기(" << THIS_VM_ID << ")가 지정된 포트로 실행됩니다." << std::endl;
+        std::cout << "  [자판기ID]       : 지정된 ID의 자판기가 기본 설정으로 실행됩니다." << std::endl;
+        std::cout << "  [자판기ID Port]  : 지정된 ID의 자판기가 지정된 포트로 실행됩니다 (좌표는 기본값 사용)." << std::endl;
+        std::cout << "  [자판기ID X Y Port]: 지정된 ID의 자판기가 지정된 X, Y 좌표 및 포트로 실행됩니다." << std::endl;
+        std::cout << "\nALL_VENDING_MACHINES_IN_SYSTEM 정의:" << std::endl;
+        for(const auto& vm : ALL_VENDING_MACHINES_IN_SYSTEM) {
+            std::cout << "  - ID: " << vm.getId() << ", X: " << vm.getLocation().first
+                      << ", Y: " << vm.getLocation().second << ", Port: " << vm.getPort() << std::endl;
+        }
+        return 0;
+    }
+
+    std::string initialVmId = THIS_VM_ID; // 파싱 전 기본 ID (T5)
+    unsigned short initialVmPort = THIS_VM_PORT;
+    int initialVmX = THIS_VM_X;
+    int initialVmY = THIS_VM_Y;
+
+    if (argc == 2) { // 인자 1개: Port (for T5) 또는 ID
+        try {
+            initialVmPort = static_cast<unsigned short>(std::stoi(argv[1]));
+            // 숫자로 변환 성공 시, 기본 ID(T5)에 대한 포트 변경으로 간주
+            std::cout << "정보: 기본 자판기(" << initialVmId << ")의 실행 포트가 " << initialVmPort << "로 지정되었습니다." << std::endl;
+        } catch (const std::invalid_argument& ia) { // 숫자가 아니면 ID로 간주
+            initialVmId = argv[1];
+            std::cout << "정보: 실행 자판기 ID가 " << initialVmId << "로 지정되었습니다. (기본 설정 사용)" << std::endl;
+        } catch (const std::out_of_range& oor) {
+            std::cerr << "오류: 포트 번호(" << argv[1] << ")가 유효한 범위를 벗어났습니다." << std::endl; return 1;
+        }
+    } else if (argc == 3) { // 인자 2개: ID Port
+        initialVmId = argv[1];
+        try {
+            initialVmPort = static_cast<unsigned short>(std::stoi(argv[2]));
+            std::cout << "정보: 자판기 " << initialVmId << "의 실행 포트가 " << initialVmPort << "로 지정되었습니다." << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "오류: 포트 번호(" << argv[2] << ") 변환 실패. " << e.what() << std::endl; return 1;
+        }
+    } else if (argc == 5) { // 인자 4개: ID X Y Port
+        initialVmId = argv[1];
+        try {
+            initialVmX = std::stoi(argv[2]);
+            initialVmY = std::stoi(argv[3]);
+            initialVmPort = static_cast<unsigned short>(std::stoi(argv[4]));
+            std::cout << "정보: 자판기 " << initialVmId << "가 X:" << initialVmX << ", Y:" << initialVmY << ", Port:" << initialVmPort << "로 실행됩니다." << std::endl;
+        } catch (const std::exception& e) {
+            std::cerr << "오류: 제공된 실행 인자 (X, Y, Port) 변환 실패. " << e.what() << std::endl; return 1;
+        }
+    } else if (argc != 1) { // 그 외 잘못된 인자 수 (1개도 아니고, 2개도 아니고, 3개도 아니고, 5개도 아님)
+        std::cerr << "오류: 잘못된 수의 명령행 인자입니다. 도움말은 --help 또는 -h 옵션을 사용하세요." << std::endl;
         return 1;
     }
-    THIS_VM_ID = argv[1];
 
-    if (THIS_VM_ID != PRIMARY_TEST_VM_ID && THIS_VM_ID != SECONDARY_TEST_VM_ID) {
-        std::cerr << "오류: 이 테스트 빌드에서는 " << PRIMARY_TEST_VM_ID << " 또는 "
-                  << SECONDARY_TEST_VM_ID << "만 실행할 수 있습니다." << std::endl;
-        return 1;
-    }
-
+    // 최종 VM 정보 설정
+    THIS_VM_ID = initialVmId;
     domain::VendingMachine vmDef = findVmDefinitionInList(THIS_VM_ID, ALL_VENDING_MACHINES_IN_SYSTEM);
     if (vmDef.getId().empty()) {
         std::cerr << "오류: ID(" << THIS_VM_ID << ")에 대한 정의를 ALL_VENDING_MACHINES_IN_SYSTEM에서 찾을 수 없음. 종료." << std::endl;
         return 1;
     }
-    THIS_VM_X = vmDef.getLocation().first;
-    THIS_VM_Y = vmDef.getLocation().second;
-    try {
-        THIS_VM_PORT = static_cast<unsigned short>(std::stoi(vmDef.getPort()));
-    } catch (const std::exception& e) {
-        std::cerr << "오류: ID(" << THIS_VM_ID << ")의 포트(" << vmDef.getPort() << ") 변환 실패. 종료. " << e.what() << std::endl;
-        return 1;
+
+    if (argc < 5) { // X, Y가 인자로 주어지지 않은 경우, vmDef에서 가져옴
+        THIS_VM_X = vmDef.getLocation().first;
+        THIS_VM_Y = vmDef.getLocation().second;
+    }
+    if (argc == 1 || (argc == 2 && !isdigit(argv[1][0])) || argc ==3 ) { // Port가 인자로 명시적으로 주어지지 않은 경우(ID만 주어졌거나 아무것도 안주어졌거나), vmDef에서 가져옴
+        // argc == 3 (ID Port)는 위에서 initialVmPort로 이미 설정됨. 여기서는 덮어쓰지 않도록 조건 조정.
+        if (! (argc == 3 || (argc == 2 && isdigit(argv[1][0])) ) ) { // ID와 Port가 같이 주어졌거나, Port만 주어졌을때는 이미 initialVmPort 설정됨
+            try { THIS_VM_PORT = static_cast<unsigned short>(std::stoi(vmDef.getPort())); }
+            catch (const std::exception& e) { std::cerr << "오류: ID(" << THIS_VM_ID << ")의 기본 포트(" << vmDef.getPort() << ") 변환 실패. " << e.what() << std::endl; return 1; }
+        } else {
+            THIS_VM_PORT = initialVmPort; // 인자로 받은 포트 사용
+        }
+    } else if (argc == 5) { // ID X Y Port 모두 주어진 경우
+         THIS_VM_X = initialVmX;
+         THIS_VM_Y = initialVmY;
+         THIS_VM_PORT = initialVmPort;
+    } else { //argc == 2 이고 argv[1]이 port인 경우
+        THIS_VM_PORT = initialVmPort;
     }
 
-    std::cout << "--- 자판기 " << THIS_VM_ID << " (Port: " << THIS_VM_PORT << ", X: " << THIS_VM_X << ", Y: " << THIS_VM_Y << ") 테스트 시작 ---" << std::endl;
-    std::cout << "정보: 이 실행은 " << PRIMARY_TEST_VM_ID << "과 " << SECONDARY_TEST_VM_ID << " 간의 통신에 집중합니다." << std::endl;
+
+    std::cout << "--- 자판기 " << THIS_VM_ID << " (Port: " << THIS_VM_PORT << ", X: " << THIS_VM_X << ", Y: " << THIS_VM_Y << ") 시스템 시작 ---" << std::endl;
 
     try {
         boost::asio::io_context io_context;
@@ -100,26 +153,27 @@ int main(int argc, char* argv[]) {
         persistence::OvmAddressRepository ovmAddressRepository;
         persistence::PrepayCodeRepository prepayCodeRepository;
 
-        setupFocusedInventory(THIS_VM_ID, inventoryRepository);
-        std::cout << "정보: " << THIS_VM_ID << " 자판기의 테스트용 초기 재고 설정 완료." << std::endl;
+        setupGeneralInventory(THIS_VM_ID, inventoryRepository);
+        std::cout << "정보: " << THIS_VM_ID << " 자판기의 초기 재고 설정 완료." << std::endl;
 
         std::vector<std::string> other_vm_endpoints_for_sender;
         std::unordered_map<std::string, std::string> id_to_endpoint_map_for_sender;
         int actual_other_vm_count = 0;
 
-        // 고정된 상대방 VM 정보 설정
-        std::string targetPartnerVmId = (THIS_VM_ID == PRIMARY_TEST_VM_ID) ? SECONDARY_TEST_VM_ID : PRIMARY_TEST_VM_ID;
-        domain::VendingMachine partnerVmDef = findVmDefinitionInList(targetPartnerVmId, ALL_VENDING_MACHINES_IN_SYSTEM);
-
-        if (!partnerVmDef.getId().empty()) {
-            ovmAddressRepository.save(partnerVmDef);
-            std::string endpoint_str = "127.0.0.1:" + partnerVmDef.getPort();
-            other_vm_endpoints_for_sender.push_back(endpoint_str); // 브로드캐스트 시 이 하나만 대상
-            id_to_endpoint_map_for_sender[partnerVmDef.getId()] = endpoint_str;
-            actual_other_vm_count = 1; // 통신 대상은 고정된 상대방 1대
-            std::cout << "정보: 통신 대상 자판기 " << partnerVmDef.getId() << " (Port: " << partnerVmDef.getPort() << ", Endpoint: " << endpoint_str << ")로 설정됨." << std::endl;
-        } else {
-            std::cerr << "경고: 파트너 자판기 " << targetPartnerVmId << " 정보를 찾을 수 없어 다른 자판기 통신이 불가능합니다." << std::endl;
+        std::cout << "정보: 다른 자판기 정보 로드 중 (시스템 내 모든 다른 자판기 대상)..." << std::endl;
+        for (const auto& other_vm_def : ALL_VENDING_MACHINES_IN_SYSTEM) {
+            if (other_vm_def.getId() == THIS_VM_ID) {
+                continue;
+            }
+            ovmAddressRepository.save(other_vm_def);
+            std::string endpoint_str = "127.0.0.1:" + other_vm_def.getPort();
+            other_vm_endpoints_for_sender.push_back(endpoint_str);
+            id_to_endpoint_map_for_sender[other_vm_def.getId()] = endpoint_str;
+            actual_other_vm_count++;
+            std::cout << "  + " << other_vm_def.getId() << " (Port: " << other_vm_def.getPort() << ", Endpoint: " << endpoint_str << ") 통신 대상으로 추가됨." << std::endl;
+        }
+        if (actual_other_vm_count == 0 && ALL_VENDING_MACHINES_IN_SYSTEM.size() > 1) {
+             std::cout << "경고: 다른 자판기가 시스템에 정의되어 있으나, 통신 대상으로 설정된 다른 자판기가 없습니다 (자기 자신만 시스템에 있는 경우)." << std::endl;
         }
 
         network::MessageSender messageSender(io_context, other_vm_endpoints_for_sender, id_to_endpoint_map_for_sender);
@@ -179,15 +233,34 @@ domain::VendingMachine findVmDefinitionInList(const std::string& vmId, const std
     return domain::VendingMachine();
 }
 
-void setupFocusedInventory(const std::string& currentVmId, persistence::InventoryRepository& inventoryRepo) {
-    std::cout << "정보: " << currentVmId << " 자판기의 테스트용 재고를 설정합니다." << std::endl;
-    if (currentVmId == PRIMARY_TEST_VM_ID) { // T5
-        inventoryRepo.addOrUpdateStock(domain::Inventory("01", 0));  // 콜라 (T5에는 없음)
-        inventoryRepo.addOrUpdateStock(domain::Inventory("02", 5));  // 사이다 (T5에는 있음)
-        std::cout << "  " << PRIMARY_TEST_VM_ID << ": 콜라(0), 사이다(5) 설정됨." << std::endl;
-    } else if (currentVmId == SECONDARY_TEST_VM_ID) { // T1
-        inventoryRepo.addOrUpdateStock(domain::Inventory("01", 10)); // 콜라 (T1에는 있음)
-        inventoryRepo.addOrUpdateStock(domain::Inventory("02", 0));  // 사이다 (T1에는 없음)
-        std::cout << "  " << SECONDARY_TEST_VM_ID << ": 콜라(10), 사이다(0) 설정됨." << std::endl;
+void setupGeneralInventory(const std::string& currentVmId, persistence::InventoryRepository& inventoryRepo) {
+    std::cout << "정보: " << currentVmId << " 자판기의 일반 재고를 설정합니다." << std::endl;
+    if (currentVmId == "T5") { // 우리 조 자판기 (T5)
+        inventoryRepo.addOrUpdateStock(domain::Inventory("01", 0));  // 콜라 (선결제 테스트용으로 재고 없음)
+        inventoryRepo.addOrUpdateStock(domain::Inventory("02", 5));  // 사이다 (로컬 구매 가능)
+        inventoryRepo.addOrUpdateStock(domain::Inventory("03", 10)); // 녹차
+        inventoryRepo.addOrUpdateStock(domain::Inventory("06", 0));  // 탄산수 (선결제 테스트용으로 재고 없음)
+        inventoryRepo.addOrUpdateStock(domain::Inventory("08", 7));  // 캔커피
+        inventoryRepo.addOrUpdateStock(domain::Inventory("15", 3));  // 오렌지주스
+        inventoryRepo.addOrUpdateStock(domain::Inventory("20", 4));  // 카페라떼
+        std::cout << "  T5: 콜라(0), 사이다(5), 녹차(10), 탄산수(0), 캔커피(7), 오렌지주스(3), 카페라떼(4) 설정됨." << std::endl;
+    } else if (currentVmId == "T1") { // T5가 선결제할 대상 자판기 예시
+        inventoryRepo.addOrUpdateStock(domain::Inventory("01", 10)); // 콜라 (T5가 선결제 가능)
+        inventoryRepo.addOrUpdateStock(domain::Inventory("02", 0));
+        inventoryRepo.addOrUpdateStock(domain::Inventory("04", 8));  // 홍차
+        inventoryRepo.addOrUpdateStock(domain::Inventory("09", 15)); // 물
+        inventoryRepo.addOrUpdateStock(domain::Inventory("10", 3));
+        inventoryRepo.addOrUpdateStock(domain::Inventory("11", 6));
+        inventoryRepo.addOrUpdateStock(domain::Inventory("12", 9));
+        std::cout << "  T1: 콜라(10), 사이다(0), 홍차(8), 물(15), 에너지드링크(3), 유자차(6), 식혜(9) 설정됨." << std::endl;
+    } else if (currentVmId == "T2") {
+        inventoryRepo.addOrUpdateStock(domain::Inventory("02", 12)); // 사이다
+        inventoryRepo.addOrUpdateStock(domain::Inventory("06", 10)); // 탄산수 (T5가 선결제 가능)
+        inventoryRepo.addOrUpdateStock(domain::Inventory("13", 5));
+        inventoryRepo.addOrUpdateStock(domain::Inventory("17", 6));
+        std::cout << "  T2: 사이다(12), 탄산수(10), 아이스티(5), 이온음료(6) 설정됨." << std::endl;
+    }
+    // 다른 자판기들에 대해서도 필요에 따라 다양한 재고 설정
+    else { 
     }
 }
