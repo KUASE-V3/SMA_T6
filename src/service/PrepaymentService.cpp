@@ -91,23 +91,33 @@ void PrepaymentService::recordIncomingPrepayment(const std::string& certCode, co
     }
 }
 
-// 랜덤 영숫자 문자열 생성
-std::string PrepaymentService::generateRandomAlphanumericString(size_t length) const { //
-    static const char charset[] = //
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
-    const size_t max_index = (sizeof(charset) - 2); //
 
-    std::string random_string; //
-    random_string.reserve(length); //
-    std::random_device rd; //
-    for (size_t i = 0; i < length; ++i) { //
-        std::mt19937 local_generator(rd()); //
-        std::uniform_int_distribution<size_t> distribution(0, max_index); //
-        random_string += charset[distribution(local_generator)]; //
+    /**
+     * @brief 지정된 길이의 랜덤 영숫자 문자열을 생성하는 내부 헬퍼 함수입니다.
+     * std::random_device를 분포에 직접 사용하여 난수 생성의 예측 가능성을 낮추려고 시도합니다.
+     * @param length 생성할 문자열의 길이.
+     * @return 생성된 랜덤 영숫자 문자열.
+     */
+    std::string PrepaymentService::generateRandomAlphanumericString(size_t length) const {
+        static const char charset[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+        const size_t charset_size = sizeof(charset) - 2; // 널 종료 문자 제외한 실제 문자 수
+
+        std::string result_string;
+        result_string.reserve(length);
+
+        std::random_device rd; // 비결정적 난수 생성기 시도
+        // std::random_device 자체가 Non-deterministic Random Bit Generator(NRBG)로 사용될 수 있음
+        // 이를 직접 std::uniform_int_distribution의 입력으로 사용합니다.
+        // 이는 std::mt19937과 같은 PRNG를 사용하는 것보다 예측이 더 어렵게 만듭니다.
+
+        std::uniform_int_distribution<size_t> distribution(0, charset_size);
+
+        for (size_t i = 0; i < length; ++i) {
+            result_string += charset[distribution(rd)]; // rd를 직접 난수 엔진처럼 사용
+        }
+        return result_string;
     }
-    return random_string; //
-}
-
 } // namespace service
