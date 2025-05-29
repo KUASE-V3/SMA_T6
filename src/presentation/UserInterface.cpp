@@ -11,24 +11,37 @@ namespace presentation {
 
 /**
  * @brief 사용자로부터 지정된 범위 내의 정수 입력을 안전하게 받습니다.
- * 잘못된 입력 시 재입력을 요청합니다.
+ * 잘못된 입력 시 (공란 포함) 재입력을 요청합니다.
  * @param prompt 사용자에게 보여줄 안내 메시지.
  * @param minVal 입력 가능한 최소 정수값.
  * @param maxVal 입력 가능한 최대 정수값.
  * @return 사용자가 입력한 유효한 정수.
  */
 int UserInterface::getIntegerInput(const std::string& prompt, int minVal, int maxVal) {
+    std::string lineInput;
     int choice = 0;
     while (true) {
         std::cout << prompt;
-        std::cin >> choice;
-        if (std::cin.good() && choice >= minVal && choice <= maxVal) {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 다음 입력을 위해 버퍼 비우기
+        std::getline(std::cin, lineInput); // 한 줄 전체를 문자열로 읽음
+
+        // 입력 문자열의 앞뒤 공백 제거 (선택 사항이지만 권장)
+        lineInput.erase(0, lineInput.find_first_not_of(" \t\n\r\f\v"));
+        lineInput.erase(lineInput.find_last_not_of(" \t\n\r\f\v") + 1);
+
+        if (lineInput.empty()) { // 공란 입력 감지
+            std::cout << "입력이 비어있습니다. " << minVal << "부터 " << maxVal << " 사이의 숫자를 입력해주세요." << std::endl;
+            continue; // 다시 입력 요청
+        }
+
+        std::stringstream ss(lineInput); // 문자열 스트림을 사용하여 정수 변환 시도
+        // ss >> choice 시, 변환 가능한 부분까지만 변환하고 나머지는 스트림에 남김.
+        // 추가로 ss.eof() 등을 확인하여 "12abc" 같은 입력도 걸러낼 수 있음.
+        if (ss >> choice && ss.eof() && choice >= minVal && choice <= maxVal) {
+            // ss.eof()는 스트림의 모든 문자가 성공적으로 소비되었는지 확인 (예: "12 abc"는 실패)
             return choice;
         } else {
-            std::cout << "잘못된 입력입니다. " << minVal << "부터 " << maxVal << " 사이의 숫자를 입력해주세요." << std::endl;
-            std::cin.clear(); // 오류 플래그 초기화
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 잘못된 입력 내용 비우기
+            std::cout << "잘못된 입력입니다. " << minVal << "부터 " << maxVal << " 사이의 숫자를 정확히 입력해주세요." << std::endl;
+            // std::cin 관련 오류 플래그 초기화 및 버퍼 비우기는 std::getline을 사용하므로 필요 없음
         }
     }
 }
