@@ -125,7 +125,6 @@ domain::Drink UserProcessController::getDrinkDetails(const std::string& drinkCod
 
 void UserProcessController::initializeSystemAndRegisterMessageHandlers() {
     // MessageService의 핸들러 등록. 콜백은 io_context 스레드에서 실행됨.
-    // 콜백 내에서 UserProcessController의 멤버(mtx_, cv_ 등)에 접근하므로 동기화 주의.
     // boost::asio::post를 사용하여 핸들러 실행을 io_context 큐에 올림.
     messageService_.registerMessageHandler(network::Message::Type::REQ_STOCK,
         [this](const network::Message& msg){ boost::asio::post(ioContext_, [this, msg](){ this->onReqStockReceived(msg); }); });
@@ -170,7 +169,6 @@ void UserProcessController::handleTimeout(const boost::system::error_code& ec, C
             std::string targetVmId_str = selectedTargetVmForPrepayment_ ? selectedTargetVmForPrepayment_->getId() : "대상 자판기";
             last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, targetVmId_str + "로부터 선결제 응답 없음");
         }
-        // 다른 상태에 대한 타임아웃 처리가 필요하다면 여기에 추가
 
         if(last_error_info_ && currentState_ == expectedStateDuringTimeout) { // 오류가 설정되었고, 아직 상태가 안바뀌었다면
              currentState_ = ControllerState::HANDLING_ERROR;
@@ -208,10 +206,8 @@ void UserProcessController::processCurrentState() {
                 std::chrono::seconds waitDuration = current_timeout_duration_ + std::chrono::seconds(1);
                 if (cv_.wait_for(lock, waitDuration, [this]{ return cv_data_ready_; })) {
                     // 응답 또는 Asio 타이머에 의해 깨어남. 콜백에서 상태 변경됨.
-                } else { // cv_.wait_for 자체 타임아웃
-                    // Asio 타이머가 처리했거나, 정말 아무 일도 없었던 경우.
-                    // handleTimeout에서 이미 오류 처리 또는 상태 변경했을 가능성 높음.
-                    // 안전장치로 여기서도 확인 및 처리.
+                } else { 
+                    // 타임아웃 발생. 현재 상태를 다시 확인하고, 필요시 오류 처리
                     std::lock_guard<std::mutex> guard(mtx_); // currentState_ 다시 확인 위해 잠금
                     if (currentState_ == ControllerState::AWAITING_STOCK_RESPONSES) { // 상태가 안 바뀌었다면
                         if (availableOtherVmsForDrink_.empty()) {
@@ -233,9 +229,6 @@ void UserProcessController::processCurrentState() {
             break;
         case ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION: // UC16: 선결제 예약 요청 및 응답 대기
             state_issuingAuthCodeAndRequestingReservation(); // 이 함수 내부에서 메시지 전송, current_timeout_duration_ 설정(10초), 타이머 시작. 상태는 변경하지 않음.
-            // 이 함수 호출 후, 아래 AWAITING_PREPAY_RESPONSE case 로직을 타야 함.
-            // 더 나은 방법: 이 함수가 AWAITING_PREPAY_RESPONSE 상태로 변경하도록 하고, 별도 case로 분리.
-            // 현재 구조를 유지한다면, 이 case에서 직접 cv_wait_for를 수행.
             {
                 std::unique_lock<std::mutex> lock(mtx_);
                 // current_timeout_duration_은 state_issuingAuthCodeAndRequestingReservation에서 10초로 설정되어 있어야 함
@@ -253,7 +246,6 @@ void UserProcessController::processCurrentState() {
                 cv_data_ready_ = false;
             }
             break;
-        // ... (나머지 상태 처리: DISPENSING_DRINK, DISPLAYING_OTHER_VM_OPTIONS 등은 그대로)
         case ControllerState::DISPENSING_DRINK:
             state_dispensingDrink();
             break;
@@ -691,14 +683,12 @@ void UserProcessController::state_transactionCompletedReturnToMenu() {
 }
 
 void UserProcessController::state_handlingError(const service::ErrorInfo& errorInfo) {
-    // 이 함수는 이미 뮤텍스 외부에서 호출되거나, 뮤텍스 내부에서 last_error_info_를 통해 호출됨.
-    // UI 호출은 메인 스레드에서 안전.
     userInterface_.displayError(errorInfo.userFriendlyMessage);
     ControllerState nextState;
     switch (errorInfo.resolutionLevel) {
         case ErrorResolutionLevel::RETRY_INPUT:
             userInterface_.displayMessage("입력을 다시 시도해주세요. (메인 메뉴로 돌아갑니다)");
-            nextState = ControllerState::DISPLAYING_MAIN_MENU; // 단순화
+            nextState = ControllerState::DISPLAYING_MAIN_MENU; 
             break;
         case ErrorResolutionLevel::SYSTEM_FATAL_ERROR:
             userInterface_.displayMessage("치명적인 시스템 오류가 발생하여 시스템을 종료합니다.");
@@ -727,7 +717,7 @@ void UserProcessController::onReqStockReceived(const network::Message& msg) { //
     } else { // UC17 E1
         last_error_info_ = errorService_.processOccurredError(ErrorType::INVALID_MESSAGE_FORMAT, "REQ_STOCK (item_code 누락 from " + msg.src_id + ")");
         currentState_ = ControllerState::HANDLING_ERROR; // 메인 스레드가 처리하도록 상태 변경
-        cv_data_ready_ = true; // 메인 스레드 깨우기 (필수는 아닐 수 있음, run 루프가 계속 돌기 때문)
+        cv_data_ready_ = true; 
         cv_.notify_one();
     }
 }
