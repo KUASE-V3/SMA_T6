@@ -730,11 +730,11 @@ void UserProcessController::onRespStockReceived(const network::Message& msg) { /
     //     std::cout << "  - item_code: " << msg.msg_content.at("item_code") << std::endl;
     // }
 
-    // if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) {
+    if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) {
     //     // <<< 디버그 로그 추가 >>>
     //     std::cout << "  - 현재 상태 AWAITING_STOCK_RESPONSES 아님. 메시지 무시." << std::endl;
-    //     return;
-    // }
+        return;
+    }
     if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) return;
 
     try {
