@@ -66,10 +66,7 @@ void OrderService::processOrderApproval(domain::Order& order, bool isPrepayment)
             // 인증 코드 포함하여 주문 정보 업데이트
             orderRepository_.save(order);
 
-            // 생성된 인증 코드와 주문 정보를 PrepaymentService에 등록
-            // PrepaymentService는 shared_ptr<domain::Order>를 받으므로, 복사본 생성 후 전달
-            auto orderSharedPtr = std::make_shared<domain::Order>(order);
-            prepaymentService_.registerPrepayment(authCode, orderSharedPtr);
+        
             // UC5 -> UC16 (재고 확보 요청)은 UserProcessController가 MessageService를 통해 진행.
         } else {
             // 일반 구매인 경우: 주문 정보 업데이트 (주로 상태 변경) 후 재고 차감
