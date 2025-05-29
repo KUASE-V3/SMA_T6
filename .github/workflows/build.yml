@@ -33,6 +33,12 @@ jobs:
     - name: Configure CMake Environment
       run: cmake -B $GITHUB_WORKSPACE/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
+    - name: install Boost
+      run: |
+        apt-get update
+        apt-get install -y libboost-all-dev
+
+
     - name: Build the project
       run: cmake --build $GITHUB_WORKSPACE/build --config ${{env.BUILD_TYPE}}
             
