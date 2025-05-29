@@ -42,13 +42,7 @@ public:
      */
     std::string generateAuthCodeString();
 
-    /**
-     * @brief 생성된 인증 코드와 연결될 주문 정보를 받아 PrePaymentCode 객체를 생성하고 저장합니다. (UC12)
-     * @param authCode `generateAuthCodeString()`으로 생성된 인증 코드.
-     * @param order 이 선결제와 연결될 주문 객체의 `std::shared_ptr`.
-     * 오류 발생 시 ErrorService를 통해 보고합니다.
-     */
-    void registerPrepayment(const std::string& authCode, std::shared_ptr<domain::Order> order);
+
 
     /**
      * @brief 입력된 인증 코드의 형식이 유효한지 (5자리 영숫자) 검사합니다. (UC13)

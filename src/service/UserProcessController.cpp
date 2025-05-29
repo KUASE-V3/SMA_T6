@@ -152,29 +152,36 @@ void UserProcessController::startResponseTimer(std::chrono::seconds duration, Co
 // Asio 타이머 만료 시 호출될 콜백
 void UserProcessController::handleTimeout(const boost::system::error_code& ec, ControllerState expectedStateDuringTimeout) {
     if (ec == boost::asio::error::operation_aborted) {
-        return; // 타이머가 정상적으로 취소됨 (예: 응답을 시간 내에 받음)
+        // std::cout << "[" << myVendingMachineId_ << "] DEBUG: Timer aborted (normal operation, response_timer_.cancel() called)." << std::endl;
+        return;
     }
-    // 타임아웃 발생 (ec가 operation_aborted가 아닌 경우)
-    std::lock_guard<std::mutex> lock(mtx_); // 공유 자원 접근 보호
-    if (currentState_ == expectedStateDuringTimeout) { // 타임아웃 발생 시점에도 여전히 해당 대기 상태인지 확인
-        if (currentState_ == ControllerState::AWAITING_STOCK_RESPONSES) { // UC9 타임아웃
-            if (availableOtherVmsForDrink_.empty()) { // UC9 E2
-                // userInterface_.displayNoOtherVendingMachineFound 호출은 메인 스레드에서 하는 것이 안전
-                last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, "주변 자판기 재고 조회");
-            } else { // 일부 응답이라도 수신된 경우
-                // userInterface_.displayMessage 호출은 메인 스레드에서
-                currentState_ = ControllerState::DISPLAYING_OTHER_VM_OPTIONS; // UC10으로
-            }
-        } else if (currentState_ == ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION) { // UC16 타임아웃
-            std::string targetVmId_str = selectedTargetVmForPrepayment_ ? selectedTargetVmForPrepayment_->getId() : "대상 자판기";
-            last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, targetVmId_str + "로부터 선결제 응답 없음");
-        }
 
-        if(last_error_info_ && currentState_ == expectedStateDuringTimeout) { // 오류가 설정되었고, 아직 상태가 안바뀌었다면
-             currentState_ = ControllerState::HANDLING_ERROR;
+    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout - Timeout occurred. ec: " << ec.message() << ", expectedState: " << static_cast<int>(expectedStateDuringTimeout) << ", currentState: " << static_cast<int>(currentState_) << std::endl;
+
+    std::lock_guard<std::mutex> lock(mtx_); // 공유 자원 접근 보호
+    if (currentState_ == expectedStateDuringTimeout) {
+        if (currentState_ == ControllerState::AWAITING_STOCK_RESPONSES) {
+            // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout for AWAITING_STOCK_RESPONSES. availableOtherVmsForDrink_ size: " << availableOtherVmsForDrink_.size() << std::endl;
+            if (!availableOtherVmsForDrink_.empty()) { // 받은 응답이 하나라도 있다면
+                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout - Stock responses received (" << availableOtherVmsForDrink_.size() << "). Changing state to DISPLAYING_OTHER_VM_OPTIONS." << std::endl;
+                currentState_ = ControllerState::DISPLAYING_OTHER_VM_OPTIONS; // UC10으로
+            } else { // 받은 응답이 전혀 없다면
+                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout - No stock responses received. Setting error." << std::endl;
+                last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, "주변 자판기 재고 조회 (Asio 타임아웃 - 응답 없음)");
+                currentState_ = ControllerState::HANDLING_ERROR;
+            }
+        } else if (currentState_ == ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION) {
+            std::string targetVmId_str = selectedTargetVmForPrepayment_ ? selectedTargetVmForPrepayment_->getId() : "대상 자판기";
+            //  std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout for ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION. Target: " << targetVmId_str << ". Setting error." << std::endl;
+            last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, targetVmId_str + "로부터 선결제 응답 없음");
+            currentState_ = ControllerState::HANDLING_ERROR;
         }
+        // 다른 상태에 대한 타임아웃 처리가 필요하다면 여기에 추가
+
         cv_data_ready_ = true; // 메인 스레드가 다음 동작을 하도록 알림
         cv_.notify_one();      // 대기 중인 메인 스레드(processCurrentState)를 깨움
+    } else {
+        // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout - Timeout for state " << static_cast<int>(expectedStateDuringTimeout) << " but current state is " << static_cast<int>(currentState_) << ". Ignoring timeout." << std::endl;
     }
 }
 
@@ -201,42 +208,53 @@ void UserProcessController::processCurrentState() {
             break;
         case ControllerState::AWAITING_STOCK_RESPONSES: // UC9: 재고 조회 응답 대기
             {
+                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: processCurrentState - Entering AWAITING_STOCK_RESPONSES wait." << std::endl;
                 std::unique_lock<std::mutex> lock(mtx_);
-                // current_timeout_duration_은 state_broadcastingStockRequest에서 30초로 설정되어 있어야 함
-                std::chrono::seconds waitDuration = current_timeout_duration_ + std::chrono::seconds(1);
+                // current_timeout_duration_은 state_broadcastingStockRequest에서 설정됨 (예: 3초 또는 30초)
+                std::chrono::seconds waitDuration = current_timeout_duration_ + std::chrono::seconds(1); // Asio 타이머보다 약간 길게
+
                 if (cv_.wait_for(lock, waitDuration, [this]{ return cv_data_ready_; })) {
-                    // 응답 또는 Asio 타이머에 의해 깨어남. 콜백에서 상태 변경됨.
-                } else { 
-                    // 타임아웃 발생. 현재 상태를 다시 확인하고, 필요시 오류 처리
-                    std::lock_guard<std::mutex> guard(mtx_); // currentState_ 다시 확인 위해 잠금
-                    if (currentState_ == ControllerState::AWAITING_STOCK_RESPONSES) { // 상태가 안 바뀌었다면
-                        if (availableOtherVmsForDrink_.empty()) {
-                            last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, "주변 자판기 재고 조회 (컨트롤러 cv_.wait_for 타임아웃)");
-                            currentState_ = ControllerState::HANDLING_ERROR;
-                        } else {
+                    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - Woke up by cv_data_ready_ (response or Asio timeout handled)." << std::endl;
+                    // 상태 변경은 onRespStockReceived 또는 handleTimeout 콜백에서 이미 처리되었을 것임.
+                } else { // cv_.wait_for 자체 타임아웃 (안전장치)
+                    // std::lock_guard<std::mutex> guard(mtx_); // unique_lock이 해제되었으므로 다시 잠글 필요 없음, 아래에서 다시 잠금
+                    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - cv_.wait_for timed out." << std::endl;
+                    // 이 시점에서 Asio 타이머의 handleTimeout이 이미 실행되었을 가능성이 높음.
+                    // 만약 handleTimeout이 어떤 이유로 상태 변경을 못했거나 cv_를 깨우지 못했다면, 여기서 한번 더 확인.
+                    std::lock_guard<std::mutex> state_check_lock(mtx_); // currentState_ 접근을 위해 다시 잠금
+                    if (currentState_ == ControllerState::AWAITING_STOCK_RESPONSES) { // 상태가 여전히 그대로라면
+                        if (!availableOtherVmsForDrink_.empty()) { // 응답이 하나라도 있다면
+                            // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - cv_.wait_for timeout, but responses ARE available. Moving to DISPLAYING_OTHER_VM_OPTIONS." << std::endl;
                             currentState_ = ControllerState::DISPLAYING_OTHER_VM_OPTIONS;
+                        } else { // 응답이 전혀 없다면
+                            // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - cv_.wait_for timeout, and NO responses available. Setting error." << std::endl;
+                            last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, "주변 자판기 재고 조회 (컨트롤러 cv_.wait_for 타임아웃 - 응답 없음)");
+                            currentState_ = ControllerState::HANDLING_ERROR;
                         }
                     }
                 }
-                cv_data_ready_ = false;
+                cv_data_ready_ = false; // 플래그 리셋
             }
             break;
+
         case ControllerState::AWAITING_PAYMENT_CONFIRMATION:
             state_awaitingPaymentConfirmation();
             break;
         case ControllerState::PROCESSING_PAYMENT:
             state_processingPayment(); // 여기서 선결제 성공 시 ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION 로 상태 변경
             break;
-        case ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION: // UC16: 선결제 예약 요청 및 응답 대기
-            state_issuingAuthCodeAndRequestingReservation(); // 이 함수 내부에서 메시지 전송, current_timeout_duration_ 설정(10초), 타이머 시작. 상태는 변경하지 않음.
+         case ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION: // UC16: 선결제 예약 요청 및 응답 대기
+            state_issuingAuthCodeAndRequestingReservation(); // 메시지 전송 및 타이머 시작
             {
+                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: processCurrentState - Entering ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION wait." << std::endl;
                 std::unique_lock<std::mutex> lock(mtx_);
-                // current_timeout_duration_은 state_issuingAuthCodeAndRequestingReservation에서 10초로 설정되어 있어야 함
+                // current_timeout_duration_은 state_issuingAuthCodeAndRequestingReservation에서 10초로 설정됨
                 std::chrono::seconds waitDuration = current_timeout_duration_ + std::chrono::seconds(1);
-                 if (cv_.wait_for(lock, waitDuration, [this]{ return cv_data_ready_; })) {
-                    // 응답 또는 Asio 타이머에 의해 깨어남. 콜백에서 상태 변경됨.
+                if (cv_.wait_for(lock, waitDuration, [this]{ return cv_data_ready_; })) {
+                    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION - Woke up by cv_data_ready_." << std::endl;
                 } else { // cv_.wait_for 자체 타임아웃
-                    std::lock_guard<std::mutex> guard(mtx_);
+                    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION - cv_.wait_for timed out." << std::endl;
+                    std::lock_guard<std::mutex> state_check_lock(mtx_);
                     if (currentState_ == ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION) {
                         std::string targetVmId_str = selectedTargetVmForPrepayment_ ? selectedTargetVmForPrepayment_->getId() : "대상 자판기";
                         last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, targetVmId_str + "로부터 선결제 예약 응답 시간 초과 (컨트롤러 cv_.wait_for 타임아웃)");
@@ -730,11 +748,11 @@ void UserProcessController::onRespStockReceived(const network::Message& msg) { /
     //     std::cout << "  - item_code: " << msg.msg_content.at("item_code") << std::endl;
     // }
 
-    // if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) {
+    if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) {
     //     // <<< 디버그 로그 추가 >>>
     //     std::cout << "  - 현재 상태 AWAITING_STOCK_RESPONSES 아님. 메시지 무시." << std::endl;
-    //     return;
-    // }
+        return;
+    }
     if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) return;
 
     try {
