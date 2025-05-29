@@ -55,7 +55,7 @@ PrepaymentCode PrepaymentCode::hold(Order order) {
 
 
 //코드 사용
-void PrepaymentCode::use(const std::string& code) {
+void PrepaymentCode::use(const std::string& Code) {
     if (this->code == code) {
         status = "Used";
     }
