@@ -1,4 +1,4 @@
-﻿#include "network/MessageSender.hpp"
+#include "network/MessageSender.hpp"
 #include "network/MessageSerializer.hpp"
 #include <boost/asio/connect.hpp>
 #include <boost/asio/write.hpp>
@@ -13,24 +13,24 @@ MessageSender::MessageSender(boost::asio::io_context& io,
     : io_context_(io), endpoints_(endpoints), id_map_(id_map) {}
 
 void MessageSender::send(const Message& msg) {
-    if (msg.dst_id == "0") { //��ε�ĳ��Ʈ�� ��� ���� ������ �ִ� endpoint ������� ����
+    if (msg.dst_id == "0") { // broadcast
         for (auto& ep : endpoints_) {
             try {
                 sendOne(ep, msg);
             } catch (const std::exception& e) {
-                // ���� ���н� �����ϰ� �Ѿ��
-                std::cerr << "[Sender] warning: failed to send to "
-                          << ep << ": " << e.what() << "\n";
+                // log error
+              //  std::cerr << "[Sender] warning: failed to send to "
+                     //     << ep << ": " << e.what() << "\n";
             }
         }
-    } else { // Ư�� ID�� �����ϴ� ���
+    } else { // unicast
         auto it = id_map_.find(msg.dst_id);
         if (it != id_map_.end()) {
             try {
                 sendOne(it->second, msg);
             } catch (const std::exception& e) {
-                std::cerr << "[Sender] warning: failed to send to "
-                          << it->second << ": " << e.what() << "\n";
+                // std::cerr << "[Sender] warning: failed to send to "
+                //           << it->second << ": " << e.what() << "\n";
             }
         }
     }
@@ -45,8 +45,9 @@ void MessageSender::sendOne(const std::string& endpoint, const Message& msg) {
     auto eps = resolver.resolve(host, std::to_string(port));
     tcp::socket socket(io_context_);
     boost::asio::connect(socket, eps);
-
+    
     std::string data = MessageSerializer::toJson(msg) + "\n";
+    // std::cout << "[Sender DEBUG] Sending to " << endpoint << ": " << data << std::endl; // <<< 로그 추가
     boost::asio::write(socket, boost::asio::buffer(data));
 }
 

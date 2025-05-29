@@ -1,81 +1,73 @@
-﻿#include "../include/persistence/inventoryRepository.h"
-#include <string>
-
-using namespace domain;
+#include "persistence/inventoryRepository.h"
+#include "domain/inventory.h"
+#include <stdexcept>
 
 namespace persistence {
 
-std::vector<domain::inventory> inventoryRepository::allDrinks = {
-    inventory(Drink("Pepsi", 1500, "D001"), 1),
-    inventory(Drink("Sprite", 1500, "D002"), 1),
-    inventory(Drink("Vita500", 1600, "D003"), 1),
-    inventory(Drink("Powerade", 1600, "D004"), 1),
-    inventory(Drink("Monster", 2500, "D005"), 1),
-    inventory(Drink("Orange Juice", 2700, "D006"), 1),
-    inventory(Drink("Gatorade", 1800, "D007"), 1),
-    inventory(Drink("Corn Silk Tea", 1800, "D008"), 1),
-    inventory(Drink("Bacchus", 1700, "D009"), 1),
-    inventory(Drink("Vitamin Drink", 1000, "D010"), 1),
-    inventory(Drink("Boseong Green Tea", 1500, "D011"), 1),
-    inventory(Drink("Milkis", 1500, "D012"), 1),
-    inventory(Drink("Cocopalm", 1600, "D013"), 1),
-    inventory(Drink("Tropicana", 1600, "D014"), 1),
-    inventory(Drink("Cafe Latte Can", 1200, "D015"), 1),
-    inventory(Drink("Americano Can", 1200, "D016"), 1),
-    inventory(Drink("Let's Be", 1300, "D017"), 1),
-    inventory(Drink("Pocari Sweat", 1400, "D018"), 1),
-    inventory(Drink("Fanta Orange", 1500, "D019"), 1),
-    inventory(Drink("Cantata", 1600, "D020"), 1)
-};
 
-
-void inventoryRepository::setAllDrinks(const std::vector<domain::inventory>& drinks) {
-    allDrinks = drinks;
+void InventoryRepository::addOrUpdateStock(const domain::Inventory& inventoryItem) {
+    stock_[inventoryItem.getDrinkCode()] = inventoryItem;
 }
 
-const std::vector<domain::inventory>& inventoryRepository::getAllDrinks() {
-    return allDrinks;
+bool InventoryRepository::isDrinkHandled(const std::string& drinkCode) const {
+    return stock_.count(drinkCode) > 0;
 }
- 
 
-//uc1 ? getList메소?
-std::vector<std::pair<std::string, int>> inventoryRepository::getList() {
-    std::vector<std::pair<std::string, int>> List;
-    for (const auto& inventory : allDrinks) {
-        List.emplace_back(inventory.getDrink().getName(), inventory.getDrink().getPrice());
+bool InventoryRepository::hasStock(const std::string& drinkCode) const {
+    auto it = stock_.find(drinkCode);
+    if (it != stock_.end()) {
+        return it->second.getQty() >= 1;
     }
-    return List;
+    return false;
 }
 
-
-//unit 테스트 기록 필요.
-bool inventoryRepository::isValid(const std::string& drink) {
-    for (const auto& inventory : allDrinks) {
-        if (inventory.getDrink().getName() == drink) {
-            return inventory.getQty() > 0;
+bool InventoryRepository::decreaseStockByOne(const std::string& drinkCode) {
+    auto it = stock_.find(drinkCode);
+    if (it != stock_.end()) {
+        try {
+            it->second.decreaseQuantity(1);
+            return true;
+        } catch (const std::out_of_range& /* e */) {
+            return false;
         }
     }
-    return false;  // 음료를 찾지 못한 경우
+    return false;
 }
 
+/**
+ * @brief 특정 음료 코드에 해당하는 Inventory 객체를 반환합니다.
+ */
+domain::Inventory InventoryRepository::getInventoryByDrinkCode(const std::string& drinkCode) const {
+    auto it = stock_.find(drinkCode);
+    if (it != stock_.end()) {
+        return it->second; // 찾았으면 해당 Inventory 객체 반환
+    }
+    // 찾지 못했으면, drinkCode가 비어있거나 qty가 0인 기본 Inventory 객체 반환
+    return domain::Inventory();
+}
 
-
-
-void inventoryRepository::changeQty(const domain::Drink& drink) {
-    for (auto& inventory : allDrinks) {
-        if (inventory.getDrink().getName() == drink.getName()) {
-            inventory.reduceDrink(drink);
-            break;
+/**
+ * @brief 특정 음료의 재고를 지정된 수량만큼 감소시킵니다.
+ * @param drinkCode 재고를 감소시킬 음료의 코드.
+ * @param amount 감소시킬 수량.
+ * @return 성공 시 true, 실패(해당 음료 없음, 재고 부족 등) 시 false.
+ */
+bool InventoryRepository::decreaseStockByAmount(const std::string& drinkCode, int amount) {
+    if (amount <= 0) { // 감소량이 0 이하면 처리 안 함
+        return false;
+    }
+    auto it = stock_.find(drinkCode);
+    if (it != stock_.end()) {
+        try {
+            it->second.decreaseQuantity(amount); // domain::Inventory의 메소드 사용
+            return true; // 성공
+        } catch (const std::out_of_range&) {
+            // domain::Inventory에서 재고 부족으로 예외 발생
+            return false; // 실패 알림
         }
     }
+    return false; // 해당 음료를 찾을 수 없음
 }
 
-bool inventoryRepository::isEmptyRepo(const domain::Drink& drink) const {
-    for (const auto& inventory : allDrinks) {
-        if (inventory.getDrink().getName() == drink.getName()) {
-            return inventory.isEmpty();
-        }
-    }
-    return true;  // 음료를 찾지 못한 경우도 true 반환
-}
-}
+
+} // namespace persistence

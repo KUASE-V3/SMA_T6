@@ -1,54 +1,44 @@
-﻿#ifndef INVENTORYREPOSITORY_H
-#define INVENTORYREPOSITORY_H
+#pragma once
 
 #include <string>
+#include <map>
+#include <optional> // std::optional 사용 가능
 
-#include "../domain/drink.h"
-#include "../domain/inventory.h"
-#include <vector>
+#include "domain/inventory.h"
 
 namespace persistence {
-class inventoryRepository {
 
-    public:
-        void setAllDrinks(const std::vector<domain::inventory>& drinks);
-        static const std::vector<domain::inventory>& getAllDrinks();;
+class InventoryRepository {
+public:
+    InventoryRepository() = default;
 
-        std::vector<std :: pair<std::string, int>> getList();
+    void addOrUpdateStock(const domain::Inventory& inventoryItem);
+    bool isDrinkHandled(const std::string& drinkCode) const;
+    bool hasStock(const std::string& drinkCode) const; // 재고가 1개 이상인지
+    bool decreaseStockByOne(const std::string& drinkCode);
 
-        static bool isValid(const std:: string& drink);
-        void changeQty(const domain::Drink& drink);
-        bool isEmptyRepo(const domain::Drink& drink) const;
+    /**
+     * @brief 특정 음료 코드에 해당하는 Inventory 객체를 반환합니다.
+     * 해당 음료를 취급하지 않거나 Inventory 객체를 찾을 수 없는 경우,
+     * qty가 0이거나 drinkCode가 비어있는 기본 Inventory 객체를 반환할 수 있습니다.
+     * 또는 std::optional<domain::Inventory>를 사용할 수도 있습니다.
+     * 여기서는 domain::Inventory를 직접 반환하고, 호출부에서 유효성을 확인합니다.
+     * @param drinkCode 조회할 음료 코드.
+     * @return 해당 음료의 Inventory 객체. 찾지 못하면 기본 생성된 Inventory 객체.
+     */
+    domain::Inventory getInventoryByDrinkCode(const std::string& drinkCode) const;
+    
+    /**
+     * @brief 특정 음료의 재고를 지정된 수량만큼 감소시킵니다.
+     * @param drinkCode 재고를 감소시킬 음료의 코드.
+     * @param amount 감소시킬 수량.
+     * @return 성공 시 true, 실패(해당 음료 없음, 재고 부족 등) 시 false.
+     */
+    bool decreaseStockByAmount(const std::string& drinkCode, int amount);
 
-        
 
-    private:
-        static std::vector<domain::inventory> allDrinks;
-
-        
+private:
+    std::map<std::string, domain::Inventory> stock_;
 };
-}
-#endif
- 
-/*
- Drink("콜라", 1.50, "D001"),
-    Drink("사이다", 1.50, "D002"),
-    Drink("환타 오렌지", 1.60, "D003"),
-    Drink("환타 포도", 1.60, "D004"),
-    Drink("몬스터", 2.50, "D005"),
-    Drink("레드불", 2.70, "D006"),
-    Drink("게토레이", 1.80, "D007"),
-    Drink("파워에이드", 1.80, "D008"),
-    Drink("이프로", 1.70, "D009"),
-    Drink("비타500", 1.00, "D010"),
-    Drink("보성녹차", 1.50, "D011"),
-    Drink("옥수수수염차", 1.50, "D012"),
-    Drink("코코팜", 1.60, "D013"),
-    Drink("트로피카나", 1.60, "D014"),
-    Drink("핫식스", 2.00, "D015"),
-    Drink("아메리카노 캔커피", 1.20, "D016"),
-    Drink("조지아 오리지널", 1.30, "D017"),
-    Drink("TOP 스위트 아메리카노", 1.40, "D018"),
-    Drink("밀키스", 1.50, "D019"),
-    Drink("칸타타", 1.60, "D020")
-*/
+
+} // namespace persistence

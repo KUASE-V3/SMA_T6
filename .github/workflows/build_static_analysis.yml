@@ -25,10 +25,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install Boost
-      run: |
-        apt-get update
-        apt-get install -y libboost-all-dev
 
     - name: Configure Submodules
       run: |
@@ -197,7 +193,7 @@ jobs:
       with:
         sarif_file: cppcheck_report.sarif
         category: cppcheck
-      continue-on-error: true  # Ïù¥ ÏòµÏÖò Ï∂îÍ∞Ä
+      continue-on-error: true  # ?ù¥ ?òµ?Öò Ï∂îÍ??
 
   # SonarCloud:
   #   needs: [GoogleTest, GCovr]

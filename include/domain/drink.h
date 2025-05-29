@@ -1,26 +1,29 @@
-﻿#ifndef DRINK_H
+#ifndef DRINK_H
 #define DRINK_H
 
 #include <string>
 
 namespace domain {
+// 모든 음료의 가격은 1000원으로 통일
+const int DEFAULT_DRINK_PRICE = 1000;
 
 class Drink {
-    public:
-        Drink();
-        
-        Drink(std::string name, int price, std::string code);
+private:
+    std::string drinkCode_attribute; // 음료 코드 (예: "01")
+    std::string name_attribute;      // 음료 이름 (예: "콜라")
+    int price_attribute;             // 음료 가격
 
-        std::string getName() const;
-        int getPrice() const;
-        std::string getCode() const;
+public:
+    Drink(std::string code = "", std::string name = "", int price = DEFAULT_DRINK_PRICE)
+        : drinkCode_attribute(code), name_attribute(name), price_attribute(price) {}
 
-    private:
-        std::string name_;
-        int price_;
-        std::string code_;
+    // Getters
+    std::string getDrinkCode() const { return drinkCode_attribute; }
+    std::string getName() const { return name_attribute; }
+    int getPrice() const { return price_attribute; }
+
+
 };
+} // namespace domain
 
-}
-
-#endif
+#endif // DRINK_H

@@ -1,4 +1,4 @@
-﻿#include "network/MessageSerializer.hpp"
+#include "network/MessageSerializer.hpp"
 
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
