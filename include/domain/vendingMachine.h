@@ -7,8 +7,8 @@
 namespace domain {
 class VendingMachine {
 private:
-    std::string id_attribute;                // 자판기 ID (예: "T6")
-    std::pair<int, int> location_attribute;  // 자판기 위치 <x, y> (0~99) [cite: 18]
+    std::string id_attribute;                // 자판기 ID (예: "T5")
+    std::pair<int, int> location_attribute;  // 자판기 위치 <x, y> (0~99) 
     std::string port_attribute;              // 자판기 네트워크 포트 정보
 
 public:
@@ -25,7 +25,6 @@ public:
         if (x >= 0 && x <= 99 && y >= 0 && y <= 99) { 
             location_attribute = std::make_pair(x,y);
         }
-        // Optionally, handle invalid coordinates (e.g., throw exception, log error)
     }
     void setPort(const std::string& newPort) { port_attribute = newPort; }
 };
