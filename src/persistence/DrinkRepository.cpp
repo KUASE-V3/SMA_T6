@@ -34,14 +34,15 @@ namespace {
 } 
 
 
-// findByDrinkCode 메소드 구현
 domain::Drink DrinkRepository::findByDrinkCode(const std::string& drinkCode) {
-    for (const auto& drink : hardcoded_drinks) {
-        if (drink.getDrinkCode() == drinkCode) {
-            return drink;
+    for (const auto& drink : hardcoded_drinks) { //
+        if (drink.getDrinkCode() == drinkCode) { //
+            return drink; //
         }
     }
-    // drinkCode가 유효하지 않은 경우 예외 처리
+    
+    throw std::runtime_error("Drink with code '" + drinkCode + "' not found.");
+
 }
 // findAll 메소드 구현
 std::vector<domain::Drink> DrinkRepository::findAll() {
