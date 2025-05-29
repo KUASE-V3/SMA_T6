@@ -14,7 +14,7 @@ domain::VendingMachine OvmAddressRepository::findById(const std::string& vmId) {
     // 자판기를 찾지 못한 경우, 기본 생성된 VendingMachine 객체를 반환합니다.
     // 실제 운영 환경에서는 오류 처리 또는 예외 발생을 고려해야 합니다.
     // 예를 들어, UC9에서 응답을 수신하고, UC10에서 가장 가까운 자판기를 안내할 때
-    // 해당 자판기의 상세 정보가 필요합니다[cite: 19, 22].
+    // 해당 자판기의 상세 정보가 필요합니다
     // 만약 요청된 vmId가 없다면, 이는 시스템 설정 오류이거나 잘못된 ID일 수 있습니다.
     return domain::VendingMachine(); // 기본 객체 반환
 }

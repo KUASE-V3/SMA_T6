@@ -39,11 +39,17 @@ void MessageReceiver::doRead(std::shared_ptr<tcp::socket> sock) {
                 std::istream is(buf.get());
                 std::string line;
                 std::getline(is, line);
+                std::cout <<  "[Receiver DEBUG] Received line: " << line << std::endl; // <<< 로그 추가
+
                 try {
                     auto msg = MessageSerializer::fromJson(line);
+                    std::cout << "[Receiver DEBUG] Parsed msg type: " << static_cast<int>(msg.msg_type) << " from " << msg.src_id << std::endl; // <<< 로그 추가
+
                     auto it = handlers_.find(msg.msg_type);
                     if (it != handlers_.end()) {
                         it->second(msg);
+                    }else {
+                    std::cout << "[Receiver DEBUG] No handler for msg type: " << static_cast<int>(msg.msg_type) << std::endl; // <<< 로그 추가
                     }
                 } catch (const std::exception& e) {
                     std::cerr << "[Receiver] parse error: " << e.what() << "\n";

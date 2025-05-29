@@ -45,8 +45,9 @@ void MessageSender::sendOne(const std::string& endpoint, const Message& msg) {
     auto eps = resolver.resolve(host, std::to_string(port));
     tcp::socket socket(io_context_);
     boost::asio::connect(socket, eps);
-
+    
     std::string data = MessageSerializer::toJson(msg) + "\n";
+    std::cout << "[Sender DEBUG] Sending to " << endpoint << ": " << data << std::endl; // <<< 로그 추가
     boost::asio::write(socket, boost::asio::buffer(data));
 }
 

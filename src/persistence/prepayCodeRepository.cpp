@@ -21,7 +21,7 @@ void PrepayCodeRepository::save(const domain::PrePaymentCode& prepayCode) {
     // prepayCode의 code_attribute를 키로 사용하여 정보를 저장하거나 업데이트합니다.
     // PrePaymentCode 객체 자체가 코드 문자열을 가지고 있으므로, prepayCode.getCode()를 사용합니다.
     codes_[prepayCode.getCode()] = prepayCode;
-    // UC12 (인증코드 발급) 단계에서 생성된 인증코드가 저장됩니다. [cite: 25]
+    // UC12 (인증코드 발급) 단계에서 생성된 인증코드가 저장됩니다. 
     // UC15 (선결제요청 수신 및 재고 확보) 단계에서도 다른 자판기의 요청으로 코드가 저장될 수 있습니다. [cite: 32]
     // 이때 PrePayment.code = AuthCode.code로 저장하는 로직이 있음. [cite: 32]
 }
@@ -33,8 +33,7 @@ bool PrepayCodeRepository::updateStatus(const std::string& code, domain::CodeSta
 
         if (newStatus == domain::CodeStatus::USED) {
             if (it->second.isUsable()) { // ACTIVE 상태일 때만 USED로 변경 가능
-                it->second.markAsUsed(); // UC14: "일치할 경우 AuthCode를 만료시킨다." [cite: 30] (만료를 USED 상태로 해석)
-                return true;
+                it->second.markAsUsed(); // UC14: "일치할 경우 AuthCode를 만료시킨다." 
             } else {
                 // 이미 USED 상태이거나 다른 비활성 상태일 수 있음
                 return false; 
