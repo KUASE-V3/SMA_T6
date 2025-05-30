@@ -44,10 +44,10 @@ const std::vector<domain::VendingMachine> ALL_VENDING_MACHINES_IN_SYSTEM = {
 };
 
 // --- 현재 실행될 자판기의 정보 (명령행 인자로 덮어쓰일 수 있음) ---
-std::string THIS_VM_ID = "T5"; // T5
-int THIS_VM_X = 50;            // T5의 기본 X 좌표
-int THIS_VM_Y = 50;            // T5의 기본 Y 좌표
-unsigned short THIS_VM_PORT = 12349; // T5의 기본 포트
+std::string THIS_VM_ID = "T6"; // T6
+int THIS_VM_X = 50;             // T6의 기본 X 좌표
+int THIS_VM_Y = 50;            // T6의 기본 Y 좌표
+unsigned short THIS_VM_PORT = 12350; // T6의 기본 포트
 
 // 함수 선언
 domain::VendingMachine findVmDefinitionInList(const std::string& vmId, const std::vector<domain::VendingMachine>& vmList);
@@ -72,15 +72,15 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    std::string initialVmId = THIS_VM_ID; // 파싱 전 기본 ID (T5)
+    std::string initialVmId = THIS_VM_ID; // 파싱 전 기본 ID (T6)
     unsigned short initialVmPort = THIS_VM_PORT;
     int initialVmX = THIS_VM_X;
     int initialVmY = THIS_VM_Y;
 
-    if (argc == 2) { // 인자 1개: Port (for T5) 또는 ID
+    if (argc == 2) { // 인자 1개: Port (for T6) 또는 ID
         try {
             initialVmPort = static_cast<unsigned short>(std::stoi(argv[1]));
-            // 숫자로 변환 성공 시, 기본 ID(T5)에 대한 포트 변경으로 간주
+            // 숫자로 변환 성공 시, 기본 ID(T6)에 대한 포트 변경으로 간주
             std::cout << "정보: 기본 자판기(" << initialVmId << ")의 실행 포트가 " << initialVmPort << "로 지정되었습니다." << std::endl;
         } catch (const std::invalid_argument& ia) { // 숫자가 아니면 ID로 간주
             initialVmId = argv[1];
@@ -160,17 +160,24 @@ int main(int argc, char* argv[]) {
         std::unordered_map<std::string, std::string> id_to_endpoint_map_for_sender;
         int actual_other_vm_count = 0;
 
-        std::cout << "정보: 다른 자판기 정보 로드 중 (시스템 내 모든 다른 자판기 대상)..." << std::endl;
+        std::cout << "정보: 다른 자판기 정보 로드 중 (컨테이너 이름 기반)..." << std::endl;
         for (const auto& other_vm_def : ALL_VENDING_MACHINES_IN_SYSTEM) {
             if (other_vm_def.getId() == THIS_VM_ID) {
-                continue;
+                continue; // 자기 자신은 제외
             }
-            ovmAddressRepository.save(other_vm_def);
-            std::string endpoint_str = "127.0.0.1:" + other_vm_def.getPort();
+
+            // Docker 네트워크 내에서는 컨테이너 이름으로 통신 가능
+            // 컨테이너 이름을 자판기 ID를 기반으로 생성 (예: T1 -> vm_t1)
+            // docker run 시 --name 옵션으로 지정한 이름과 일치해야 함.
+            std::string container_name = "vm_" + other_vm_def.getId(); // 또는 "vm_t1", "vm_t5" 등 일관된 규칙 사용
+            std::string endpoint_str = container_name + ":" + other_vm_def.getPort(); // 예: "vm_t1:12345"
+
             other_vm_endpoints_for_sender.push_back(endpoint_str);
             id_to_endpoint_map_for_sender[other_vm_def.getId()] = endpoint_str;
             actual_other_vm_count++;
-            std::cout << "  + " << other_vm_def.getId() << " (Port: " << other_vm_def.getPort() << ", Endpoint: " << endpoint_str << ") 통신 대상으로 추가됨." << std::endl;
+            std::cout << "  + " << other_vm_def.getId() << " (컨테이너명: " << container_name 
+                      << ", 포트: " << other_vm_def.getPort() << ", 내부 엔드포인트: " << endpoint_str 
+                      << ") 통신 대상으로 추가됨." << std::endl;
         }
         if (actual_other_vm_count == 0 && ALL_VENDING_MACHINES_IN_SYSTEM.size() > 1) {
              std::cout << "경고: 다른 자판기가 시스템에 정의되어 있으나, 통신 대상으로 설정된 다른 자판기가 없습니다 (자기 자신만 시스템에 있는 경우)." << std::endl;
@@ -235,7 +242,7 @@ domain::VendingMachine findVmDefinitionInList(const std::string& vmId, const std
 
 void setupGeneralInventory(const std::string& currentVmId, persistence::InventoryRepository& inventoryRepo) {
     std::cout << "정보: " << currentVmId << " 자판기의 일반 재고를 설정합니다." << std::endl;
-    if (currentVmId == "T5") { // 우리 조 자판기 (T5)
+    if (currentVmId == "T6") { // 우리 조 자판기 (T6)
         inventoryRepo.addOrUpdateStock(domain::Inventory("01", 0));  // 콜라 (선결제 테스트용으로 재고 없음)
         inventoryRepo.addOrUpdateStock(domain::Inventory("02", 5));  // 사이다 (로컬 구매 가능)
         inventoryRepo.addOrUpdateStock(domain::Inventory("03", 10)); // 녹차
@@ -243,9 +250,9 @@ void setupGeneralInventory(const std::string& currentVmId, persistence::Inventor
         inventoryRepo.addOrUpdateStock(domain::Inventory("08", 7));  // 캔커피
         inventoryRepo.addOrUpdateStock(domain::Inventory("15", 3));  // 오렌지주스
         inventoryRepo.addOrUpdateStock(domain::Inventory("20", 4));  // 카페라떼
-        std::cout << "  T5: 콜라(0), 사이다(5), 녹차(10), 탄산수(0), 캔커피(7), 오렌지주스(3), 카페라떼(4) 설정됨." << std::endl;
-    } else if (currentVmId == "T1") { // T5가 선결제할 대상 자판기 예시
-        inventoryRepo.addOrUpdateStock(domain::Inventory("01", 10)); // 콜라 (T5가 선결제 가능)
+        std::cout << "  T6: 콜라(0), 사이다(5), 녹차(10), 탄산수(0), 캔커피(7), 오렌지주스(3), 카페라떼(4) 설정됨." << std::endl;
+    } else if (currentVmId == "T1") { // T6가 선결제할 대상 자판기 예시
+        inventoryRepo.addOrUpdateStock(domain::Inventory("01", 10)); // 콜라 (T6가 선결제 가능)
         inventoryRepo.addOrUpdateStock(domain::Inventory("02", 0));
         inventoryRepo.addOrUpdateStock(domain::Inventory("04", 8));  // 홍차
         inventoryRepo.addOrUpdateStock(domain::Inventory("09", 15)); // 물
@@ -255,7 +262,7 @@ void setupGeneralInventory(const std::string& currentVmId, persistence::Inventor
         std::cout << "  T1: 콜라(10), 사이다(0), 홍차(8), 물(15), 에너지드링크(3), 유자차(6), 식혜(9) 설정됨." << std::endl;
     } else if (currentVmId == "T2") {
         inventoryRepo.addOrUpdateStock(domain::Inventory("02", 12)); // 사이다
-        inventoryRepo.addOrUpdateStock(domain::Inventory("06", 10)); // 탄산수 (T5가 선결제 가능)
+        inventoryRepo.addOrUpdateStock(domain::Inventory("06", 10)); // 탄산수 (T6가 선결제 가능)
         inventoryRepo.addOrUpdateStock(domain::Inventory("13", 5));
         inventoryRepo.addOrUpdateStock(domain::Inventory("17", 6));
         std::cout << "  T2: 사이다(12), 탄산수(10), 아이스티(5), 이온음료(6) 설정됨." << std::endl;
