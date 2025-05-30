@@ -1,18 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 project(SMA_T6_Project)
 
-# 외부 라이브러리 경로 설정 (사용자 환경에 맞게 설정됨)
-set(RAPIDJSON_INCLUDE_DIR "/home/linuxbrew/.linuxbrew/include") # RapidJSON 헤더 경로
+set(RAPIDJSON_INCLUDE_DIR "/home/linuxbrew/.linuxbrew/include") # RapidJSON 
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Boost 라이브러리 찾기
-find_package(Boost 1.74.0 REQUIRED COMPONENTS system)
+find_package(Boost 1.71.0 REQUIRED COMPONENTS system)
 
 if(Boost_FOUND)
     message(STATUS "Boost found. Include Dirs: ${Boost_INCLUDE_DIRS}")
-    include_directories(${Boost_INCLUDE_DIRS}) # 전역으로 Boost 헤더 경로 추가 
+    include_directories(${Boost_INCLUDE_DIRS}) 
 else()
     message(FATAL_ERROR "Boost not found!")
 endif()
@@ -24,13 +22,11 @@ endif()
 
 find_package(Threads REQUIRED)
 
-# 기본 Include 경로 설정
 include_directories(
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}/external/rapidjson/include 
 )
 
-# 커버리지 옵션 (기존 유지)
 option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
 if(ENABLE_COVERAGE)
   message(STATUS "Coverage instrumentation enabled")

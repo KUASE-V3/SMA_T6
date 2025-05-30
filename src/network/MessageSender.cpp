@@ -18,9 +18,9 @@ void MessageSender::send(const Message& msg) {
             try {
                 sendOne(ep, msg);
             } catch (const std::exception& e) {
-                // log error
-              //  std::cerr << "[Sender] warning: failed to send to "
-                     //     << ep << ": " << e.what() << "\n";
+            // log error
+            //  std::cerr << "[Sender] warning: failed to send to "
+            //     << ep << ": " << e.what() << "\n";
             }
         }
     } else { // unicast

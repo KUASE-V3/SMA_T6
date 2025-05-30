@@ -217,7 +217,7 @@ void UserProcessController::processCurrentState() {
                     // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - Woke up by cv_data_ready_ (response or Asio timeout handled)." << std::endl;
                     // 상태 변경은 onRespStockReceived 또는 handleTimeout 콜백에서 이미 처리되었을 것임.
                 } else { // cv_.wait_for 자체 타임아웃 (안전장치)
-                    // std::lock_guard<std::mutex> guard(mtx_); // unique_lock이 해제되었으므로 다시 잠글 필요 없음, 아래에서 다시 잠금
+                    std::lock_guard<std::mutex> guard(mtx_); // unique_lock이 해제되었으므로 다시 잠글 필요 없음, 아래에서 다시 잠금
                     // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - cv_.wait_for timed out." << std::endl;
                     // 이 시점에서 Asio 타이머의 handleTimeout이 이미 실행되었을 가능성이 높음.
                     // 만약 handleTimeout이 어떤 이유로 상태 변경을 못했거나 cv_를 깨우지 못했다면, 여기서 한번 더 확인.
@@ -743,17 +743,15 @@ void UserProcessController::onReqStockReceived(const network::Message& msg) { //
 void UserProcessController::onRespStockReceived(const network::Message& msg) { // UC9
     std::lock_guard<std::mutex> lock(mtx_);
     // // <<< 디버그 로그 추가 >>>
-    // std::cout << "[" << myVendingMachineId_ << "] onRespStockReceived: 메시지 수신됨 (from: " << msg.src_id << ", type: " << static_cast<int>(msg.msg_type) << ")" << std::endl;
+    // std::cout << "[" << myVendingMachineId_ << "] onRespStockReceived: 메시지 수신됨 (from: " << msg.src_id << ")" << std::endl;
+    // if (pendingDrinkSelection_) {
+    //     std::cout << "  - 현재 pendingDrinkSelection_ 음료 코드: " << pendingDrinkSelection_->getDrinkCode() << std::endl;
+    // } else {
+    //     std::cout << "  - 현재 pendingDrinkSelection_이 설정되지 않음!" << std::endl;
+    // }
     // if (msg.msg_content.count("item_code")) {
     //     std::cout << "  - item_code: " << msg.msg_content.at("item_code") << std::endl;
     // }
-
-    if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) {
-    //     // <<< 디버그 로그 추가 >>>
-    //     std::cout << "  - 현재 상태 AWAITING_STOCK_RESPONSES 아님. 메시지 무시." << std::endl;
-        return;
-    }
-    if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) return;
 
     try {
         std::string drinkCode = msg.msg_content.at("item_code");
@@ -766,7 +764,7 @@ void UserProcessController::onRespStockReceived(const network::Message& msg) { /
             bool alreadyReceived = false;
             for(const auto& ovm : availableOtherVmsForDrink_) if(ovm.id == vmId) alreadyReceived = true;
             if(alreadyReceived) return;
-
+        
             availableOtherVmsForDrink_.push_back({vmId, x, y, true});
             // // <<< 디버그 로그 추가 >>>
             // std::cout << "  - 유효한 재고 응답. availableOtherVmsForDrink_ 크기: " << availableOtherVmsForDrink_.size() << "/" << total_other_vms_ << std::endl;
