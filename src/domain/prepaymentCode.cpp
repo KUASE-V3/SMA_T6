@@ -1,10 +1,21 @@
 #include "domain/prepaymentCode.h"
-#include "domain/order.h" 
-#include <memory>                  // std::shared_ptr 사용
-#include <string>                  // std::string 사용
+#include <cstdlib>
+#include <string>
+#include <memory>
 
 namespace domain {
 
-//PrePaymentCode.h 헤더 파일에 이미 인라인으로 구현되어 있습니다.
+std::string PrePaymentCode::generateRandomCode() {
+    static const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    std::string result;
+    for (int i = 0; i < 5; ++i) {
+        int index = std::rand() % (sizeof(charset) - 1);
+        result += charset[index];
+    }
+    return result;
+}
+
+// 나머지 멤버 함수는 헤더에서 inline으로 구현됨
+
 
 } // namespace domain
