@@ -25,6 +25,7 @@ add_test(NAME UC17Test COMMAND runUC17Test.out)
 # �ܺ� ���̺귯�� ��� ���� (����� ȯ�濡 �°� ������)
 set(RAPIDJSON_INCLUDE_DIR "/home/linuxbrew/.linuxbrew/include") # RapidJSON ��� ���
 
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -34,6 +35,7 @@ find_package(Boost 1.74.0 REQUIRED COMPONENTS system)
 if(Boost_FOUND)
     message(STATUS "Boost found. Include Dirs: ${Boost_INCLUDE_DIRS}")
     include_directories(${Boost_INCLUDE_DIRS}) # �������� Boost ��� ��� �߰� 
+
 else()
     message(FATAL_ERROR "Boost not found!")
 endif()
@@ -45,14 +47,13 @@ endif()
 
 find_package(Threads REQUIRED)
 
-# �⺻ Include ��� ����
 include_directories(
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_SOURCE_DIR}/external/rapidjson/include 
   /home/linuxbrew/.linuxbrew/include
 )
 
-# Ŀ������ �ɼ� (���� ����)
+
 option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
 if(ENABLE_COVERAGE)
   message(STATUS "Coverage instrumentation enabled")

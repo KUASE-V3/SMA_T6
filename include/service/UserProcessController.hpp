@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 #include <vector>
@@ -172,6 +172,9 @@ private:
     void onRespStockReceived(const network::Message& msg);  // UC9
     void onReqPrepayReceived(const network::Message& msg);  // UC15
     void onRespPrepayReceived(const network::Message& msg); // UC16
+
+    void handleStockResponseTimeout();
+
 };
 
 } // namespace service

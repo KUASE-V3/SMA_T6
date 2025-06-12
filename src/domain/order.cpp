@@ -1,37 +1,8 @@
-#include "domain/order.h" // Order Å¬·¡½º Á¤ÀÇ¸¦ Æ÷ÇÔ
-#include <string> // setPayStatus, setCertCode µî¿¡¼­ std::string »ç¿ë
+#include "domain/order.h" // Order í´ë˜ìŠ¤ ì •ì˜ë¥¼ í¬í•¨
+#include <string> // setPayStatus, setCertCode ë“±ì—ì„œ std::string ì‚¬ìš©
 
 namespace domain {
 
-// Order.h Çì´õ ÆÄÀÏ¿¡ ÀÌ¹Ì ÀÎ¶óÀÎÀ¸·Î ±¸ÇöµÇ¾î ÀÖ½À´Ï´Ù.
-/*
-Order::Order(std::string vmid, std::string dCode, int qty, std::string cCode, std::string pStatus)
-    : vmid_attribute(vmid),
-      drinkCode_attribute(dCode),
-      qty_attribute(qty),
-      certCode_attribute(cCode),
-      paystatus_attribute(pStatus) {
-    // ±âº»°ªÀ¸·Î qty=1, pStatus="PENDING" µîÀÌ Çì´õ¿¡ ¸í½ÃµÊ
-}
-*/
-
-/*
-std::string Order::getVmid() const { return vmid_attribute; }
-std::string Order::getDrinkCode() const { return drinkCode_attribute; }
-int Order::getQty() const { return qty_attribute; }
-std::string Order::getCertCode() const { return certCode_attribute; }
-std::string Order::getPayStatus() const { return paystatus_attribute; }
-*/
-
-/*
-void Order::setPayStatus(const std::string& newStatus) {
-    paystatus_attribute = newStatus;
-}
-
-void Order::setCertCode(const std::string& newCertCode) {
-    certCode_attribute = newCertCode;
-}
-*/
-
+// Order.h í—¤ë” íŒŒì¼ì— ì´ë¯¸ ì¸ë¼ì¸ìœ¼ë¡œ êµ¬í˜„ë˜ì–´ ìˆìŠµë‹ˆë‹¤.
 
 } // namespace domain

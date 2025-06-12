@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <string>
 #include <memory>   // std::shared_ptr
@@ -16,19 +16,8 @@ namespace service {
 
 namespace service {
 
-/**
- * @brief 선결제 관련 비즈니스 로직을 처리하는 서비스입니다.
- * 인증 코드 생성, 등록, 유효성 검사, 상태 변경 및 다른 자판기로부터의 선결제 요청 기록 등을 담당합니다.
- * 관련된 유스케이스: UC12, UC13, UC14, UC15
- */
 class PrepaymentService {
 public:
-    /**
-     * @brief PrepaymentService 생성자.
-     * @param prepayCodeRepo 선결제 코드 데이터 관리를 위한 PrepayCodeRepository 객체에 대한 참조.
-     * @param orderRepo 주문 데이터 관리를 위한 OrderRepository 객체에 대한 참조 (선결제 시 주문 기록용).
-     * @param errorService 오류 처리를 위한 ErrorService 객체에 대한 참조.
-     */
     PrepaymentService(
         persistence::PrepayCodeRepository& prepayCodeRepo,
         persistence::OrderRepository& orderRepo,
@@ -42,13 +31,7 @@ public:
      */
     std::string generateAuthCodeString();
 
-    /**
-     * @brief 생성된 인증 코드와 연결될 주문 정보를 받아 PrePaymentCode 객체를 생성하고 저장합니다. (UC12)
-     * @param authCode `generateAuthCodeString()`으로 생성된 인증 코드.
-     * @param order 이 선결제와 연결될 주문 객체의 `std::shared_ptr`.
-     * 오류 발생 시 ErrorService를 통해 보고합니다.
-     */
-    void registerPrepayment(const std::string& authCode, std::shared_ptr<domain::Order> order);
+
 
     /**
      * @brief 입력된 인증 코드의 형식이 유효한지 (5자리 영숫자) 검사합니다. (UC13)

@@ -1,4 +1,4 @@
-﻿
+
 
 #include "service/DistanceService.hpp"
 #include "domain/vendingMachine.h" // domain::VendingMachine 객체 생성 및 반환을 위해 필요
@@ -10,15 +10,6 @@
 namespace service {
 
 
-/**
- * @brief 자판기 ID (예: "T1", "T12")에서 숫자 부분을 추출하여 정수로 반환합니다.
- * ID는 'T' 또는 't'로 시작하고 그 뒤에 숫자가 오는 형식을 가정합니다.
- * (PFR R3.2: "거리가 같다면 id의 숫자가 작은 자판기로 안내한다.")
- * @param vmId 추출할 자판기의 ID 문자열.
- * @return 추출된 숫자.
- * @throws std::invalid_argument ID 형식이 올바르지 않거나 숫자 변환에 실패한 경우.
- * @throws std::out_of_range std::stoi 변환 시 숫자 범위 초과.
- */
 int DistanceService::extractNumericId(const std::string& vmId) const {
     if (vmId.length() > 1 && (vmId[0] == 'T' || vmId[0] == 't')) {
         try {
@@ -36,16 +27,6 @@ int DistanceService::extractNumericId(const std::string& vmId) const {
     throw std::invalid_argument("유효하지 않은 자판기 ID 형식입니다: '" + vmId + "' (예: T1, T12)");
 }
 
-/**
- * @brief 주어진 다른 자판기 정보 목록 중에서 현재 자판기를 기준으로 가장 가깝고,
- * 재고가 있는 자판기를 찾아 반환합니다. (UC10, PFR R3.2)
- * 거리가 같을 경우 자판기 ID의 숫자 부분이 작은 것을 우선합니다.
- * @param currentVmX 현재 자판기의 X 좌표.
- * @param currentVmY 현재 자판기의 Y 좌표.
- * @param otherVms 다른 자판기들의 정보(ID, 좌표, 재고 유무)를 담은 벡터.
- * @return 조건에 맞는 가장 가까운 자판기의 domain::VendingMachine 객체.
- * 조건에 맞는 자판기가 없으면 std::nullopt를 반환합니다.
- */
 std::optional<domain::VendingMachine> DistanceService::findNearestAvailableVendingMachine(
     int currentVmX,
     int currentVmY,
@@ -62,7 +43,7 @@ std::optional<domain::VendingMachine> DistanceService::findNearestAvailableVendi
     for (const auto& vmInfo : otherVms) {
         if (vmInfo.hasStock) { // 재고가 있는 자판기만 고려
             double dist = calculateDistance(currentVmX, currentVmY, vmInfo.coordX, vmInfo.coordY);
-            candidatesWithDistance.push_back({dist, vmInfo});
+            candidatesWithDistance.emplace_back(dist, vmInfo);
         }
     }
 

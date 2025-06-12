@@ -1,4 +1,4 @@
-﻿#include "domain/prepaymentCode.h"
+#include "domain/prepaymentCode.h"
 #include <cstdlib>
 #include <string>
 #include <memory>
@@ -16,5 +16,6 @@ std::string PrePaymentCode::generateRandomCode() {
 }
 
 // 나머지 멤버 함수는 헤더에서 inline으로 구현됨
+
 
 } // namespace domain

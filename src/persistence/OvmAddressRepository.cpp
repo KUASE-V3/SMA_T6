@@ -3,35 +3,29 @@
 
 namespace persistence {
 
-// OvmAddressRepository() = default; // ±âº» »ı¼ºÀÚ
 
-// ID·Î Æ¯Á¤ ¿ÜºÎ ÀÚÆÇ±â Á¤º¸ Á¶È¸
-domain::VendingMachine OvmAddressRepository::findById(const std::string& vmId) {
+// IDë¡œ íŠ¹ì • ì™¸ë¶€ ìíŒê¸° ì •ë³´ ì¡°íšŒ
+domain::VendingMachine OvmAddressRepository::findById(const std::string& vmId) const{
     auto it = vms_.find(vmId);
     if (it != vms_.end()) {
         return it->second;
     }
-    // ÀÚÆÇ±â¸¦ Ã£Áö ¸øÇÑ °æ¿ì, ±âº» »ı¼ºµÈ VendingMachine °´Ã¼¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
-    // ½ÇÁ¦ ¿î¿µ È¯°æ¿¡¼­´Â ¿À·ù Ã³¸® ¶Ç´Â ¿¹¿Ü ¹ß»ıÀ» °í·ÁÇØ¾ß ÇÕ´Ï´Ù.
-    // ¿¹¸¦ µé¾î, UC9¿¡¼­ ÀÀ´äÀ» ¼ö½ÅÇÏ°í, UC10¿¡¼­ °¡Àå °¡±î¿î ÀÚÆÇ±â¸¦ ¾È³»ÇÒ ¶§
-    // ÇØ´ç ÀÚÆÇ±âÀÇ »ó¼¼ Á¤º¸°¡ ÇÊ¿äÇÕ´Ï´Ù
-    // ¸¸¾à ¿äÃ»µÈ vmId°¡ ¾ø´Ù¸é, ÀÌ´Â ½Ã½ºÅÛ ¼³Á¤ ¿À·ùÀÌ°Å³ª Àß¸øµÈ IDÀÏ ¼ö ÀÖ½À´Ï´Ù.
-    return domain::VendingMachine(); // ±âº» °´Ã¼ ¹İÈ¯
+    return domain::VendingMachine(); // ê¸°ë³¸ ê°ì²´ ë°˜í™˜
 }
 
-// ¸ğµç µî·ÏµÈ ¿ÜºÎ ÀÚÆÇ±â Á¤º¸ Á¶È¸
-std::vector<domain::VendingMachine> OvmAddressRepository::findAll() {
+// ëª¨ë“  ë“±ë¡ëœ ì™¸ë¶€ ìíŒê¸° ì •ë³´ ì¡°íšŒ
+std::vector<domain::VendingMachine> OvmAddressRepository::findAll() const {
     std::vector<domain::VendingMachine> allVms;
     allVms.reserve(vms_.size());
-    for (const auto& pair : vms_) {
-        allVms.push_back(pair.second);
+    // pair ëŒ€ì‹  [id, vm]ìœ¼ë¡œ ë°”ë¡œ ë¶„í•´í•©ë‹ˆë‹¤. idëŠ” ì‚¬ìš©í•˜ì§€ ì•Šì§€ë§Œ ëª…ì‹œì ìœ¼ë¡œ ë³´ì—¬ì¤ë‹ˆë‹¤.
+    for (const auto& [id, vm] : vms_) {
+        allVms.push_back(vm);
     }
     return allVms;
 }
 
-// ¿ÜºÎ ÀÚÆÇ±â Á¤º¸ Ãß°¡/¾÷µ¥ÀÌÆ® (ÃÊ±â ¼³Á¤¿ë ¶Ç´Â µ¿Àû Ãß°¡ ½Ã)
+// ì™¸ë¶€ ìíŒê¸° ì •ë³´ ì¶”ê°€/ì—…ë°ì´íŠ¸ (ì´ˆê¸° ì„¤ì •ìš© ë˜ëŠ” ë™ì  ì¶”ê°€ ì‹œ)
 void OvmAddressRepository::save(const domain::VendingMachine& vm) {
-    // vmId¸¦ Å°·Î »ç¿ëÇÏ¿© ÀÚÆÇ±â Á¤º¸¸¦ ÀúÀåÇÏ°Å³ª ¾÷µ¥ÀÌÆ®ÇÕ´Ï´Ù.
     vms_[vm.getId()] = vm;
 }
 

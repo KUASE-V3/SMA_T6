@@ -1,4 +1,4 @@
-﻿#include "network/MessageReceiver.hpp"
+#include "network/MessageReceiver.hpp"
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/read_until.hpp>    
 #include <boost/asio/streambuf.hpp>    
@@ -21,7 +21,7 @@ void MessageReceiver::start() {
 }
 
 void MessageReceiver::doAccept() {
-    std::cout << " Accepting connections on port " << port_ << std::endl;
+    // std::cout << " Accepting connections on port " << port_ << std::endl;
     auto sock = std::make_shared<tcp::socket>(io_context_);
     acceptor_.async_accept(*sock, [this, sock](boost::system::error_code ec) {
         if (!ec) {
@@ -39,20 +39,13 @@ void MessageReceiver::doRead(std::shared_ptr<tcp::socket> sock) {
                 std::istream is(buf.get());
                 std::string line;
                 std::getline(is, line);
-                std::cout <<  "[Receiver DEBUG] Received line: " << line << std::endl; // <<< 로그 추가
-
                 try {
                     auto msg = MessageSerializer::fromJson(line);
-                    std::cout << "[Receiver DEBUG] Parsed msg type: " << static_cast<int>(msg.msg_type) << " from " << msg.src_id << std::endl; // <<< 로그 추가
 
                     auto it = handlers_.find(msg.msg_type);
-                    if (it != handlers_.end()) {
-                        it->second(msg);
-                    }else {
-                    std::cout << "[Receiver DEBUG] No handler for msg type: " << static_cast<int>(msg.msg_type) << std::endl; // <<< 로그 추가
-                    }
+                    it->second(msg);
                 } catch (const std::exception& e) {
-                    std::cerr << "[Receiver] parse error: " << e.what() << "\n";
+                    std::cerr << "오류: 메시지 수신 처리 중 예외 발생: " << e.what() << std::endl;
                 }
                 doRead(sock);
             }

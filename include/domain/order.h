@@ -1,4 +1,4 @@
-﻿#ifndef ORDER_H
+#ifndef ORDER_H
 #define ORDER_H
 
 #include <string>
@@ -11,10 +11,9 @@ private:
     int qty_attribute;               // 주문 수량 (항상 1)
     std::string certCode_attribute;  // 선결제 시 발급된 인증코드
     std::string paystatus_attribute; // 결제 상태 (예: "PENDING", "APPROVED", "DECLINED")
-    // std::string orderId_attribute; // 고유 주문 ID (필요시 추가 고려)
 
 public:
-    Order(std::string vmid = "", std::string dCode = "", int qty = 1, std::string cCode = "", std::string pStatus = "PENDING")
+    Order(const std::string&  vmid = "", const std::string& dCode  = "", int qty = 1, const std::string&  cCode = "", const std::string&  pStatus = "PENDING")
         : vmid_attribute(vmid), drinkCode_attribute(dCode), qty_attribute(qty),
           certCode_attribute(cCode), paystatus_attribute(pStatus) {}
 
@@ -24,16 +23,12 @@ public:
     int getQty() const { return qty_attribute; }
     std::string getCertCode() const { return certCode_attribute; }
     std::string getPayStatus() const { return paystatus_attribute; }
-    // std::string getOrderId() const { return orderId_attribute; }
 
     // Setters / Modifiers
     void setPayStatus(const std::string& newStatus) {
-        // Potentially add validation for status values
         paystatus_attribute = newStatus;
     }
     void setCertCode(const std::string& newCertCode) {
-        // 인증코드는 알파벳 대/소문자와 숫자를 포함하는 랜덤한 5자리의 문자열 
-        // (여기서는 단순 할당, 생성은 서비스 계층에서)
         certCode_attribute = newCertCode;
     }
 };

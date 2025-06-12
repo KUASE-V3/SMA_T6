@@ -1,4 +1,4 @@
-﻿#include "service/MessageService.hpp"
+#include "service/MessageService.hpp"
 // MessageService.hpp에서 이미 필요한 헤더들을 include 하고 있음
 // (MessageSender, MessageReceiver, Message, EnumClassHash, ErrorService 등)
 
@@ -25,13 +25,9 @@ MessageService::MessageService(
     myVmId_(myVmId),
     myCoordX_(myCoordX),
     myCoordY_(myCoordY) {
-    // 핸들러 등록 및 수신 시작은 startReceivingMessages()에서 명시적으로 호출.
 }
 
-/**
- * @brief MessageReceiver에 각 메시지 타입별 내부 콜백(onMessageReceived)을 등록하고,
- * 메시지 수신을 시작합니다.
- */
+
 void MessageService::startReceivingMessages() {
     // Message.hpp에 정의된 모든 Message::Type에 대해
     // onMessageReceived를 호출하는 람다를 MessageReceiver에 등록합니다.
@@ -56,7 +52,6 @@ void MessageService::startReceivingMessages() {
     }
 }
 
-// --- 메시지 송신 메소드 구현 ---
 
 // UC8: 재고 조회 브로드캐스트 (PFR 표1)
 void MessageService::sendStockRequestBroadcast(const std::string& drinkCode) {
@@ -126,20 +121,11 @@ void MessageService::sendPrepaymentReservationResponse(const std::string& destin
     }
 }
 
-/**
- * @brief 외부(UserProcessController)에서 특정 메시지 타입에 대한 핸들러를 등록합니다.
- * @param type 처리할 메시지의 타입 (network::Message::Type).
- * @param handler 해당 메시지 수신 시 호출될 콜백 함수.
- */
 void MessageService::registerMessageHandler(network::Message::Type type, GenericMessageHandler handler) {
     messageHandlers_[type] = std::move(handler);
 }
 
-/**
- * @brief MessageReceiver로부터 메시지를 수신했을 때 호출되는 내부 콜백 함수입니다.
- * 등록된 핸들러 맵을 참조하여 해당 메시지 타입에 맞는 핸들러를 실행합니다.
- * @param msg 수신된 network::Message 객체.
- */
+
 void MessageService::onMessageReceived(const network::Message& msg) {
     auto it = messageHandlers_.find(msg.msg_type);
     if (it != messageHandlers_.end()) {

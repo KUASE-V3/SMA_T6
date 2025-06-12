@@ -1,4 +1,4 @@
-﻿#ifndef DRINK_H
+#ifndef DRINK_H
 #define DRINK_H
 
 #include <string>
@@ -14,7 +14,7 @@ private:
     int price_attribute;             // 음료 가격
 
 public:
-    Drink(std::string code = "", std::string name = "", int price = DEFAULT_DRINK_PRICE)
+    Drink(const std::string& code = "", const std::string& name = "", int price = DEFAULT_DRINK_PRICE)
         : drinkCode_attribute(code), name_attribute(name), price_attribute(price) {}
 
     // Getters

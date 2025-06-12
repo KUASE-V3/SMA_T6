@@ -3,34 +3,34 @@
 #include <string>
 #include <vector>
 #include <functional>
-#include <unordered_map> // std::map¿¡¼­ º¯°æµÊ
+#include <unordered_map> // std::mapì—ì„œ ë³€ê²½ë¨
 
-// --- ÇÊ¿äÇÑ Å¸ÀÔµéÀÇ ÀüÃ¼ Á¤ÀÇ¸¦ ¸ÕÀú Æ÷ÇÔ ---
-#include "network/message.hpp"         // network::Message ¹× network::Message::Type Á¤ÀÇ
-#include "network/MessageSender.hpp"   // network::MessageSender Á¤ÀÇ
-#include "network/MessageReceiver.hpp" // network::MessageReceiver ¹× network::EnumClassHash Á¤ÀÇ
-#include "service/ErrorService.hpp"    // service::ErrorService Á¤ÀÇ
+// --- í•„ìš”í•œ íƒ€ì…ë“¤ì˜ ì „ì²´ ì •ì˜ë¥¼ ë¨¼ì € í¬í•¨ ---
+#include "network/message.hpp"         // network::Message ë° network::Message::Type ì •ì˜
+#include "network/MessageSender.hpp"   // network::MessageSender ì •ì˜
+#include "network/MessageReceiver.hpp" // network::MessageReceiver ë° network::EnumClassHash ì •ì˜
+#include "service/ErrorService.hpp"    // service::ErrorService ì •ì˜
 
 namespace service {
 
-// Äİ¹é ÇÔ¼ö Å¸ÀÔ Á¤ÀÇ: ¼ö½ÅµÈ ³×Æ®¿öÅ© ¸Ş½ÃÁö¸¦ Ã³¸®ÇÏ±â À§ÇÑ ÀÏ¹İ ÇÚµé·¯
+// ì½œë°± í•¨ìˆ˜ íƒ€ì… ì •ì˜: ìˆ˜ì‹ ëœ ë„¤íŠ¸ì›Œí¬ ë©”ì‹œì§€ë¥¼ ì²˜ë¦¬í•˜ê¸° ìœ„í•œ ì¼ë°˜ í•¸ë“¤ëŸ¬
 using GenericMessageHandler = std::function<void(const network::Message& message)>;
 
 /**
- * @brief ´Ù¸¥ ÀÚÆÇ±â¿ÍÀÇ ¸Ş½ÃÁö ¼Û¼ö½ÅÀ» ´ã´çÇÏ´Â ¼­ºñ½ºÀÔ´Ï´Ù.
- * MessageSender¿Í MessageReceiver¸¦ »ç¿ëÇÏ¿© ³×Æ®¿öÅ© Åë½ÅÀ» ¼öÇàÇÏ°í,
- * ¼ö½ÅµÈ ¸Ş½ÃÁö¿¡ µû¶ó µî·ÏµÈ ÇÚµé·¯(ÁÖ·Î UserProcessControllerÀÇ ¸Ş¼Òµå)¸¦ È£ÃâÇÕ´Ï´Ù.
+ * @brief ë‹¤ë¥¸ ìíŒê¸°ì™€ì˜ ë©”ì‹œì§€ ì†¡ìˆ˜ì‹ ì„ ë‹´ë‹¹í•˜ëŠ” ì„œë¹„ìŠ¤ì…ë‹ˆë‹¤.
+ * MessageSenderì™€ MessageReceiverë¥¼ ì‚¬ìš©í•˜ì—¬ ë„¤íŠ¸ì›Œí¬ í†µì‹ ì„ ìˆ˜í–‰í•˜ê³ ,
+ * ìˆ˜ì‹ ëœ ë©”ì‹œì§€ì— ë”°ë¼ ë“±ë¡ëœ í•¸ë“¤ëŸ¬(ì£¼ë¡œ UserProcessControllerì˜ ë©”ì†Œë“œ)ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
  */
 class MessageService {
 public:
     /**
-     * @brief MessageService »ı¼ºÀÚ.
-     * @param sender ¸Ş½ÃÁö ¼Û½ÅÀ» À§ÇÑ MessageSender °´Ã¼¿¡ ´ëÇÑ ÂüÁ¶.
-     * @param receiver ¸Ş½ÃÁö ¼ö½ÅÀ» À§ÇÑ MessageReceiver °´Ã¼¿¡ ´ëÇÑ ÂüÁ¶.
-     * @param errorService ¿À·ù Ã³¸®¸¦ À§ÇÑ ErrorService °´Ã¼¿¡ ´ëÇÑ ÂüÁ¶.
-     * @param myVmId ÇöÀç ÀÚÆÇ±âÀÇ °íÀ¯ ID.
-     * @param myCoordX ÇöÀç ÀÚÆÇ±âÀÇ X ÁÂÇ¥ (RESP_STOCK ¸Ş½ÃÁö ±¸¼º ½Ã »ç¿ë).
-     * @param myCoordY ÇöÀç ÀÚÆÇ±âÀÇ Y ÁÂÇ¥ (RESP_STOCK ¸Ş½ÃÁö ±¸¼º ½Ã »ç¿ë).
+     * @brief MessageService ìƒì„±ì.
+     * @param sender ë©”ì‹œì§€ ì†¡ì‹ ì„ ìœ„í•œ MessageSender ê°ì²´ì— ëŒ€í•œ ì°¸ì¡°.
+     * @param receiver ë©”ì‹œì§€ ìˆ˜ì‹ ì„ ìœ„í•œ MessageReceiver ê°ì²´ì— ëŒ€í•œ ì°¸ì¡°.
+     * @param errorService ì˜¤ë¥˜ ì²˜ë¦¬ë¥¼ ìœ„í•œ ErrorService ê°ì²´ì— ëŒ€í•œ ì°¸ì¡°.
+     * @param myVmId í˜„ì¬ ìíŒê¸°ì˜ ê³ ìœ  ID.
+     * @param myCoordX í˜„ì¬ ìíŒê¸°ì˜ X ì¢Œí‘œ (RESP_STOCK ë©”ì‹œì§€ êµ¬ì„± ì‹œ ì‚¬ìš©).
+     * @param myCoordY í˜„ì¬ ìíŒê¸°ì˜ Y ì¢Œí‘œ (RESP_STOCK ë©”ì‹œì§€ êµ¬ì„± ì‹œ ì‚¬ìš©).
      */
     MessageService(
         network::MessageSender& sender,
@@ -42,76 +42,76 @@ public:
     );
 
     /**
-     * @brief MessageReceiver¸¦ ÅëÇØ ¸Ş½ÃÁö ¼ö½ÅÀ» ½ÃÀÛÇÏµµ·Ï ¼³Á¤ÇÕ´Ï´Ù.
-     * ³»ºÎÀûÀ¸·Î °¢ ¸Ş½ÃÁö Å¸ÀÔ¿¡ ´ëÇØ onMessageReceived¸¦ È£ÃâÇÏ´Â ÇÚµé·¯¸¦ µî·ÏÇÏ°í,
-     * MessageReceiverÀÇ start()¸¦ È£ÃâÇÕ´Ï´Ù.
+     * @brief MessageReceiverë¥¼ í†µí•´ ë©”ì‹œì§€ ìˆ˜ì‹ ì„ ì‹œì‘í•˜ë„ë¡ ì„¤ì •í•©ë‹ˆë‹¤.
+     * ë‚´ë¶€ì ìœ¼ë¡œ ê° ë©”ì‹œì§€ íƒ€ì…ì— ëŒ€í•´ onMessageReceivedë¥¼ í˜¸ì¶œí•˜ëŠ” í•¸ë“¤ëŸ¬ë¥¼ ë“±ë¡í•˜ê³ ,
+     * MessageReceiverì˜ start()ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
      */
     void startReceivingMessages();
 
-    // --- ¸Ş½ÃÁö ¼Û½Å ¸Ş¼Òµå ---
+    // --- ë©”ì‹œì§€ ì†¡ì‹  ë©”ì†Œë“œ ---
 
     /**
-     * @brief Àç°í Á¶È¸ ¿äÃ» (REQ_STOCK)À» ¸ğµç ´Ù¸¥ ÀÚÆÇ±â¿¡ ºê·ÎµåÄ³½ºÆ®ÇÕ´Ï´Ù. (UC8)
-     * PFR Ç¥1: Àç°í È®ÀÎ ¿äÃ» ½ÃÀÇ msg format ÁØ¼ö.
-     * @param drinkCode Á¶È¸ÇÒ À½·áÀÇ ÄÚµå.
+     * @brief ì¬ê³  ì¡°íšŒ ìš”ì²­ (REQ_STOCK)ì„ ëª¨ë“  ë‹¤ë¥¸ ìíŒê¸°ì— ë¸Œë¡œë“œìºìŠ¤íŠ¸í•©ë‹ˆë‹¤. (UC8)
+     * PFR í‘œ1: ì¬ê³  í™•ì¸ ìš”ì²­ ì‹œì˜ msg format ì¤€ìˆ˜.
+     * @param drinkCode ì¡°íšŒí•  ìŒë£Œì˜ ì½”ë“œ.
      */
     void sendStockRequestBroadcast(const std::string& drinkCode);
 
     /**
-     * @brief Æ¯Á¤ ÀÚÆÇ±â¿¡ ¼±°áÁ¦ Àç°í È®º¸ ¿äÃ» (REQ_PREPAY)À» Àü¼ÛÇÕ´Ï´Ù. (UC16)
-     * PFR Ç¥3: ¼±°áÁ¦ ¿äÃ» ½ÃÀÇ msg format ÁØ¼ö.
-     * @param targetVmId ´ë»ó ÀÚÆÇ±âÀÇ ID.
-     * @param drinkCode ¿¹¾àÇÒ À½·áÀÇ ÄÚµå.
-     * @param authCode »ı¼ºµÈ ÀÎÁõ ÄÚµå.
+     * @brief íŠ¹ì • ìíŒê¸°ì— ì„ ê²°ì œ ì¬ê³  í™•ë³´ ìš”ì²­ (REQ_PREPAY)ì„ ì „ì†¡í•©ë‹ˆë‹¤. (UC16)
+     * PFR í‘œ3: ì„ ê²°ì œ ìš”ì²­ ì‹œì˜ msg format ì¤€ìˆ˜.
+     * @param targetVmId ëŒ€ìƒ ìíŒê¸°ì˜ ID.
+     * @param drinkCode ì˜ˆì•½í•  ìŒë£Œì˜ ì½”ë“œ.
+     * @param authCode ìƒì„±ëœ ì¸ì¦ ì½”ë“œ.
      */
     void sendPrepaymentReservationRequest(const std::string& targetVmId, const std::string& drinkCode, const std::string& authCode);
 
     /**
-     * @brief ´Ù¸¥ ÀÚÆÇ±âÀÇ Àç°í Á¶È¸ ¿äÃ»(REQ_STOCK)¿¡ ´ëÇÑ ÀÀ´ä(RESP_STOCK)À» Àü¼ÛÇÕ´Ï´Ù. (UC17)
-     * PFR Ç¥2: Àç°í È®ÀÎ ÀÀ´ä ½ÃÀÇ msg format ÁØ¼ö.
-     * @param destinationVmId ÀÀ´äÀ» ¹ŞÀ» ÀÚÆÇ±â(¿äÃ»À» º¸³½ ÀÚÆÇ±â)ÀÇ ID.
-     * @param drinkCode Á¶È¸ ¿äÃ»¹ŞÀº À½·áÀÇ ÄÚµå.
-     * @param currentStock ÇØ´ç À½·áÀÇ ÇöÀç Àç°í·® (0~99).
+     * @brief ë‹¤ë¥¸ ìíŒê¸°ì˜ ì¬ê³  ì¡°íšŒ ìš”ì²­(REQ_STOCK)ì— ëŒ€í•œ ì‘ë‹µ(RESP_STOCK)ì„ ì „ì†¡í•©ë‹ˆë‹¤. (UC17)
+     * PFR í‘œ2: ì¬ê³  í™•ì¸ ì‘ë‹µ ì‹œì˜ msg format ì¤€ìˆ˜.
+     * @param destinationVmId ì‘ë‹µì„ ë°›ì„ ìíŒê¸°(ìš”ì²­ì„ ë³´ë‚¸ ìíŒê¸°)ì˜ ID.
+     * @param drinkCode ì¡°íšŒ ìš”ì²­ë°›ì€ ìŒë£Œì˜ ì½”ë“œ.
+     * @param currentStock í•´ë‹¹ ìŒë£Œì˜ í˜„ì¬ ì¬ê³ ëŸ‰ (0~99).
      */
     void sendStockResponse(const std::string& destinationVmId, const std::string& drinkCode, int currentStock);
 
     /**
-     * @brief ´Ù¸¥ ÀÚÆÇ±âÀÇ ¼±°áÁ¦ Àç°í È®º¸ ¿äÃ»(REQ_PREPAY)¿¡ ´ëÇÑ ÀÀ´ä(RESP_PREPAY)À» Àü¼ÛÇÕ´Ï´Ù. (UC15)
-     * PFR Ç¥4: ¼±°áÁ¦ °¡´É ¿©ºÎ ÀÀ´ä ½ÃÀÇ msg format ÁØ¼ö.
-     * @param destinationVmId ÀÀ´äÀ» ¹ŞÀ» ÀÚÆÇ±â(¿äÃ»À» º¸³½ ÀÚÆÇ±â)ÀÇ ID.
-     * @param drinkCode ¿äÃ»¹ŞÀº À½·áÀÇ ÄÚµå.
-     * @param reservedItemNum ½ÇÁ¦·Î È®º¸(¿¹¾à)µÈ À½·áÀÇ ¼ö·® (¼º°ø ½Ã ¿äÃ» ¼ö·®, ½ÇÆĞ ½Ã 0).
-     * @param available Àç°í È®º¸ ¹× ¼±°áÁ¦ Ã³¸® °¡´É ¿©ºÎ (T/F).
+     * @brief ë‹¤ë¥¸ ìíŒê¸°ì˜ ì„ ê²°ì œ ì¬ê³  í™•ë³´ ìš”ì²­(REQ_PREPAY)ì— ëŒ€í•œ ì‘ë‹µ(RESP_PREPAY)ì„ ì „ì†¡í•©ë‹ˆë‹¤. (UC15)
+     * PFR í‘œ4: ì„ ê²°ì œ ê°€ëŠ¥ ì—¬ë¶€ ì‘ë‹µ ì‹œì˜ msg format ì¤€ìˆ˜.
+     * @param destinationVmId ì‘ë‹µì„ ë°›ì„ ìíŒê¸°(ìš”ì²­ì„ ë³´ë‚¸ ìíŒê¸°)ì˜ ID.
+     * @param drinkCode ìš”ì²­ë°›ì€ ìŒë£Œì˜ ì½”ë“œ.
+     * @param reservedItemNum ì‹¤ì œë¡œ í™•ë³´(ì˜ˆì•½)ëœ ìŒë£Œì˜ ìˆ˜ëŸ‰ (ì„±ê³µ ì‹œ ìš”ì²­ ìˆ˜ëŸ‰, ì‹¤íŒ¨ ì‹œ 0).
+     * @param available ì¬ê³  í™•ë³´ ë° ì„ ê²°ì œ ì²˜ë¦¬ ê°€ëŠ¥ ì—¬ë¶€ (T/F).
      */
     void sendPrepaymentReservationResponse(const std::string& destinationVmId, const std::string& drinkCode, int reservedItemNum, bool available);
 
-    // --- ¸Ş½ÃÁö ¼ö½Å ÇÚµé·¯ µî·Ï ---
+    // --- ë©”ì‹œì§€ ìˆ˜ì‹  í•¸ë“¤ëŸ¬ ë“±ë¡ ---
 
     /**
-     * @brief Æ¯Á¤ ¸Ş½ÃÁö Å¸ÀÔ¿¡ ´ëÇÑ Ã³¸® ÇÚµé·¯¸¦ µî·ÏÇÕ´Ï´Ù.
-     * UserProcessController µî ¿ÜºÎ¿¡¼­ ÀÌ ¸Ş¼Òµå¸¦ È£ÃâÇÏ¿© °¢ ¸Ş½ÃÁö Å¸ÀÔ¿¡ ´ëÇÑ Äİ¹é ÇÔ¼ö¸¦ ¼³Á¤ÇÕ´Ï´Ù.
-     * @param type Ã³¸®ÇÒ ¸Ş½ÃÁöÀÇ Å¸ÀÔ (network::Message::Type).
-     * @param handler ÇØ´ç Å¸ÀÔÀÇ ¸Ş½ÃÁö¸¦ ¹Ş¾ÒÀ» ¶§ È£ÃâµÉ ÇÔ¼ö °´Ã¼.
+     * @brief íŠ¹ì • ë©”ì‹œì§€ íƒ€ì…ì— ëŒ€í•œ ì²˜ë¦¬ í•¸ë“¤ëŸ¬ë¥¼ ë“±ë¡í•©ë‹ˆë‹¤.
+     * UserProcessController ë“± ì™¸ë¶€ì—ì„œ ì´ ë©”ì†Œë“œë¥¼ í˜¸ì¶œí•˜ì—¬ ê° ë©”ì‹œì§€ íƒ€ì…ì— ëŒ€í•œ ì½œë°± í•¨ìˆ˜ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
+     * @param type ì²˜ë¦¬í•  ë©”ì‹œì§€ì˜ íƒ€ì… (network::Message::Type).
+     * @param handler í•´ë‹¹ íƒ€ì…ì˜ ë©”ì‹œì§€ë¥¼ ë°›ì•˜ì„ ë•Œ í˜¸ì¶œë  í•¨ìˆ˜ ê°ì²´.
      */
     void registerMessageHandler(network::Message::Type type, GenericMessageHandler handler);
 
 private:
-    network::MessageSender& messageSender_;     // ¸Ş½ÃÁö ¼Û½Å¿ë °´Ã¼
-    network::MessageReceiver& messageReceiver_; // ¸Ş½ÃÁö ¼ö½Å¿ë °´Ã¼
-    service::ErrorService& errorService_;       // ¿À·ù Ã³¸®¿ë °´Ã¼
+    network::MessageSender& messageSender_;     // ë©”ì‹œì§€ ì†¡ì‹ ìš© ê°ì²´
+    network::MessageReceiver& messageReceiver_; // ë©”ì‹œì§€ ìˆ˜ì‹ ìš© ê°ì²´
+    service::ErrorService& errorService_;       // ì˜¤ë¥˜ ì²˜ë¦¬ìš© ê°ì²´
 
-    std::string myVmId_;    // ÀÌ ÀÚÆÇ±âÀÇ ID
-    int myCoordX_;          // ÀÌ ÀÚÆÇ±âÀÇ X ÁÂÇ¥
-    int myCoordY_;          // ÀÌ ÀÚÆÇ±âÀÇ Y ÁÂÇ¥
+    std::string myVmId_;    // ì´ ìíŒê¸°ì˜ ID
+    int myCoordX_;          // ì´ ìíŒê¸°ì˜ X ì¢Œí‘œ
+    int myCoordY_;          // ì´ ìíŒê¸°ì˜ Y ì¢Œí‘œ
 
     /**
-     * @brief MessageReceiver·ÎºÎÅÍ ¸ğµç Å¸ÀÔÀÇ ¸Ş½ÃÁö¸¦ ¹Ş¾Æ,
-     * µî·ÏµÈ ÇÚµé·¯ ¸Ê(messageHandlers_)À» ÂüÁ¶ÇÏ¿© ÀûÀıÇÑ ÇÚµé·¯¸¦ È£ÃâÇÏ´Â ³»ºÎ Äİ¹é.
-     * @param msg ¼ö½ÅµÈ network::Message °´Ã¼.
+     * @brief MessageReceiverë¡œë¶€í„° ëª¨ë“  íƒ€ì…ì˜ ë©”ì‹œì§€ë¥¼ ë°›ì•„,
+     * ë“±ë¡ëœ í•¸ë“¤ëŸ¬ ë§µ(messageHandlers_)ì„ ì°¸ì¡°í•˜ì—¬ ì ì ˆí•œ í•¸ë“¤ëŸ¬ë¥¼ í˜¸ì¶œí•˜ëŠ” ë‚´ë¶€ ì½œë°±.
+     * @param msg ìˆ˜ì‹ ëœ network::Message ê°ì²´.
      */
     void onMessageReceived(const network::Message& msg);
 
-    // µî·ÏµÈ ¸Ş½ÃÁö Å¸ÀÔº° ÇÚµé·¯µéÀ» ÀúÀåÇÏ´Â ¸Ê
+    // ë“±ë¡ëœ ë©”ì‹œì§€ íƒ€ì…ë³„ í•¸ë“¤ëŸ¬ë“¤ì„ ì €ì¥í•˜ëŠ” ë§µ
     // Key: network::Message::Type, Value: GenericMessageHandler, Hash: network::EnumClassHash
     std::unordered_map<network::Message::Type, GenericMessageHandler, network::EnumClassHash> messageHandlers_;
 };

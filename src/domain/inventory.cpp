@@ -1,4 +1,4 @@
-﻿#include "domain/inventory.h"
+#include "domain/inventory.h"
 
 namespace domain {
 

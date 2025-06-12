@@ -1,4 +1,4 @@
-﻿#ifndef INVENTORY_H
+#ifndef INVENTORY_H
 #define INVENTORY_H
 
 #include <string>
@@ -12,7 +12,7 @@ private:
     int qty_attribute;
 
 public:
-    Inventory(std::string dCode = "", int qty = 0)
+    Inventory(const std::string& dCode = "", int qty = 0)
         : drinkCode_attribute(dCode), qty_attribute(qty) {
         if (qty < 0) { // 초기 수량이 음수일 경우 방지
             this->qty_attribute = 0;
@@ -28,14 +28,6 @@ public:
     bool isEmpty() const {
         return qty_attribute <= 0;
     }
-
-    // void increaseQuantity(int amount) {
-    //     if (amount <= 0) return; // 증가량이 0 이하이면 변경 없음
-    //     qty_attribute += amount;
-    //     if (qty_attribute > 99) {
-    //         qty_attribute = 99; // 최대 재고 99개 제한
-    //     }
-    //}
 
     void decreaseQuantity(int amount) {
         if (amount <= 0) return; // 감소량이 0 이하이면 변경 없음

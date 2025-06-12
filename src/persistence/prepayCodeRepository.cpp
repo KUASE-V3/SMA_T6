@@ -1,47 +1,47 @@
 #include "persistence/prepayCodeRepository.h"
-#include <map> // ³»ºÎ ÀúÀå¼Ò·Î std::map »ç¿ë
+#include <map> // ë‚´ë¶€ ì €ì¥ì†Œë¡œ std::map ì‚¬ìš©
 
 namespace persistence {
 
 
-// ÀÎÁõÄÚµå·Î ¼±°áÁ¦ Á¤º¸ Á¶È¸
+// ì¸ì¦ì½”ë“œë¡œ ì„ ê²°ì œ ì •ë³´ ì¡°íšŒ
 domain::PrePaymentCode PrepayCodeRepository::findByCode(const std::string& code) {
     auto it = codes_.find(code);
     if (it != codes_.end()) {
         return it->second;
     }
-    // ÄÚµå¸¦ Ã£Áö ¸øÇÑ °æ¿ì, ±âº» »ı¼ºµÈ PrePaymentCode °´Ã¼¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
-    // UC14 (ÀÎÁõÄÚµå À¯È¿¼º °ËÁõ)ÀÇ ¿¹¿Ü »óÈ² E1: "½Ã½ºÅÛ¿¡ ÀúÀåµÇ ÀÖÁö ¾ÊÀº ÀÎÁõÄÚµåÀÌ¸é, ½Ã½ºÅÛÀº ¿¡·¯¸Ş½ÃÁö¸¦ È£ÃâÇØ º¸¿©ÁØ´Ù." [cite: 30]
-    // ÀÌ ¸®Æ÷ÁöÅä¸® ¸Ş¼Òµå´Â Ã£´Â ¿ªÇÒ¸¸ ÇÏ¸ç, ½ÇÁ¦ ¿¡·¯ ¸Ş½ÃÁö Ç¥½Ã´Â ¼­ºñ½º °èÃşÀÌ³ª ÄÁÆ®·Ñ·¯¿¡¼­ Ã³¸®ÇÕ´Ï´Ù.
-    return domain::PrePaymentCode(); // ±âº» °´Ã¼ ¹İÈ¯
+    // ì½”ë“œë¥¼ ì°¾ì§€ ëª»í•œ ê²½ìš°, ê¸°ë³¸ ìƒì„±ëœ PrePaymentCode ê°ì²´ë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
+    // UC14 (ì¸ì¦ì½”ë“œ ìœ íš¨ì„± ê²€ì¦)ì˜ ì˜ˆì™¸ ìƒí™© E1: "ì‹œìŠ¤í…œì— ì €ì¥ë˜ ìˆì§€ ì•Šì€ ì¸ì¦ì½”ë“œì´ë©´, ì‹œìŠ¤í…œì€ ì—ëŸ¬ë©”ì‹œì§€ë¥¼ í˜¸ì¶œí•´ ë³´ì—¬ì¤€ë‹¤." [cite: 30]
+    // ì´ ë¦¬í¬ì§€í† ë¦¬ ë©”ì†Œë“œëŠ” ì°¾ëŠ” ì—­í• ë§Œ í•˜ë©°, ì‹¤ì œ ì—ëŸ¬ ë©”ì‹œì§€ í‘œì‹œëŠ” ì„œë¹„ìŠ¤ ê³„ì¸µì´ë‚˜ ì»¨íŠ¸ë¡¤ëŸ¬ì—ì„œ ì²˜ë¦¬í•©ë‹ˆë‹¤.
+    return domain::PrePaymentCode(); // ê¸°ë³¸ ê°ì²´ ë°˜í™˜
 }
 
-// ¼±°áÁ¦ Á¤º¸ ÀúÀå
+// ì„ ê²°ì œ ì •ë³´ ì €ì¥
 void PrepayCodeRepository::save(const domain::PrePaymentCode& prepayCode) {
-    // prepayCodeÀÇ code_attribute¸¦ Å°·Î »ç¿ëÇÏ¿© Á¤º¸¸¦ ÀúÀåÇÏ°Å³ª ¾÷µ¥ÀÌÆ®ÇÕ´Ï´Ù.
-    // PrePaymentCode °´Ã¼ ÀÚÃ¼°¡ ÄÚµå ¹®ÀÚ¿­À» °¡Áö°í ÀÖÀ¸¹Ç·Î, prepayCode.getCode()¸¦ »ç¿ëÇÕ´Ï´Ù.
+    // prepayCodeì˜ code_attributeë¥¼ í‚¤ë¡œ ì‚¬ìš©í•˜ì—¬ ì •ë³´ë¥¼ ì €ì¥í•˜ê±°ë‚˜ ì—…ë°ì´íŠ¸í•©ë‹ˆë‹¤.
+    // PrePaymentCode ê°ì²´ ìì²´ê°€ ì½”ë“œ ë¬¸ìì—´ì„ ê°€ì§€ê³  ìˆìœ¼ë¯€ë¡œ, prepayCode.getCode()ë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤.
     codes_[prepayCode.getCode()] = prepayCode;
-    // UC12 (ÀÎÁõÄÚµå ¹ß±Ş) ´Ü°è¿¡¼­ »ı¼ºµÈ ÀÎÁõÄÚµå°¡ ÀúÀåµË´Ï´Ù. 
-    // UC15 (¼±°áÁ¦¿äÃ» ¼ö½Å ¹× Àç°í È®º¸) ´Ü°è¿¡¼­µµ ´Ù¸¥ ÀÚÆÇ±âÀÇ ¿äÃ»À¸·Î ÄÚµå°¡ ÀúÀåµÉ ¼ö ÀÖ½À´Ï´Ù. [cite: 32]
-    // ÀÌ¶§ PrePayment.code = AuthCode.code·Î ÀúÀåÇÏ´Â ·ÎÁ÷ÀÌ ÀÖÀ½. [cite: 32]
+    // UC12 (ì¸ì¦ì½”ë“œ ë°œê¸‰) ë‹¨ê³„ì—ì„œ ìƒì„±ëœ ì¸ì¦ì½”ë“œê°€ ì €ì¥ë©ë‹ˆë‹¤. 
+    // UC15 (ì„ ê²°ì œìš”ì²­ ìˆ˜ì‹  ë° ì¬ê³  í™•ë³´) ë‹¨ê³„ì—ì„œë„ ë‹¤ë¥¸ ìíŒê¸°ì˜ ìš”ì²­ìœ¼ë¡œ ì½”ë“œê°€ ì €ì¥ë  ìˆ˜ ìˆìŠµë‹ˆë‹¤. [cite: 32]
+    // ì´ë•Œ PrePayment.code = AuthCode.codeë¡œ ì €ì¥í•˜ëŠ” ë¡œì§ì´ ìˆìŒ. [cite: 32]
 }
 
-// ¼±°áÁ¦ ÄÚµå »óÅÂ º¯°æ (¿¹: ACTIVE -> USED)
+// ì„ ê²°ì œ ì½”ë“œ ìƒíƒœ ë³€ê²½ (ì˜ˆ: ACTIVE -> USED)
 bool PrepayCodeRepository::updateStatus(const std::string& code, domain::CodeStatus newStatus) {
     auto it = codes_.find(code);
     if (it != codes_.end()) {
 
         if (newStatus == domain::CodeStatus::USED) {
-            if (it->second.isUsable()) { // ACTIVE »óÅÂÀÏ ¶§¸¸ USED·Î º¯°æ °¡´É
-                it->second.markAsUsed(); // UC14: "ÀÏÄ¡ÇÒ °æ¿ì AuthCode¸¦ ¸¸·á½ÃÅ²´Ù." 
+            if (it->second.isUsable()) { // ACTIVE ìƒíƒœì¼ ë•Œë§Œ USEDë¡œ ë³€ê²½ ê°€ëŠ¥
+                it->second.markAsUsed(); // UC14: "ì¼ì¹˜í•  ê²½ìš° AuthCodeë¥¼ ë§Œë£Œì‹œí‚¨ë‹¤." 
             } else {
-                // ÀÌ¹Ì USED »óÅÂÀÌ°Å³ª ´Ù¸¥ ºñÈ°¼º »óÅÂÀÏ ¼ö ÀÖÀ½
+                // ì´ë¯¸ USED ìƒíƒœì´ê±°ë‚˜ ë‹¤ë¥¸ ë¹„í™œì„± ìƒíƒœì¼ ìˆ˜ ìˆìŒ
                 return false; 
             }
         }
-        return false; // ±× ¿Ü »óÅÂ º¯°æÀº ¹ÌÁö¿ø
+        return false; // ê·¸ ì™¸ ìƒíƒœ ë³€ê²½ì€ ë¯¸ì§€ì›
     }
-    return false; // ÄÚµå¸¦ Ã£Áö ¸øÇÔ
+    return false; // ì½”ë“œë¥¼ ì°¾ì§€ ëª»í•¨
 }
 
 } // namespace persistence
