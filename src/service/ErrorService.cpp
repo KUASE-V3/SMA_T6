@@ -2,13 +2,6 @@
 #include <string>
 
 namespace service {
-
-/**
- * @brief ErrorType과 추가 컨텍스트를 바탕으로 사용자에게 보여줄 기본 오류 메시지를 생성합니다.
- * @param type 발생한 오류의 타입.
- * @param context 오류 메시지에 포함될 추가적인 문맥 정보.
- * @return 사용자 친화적인 오류 메시지 문자열.
- */
 std::string ErrorService::getDefaultUserMessageForError(ErrorType type, const std::string& context) {
     std::string message;
     std::string ctx_msg = context.empty() ? "" : " (" + context + ")";
@@ -92,11 +85,6 @@ std::string ErrorService::getDefaultUserMessageForError(ErrorType type, const st
     return message;
 }
 
-/**
- * @brief ErrorType에 따라 UserProcessController가 취해야 할 기본 해결 수준을 결정합니다.
- * @param type 발생한 오류의 타입.
- * @return 권장되는 ErrorResolutionLevel.
- */
 ErrorResolutionLevel ErrorService::getDefaultResolutionLevelForError(ErrorType type) {
     switch (type) {
         case ErrorType::INVALID_MENU_CHOICE:
