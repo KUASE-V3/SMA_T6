@@ -21,7 +21,7 @@ private:
     std::shared_ptr<domain::Order> heldOrder_attribute; // domain::Order 명시
 
 public:
-    PrePaymentCode(std::string code = "",
+    PrePaymentCode(const std::string& code = "",
                    CodeStatus status = CodeStatus::ACTIVE, // domain::CodeStatus 또는 CodeStatus
                    std::shared_ptr<domain::Order> order = nullptr) // domain::Order 명시
         : code_attribute(code), status_attribute(status), heldOrder_attribute(order) {}

@@ -12,7 +12,7 @@ private:
     std::string port_attribute;              // 자판기 네트워크 포트 정보
 
 public:
-    VendingMachine(std::string vmId = "", int x = 0, int y = 0, std::string port = "")
+    VendingMachine(const std::string& vmId = "", int x = 0, int y = 0, const std::string& port = "")
         : id_attribute(vmId), location_attribute(std::make_pair(x, y)), port_attribute(port) {}
 
     // Getters

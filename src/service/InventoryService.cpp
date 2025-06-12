@@ -18,11 +18,7 @@ InventoryService::InventoryService(
     drinkRepository_(drinkRepo),
     errorService_(errorService) {}
 
-/**
- * @brief 시스템에 정의된 모든 음료 종류의 목록을 반환합니다.
- * (UC1. 음료 목록 조회 및 표시 - Typical Course 1: "(S): 자판기가 Drink List를를 확인해...")
- * @return domain::Drink 객체들의 벡터. Repository 접근 실패 시 빈 벡터 반환 및 오류 처리.
- */
+
 std::vector<domain::Drink> InventoryService::getAllDrinkTypes() {
     try {
         // PFR - R1.1: 전체 20종류의 음료 메뉴를 사용자에게 표시
@@ -38,13 +34,7 @@ std::vector<domain::Drink> InventoryService::getAllDrinkTypes() {
     }
 }
 
-/**
- * @brief 특정 음료의 현재 자판기 내 판매 가능 여부, 가격, 실제 재고량을 확인합니다.
- * (UC2 Typical Course 2: "(S): 시스템은 Inventory를 참조해 해당 음료가 자판기에서 판매 가능한지 확인한다.")
- * (UC3 Typical Course 1: "(S): 사용자가 선택한 음료에 대해 시스템은 재고를 조회해 재고 유무를 판단한다.")
- * @param drinkCode 확인할 음료의 코드.
- * @return DrinkAvailabilityInfo 구조체 (isAvailable, price, currentStock 포함).
- */
+
 InventoryService::DrinkAvailabilityInfo InventoryService::checkDrinkAvailabilityAndPrice(const std::string& drinkCode) {
     DrinkAvailabilityInfo info; // isAvailable = false, price = 0, currentStock = 0 으로 자동 초기화
 
@@ -92,12 +82,6 @@ void InventoryService::decreaseStock(const std::string& drinkCode) {
     }
 }
 
-
-/**
- * @brief 특정 음료의 재고를 지정된 수량만큼 감소시킵니다.
- * @param drinkCode 재고를 감소시킬 음료의 코드.
- * @param amount 감소시킬 수량.
- */
 void InventoryService::decreaseStockByAmount(const std::string& drinkCode, int amount) {
     try {
         bool success = inventoryRepository_.decreaseStockByAmount(drinkCode, amount);

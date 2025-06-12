@@ -20,7 +20,7 @@
 #include <vector>
 #include <optional>
 #include <chrono>
-#include <thread>   // std::this_thread::sleep_for (음료 배출 등 간단한 동기 지연)
+#include <thread>  
 #include <mutex>
 #include <condition_variable>
 #include <iostream> 
@@ -57,11 +57,10 @@ UserProcessController::UserProcessController(
 }
 
 void UserProcessController::run() {
-    { // 초기화는 메인 스레드에서, io_context 스레드 시작 전 수행
+    { 
         if (currentState_ == ControllerState::INITIALIZING) {
             initializeSystemAndRegisterMessageHandlers(); // 내부에서 콜백 등록
             userInterface_.displayMessage("자판기 시스템을 시작합니다. 현재 자판기 ID: " + myVendingMachineId_);
-            // changeState는 뮤텍스를 사용하므로 여기서 호출 가능
             changeState(ControllerState::SYSTEM_READY);
         }
     }
@@ -85,8 +84,23 @@ void UserProcessController::changeState(ControllerState newState) {
     currentState_ = newState;
 }
 
+void UserProcessController::handleStockResponseTimeout() {
+    std::lock_guard<std::mutex> lock(mtx_);
+
+    if (currentState_ != ControllerState::AWAITING_STOCK_RESPONSES) {
+        return; 
+    }
+
+    if (!availableOtherVmsForDrink_.empty()) {
+        currentState_ = ControllerState::DISPLAYING_OTHER_VM_OPTIONS;
+    } else {
+        last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, "주변 자판기 재고 조회 타임아웃");
+        currentState_ = ControllerState::HANDLING_ERROR;
+    }
+}
+
 void UserProcessController::resetCurrentTransactionState() {
-    std::lock_guard<std::mutex> lock(mtx_); // 공유 멤버 변수 접근 보호
+    std::lock_guard<std::mutex> lock(mtx_); 
     currentActiveOrder_.reset();
     isCurrentOrderPrepayment_ = false;
     pendingDrinkSelection_.reset();
@@ -97,7 +111,6 @@ void UserProcessController::resetCurrentTransactionState() {
 }
 
 domain::Drink UserProcessController::getDrinkDetails(const std::string& drinkCode) {
-    // InventoryService 내부에서 데이터 접근 동기화가 이루어진다고 가정.
     try {
         auto allDrinks = inventoryService_.getAllDrinkTypes();
         for (const auto& drink : allDrinks) {
@@ -105,7 +118,7 @@ domain::Drink UserProcessController::getDrinkDetails(const std::string& drinkCod
                 return drink;
             }
         }
-        { // 오류 정보 설정 및 상태 변경을 위해 뮤텍스 사용
+        { 
             std::lock_guard<std::mutex> lock(mtx_);
             last_error_info_ = errorService_.processOccurredError(ErrorType::DRINK_NOT_FOUND, "음료 코드(" + drinkCode + ")가 메뉴에 없습니다.");
             currentState_ = ControllerState::HANDLING_ERROR;
@@ -152,36 +165,27 @@ void UserProcessController::startResponseTimer(std::chrono::seconds duration, Co
 // Asio 타이머 만료 시 호출될 콜백
 void UserProcessController::handleTimeout(const boost::system::error_code& ec, ControllerState expectedStateDuringTimeout) {
     if (ec == boost::asio::error::operation_aborted) {
-        // std::cout << "[" << myVendingMachineId_ << "] DEBUG: Timer aborted (normal operation, response_timer_.cancel() called)." << std::endl;
         return;
     }
 
-    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout - Timeout occurred. ec: " << ec.message() << ", expectedState: " << static_cast<int>(expectedStateDuringTimeout) << ", currentState: " << static_cast<int>(currentState_) << std::endl;
 
     std::lock_guard<std::mutex> lock(mtx_); // 공유 자원 접근 보호
     if (currentState_ == expectedStateDuringTimeout) {
         if (currentState_ == ControllerState::AWAITING_STOCK_RESPONSES) {
-            // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout for AWAITING_STOCK_RESPONSES. availableOtherVmsForDrink_ size: " << availableOtherVmsForDrink_.size() << std::endl;
             if (!availableOtherVmsForDrink_.empty()) { // 받은 응답이 하나라도 있다면
-                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout - Stock responses received (" << availableOtherVmsForDrink_.size() << "). Changing state to DISPLAYING_OTHER_VM_OPTIONS." << std::endl;
                 currentState_ = ControllerState::DISPLAYING_OTHER_VM_OPTIONS; // UC10으로
             } else { // 받은 응답이 전혀 없다면
-                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout - No stock responses received. Setting error." << std::endl;
                 last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, "주변 자판기 재고 조회 (Asio 타임아웃 - 응답 없음)");
                 currentState_ = ControllerState::HANDLING_ERROR;
             }
         } else if (currentState_ == ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION) {
             std::string targetVmId_str = selectedTargetVmForPrepayment_ ? selectedTargetVmForPrepayment_->getId() : "대상 자판기";
-            //  std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout for ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION. Target: " << targetVmId_str << ". Setting error." << std::endl;
             last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, targetVmId_str + "로부터 선결제 응답 없음");
             currentState_ = ControllerState::HANDLING_ERROR;
         }
-        // 다른 상태에 대한 타임아웃 처리가 필요하다면 여기에 추가
 
         cv_data_ready_ = true; // 메인 스레드가 다음 동작을 하도록 알림
         cv_.notify_one();      // 대기 중인 메인 스레드(processCurrentState)를 깨움
-    } else {
-        // std::cout << "[" << myVendingMachineId_ << "] DEBUG: handleTimeout - Timeout for state " << static_cast<int>(expectedStateDuringTimeout) << " but current state is " << static_cast<int>(currentState_) << ". Ignoring timeout." << std::endl;
     }
 }
 
@@ -203,39 +207,20 @@ void UserProcessController::processCurrentState() {
             state_awaitingDrinkSelection(); // 여기서 재고 없으면 BROADCASTING_STOCK_REQUEST 로 상태 변경
             break;
         case ControllerState::BROADCASTING_STOCK_REQUEST: // UC8: 메시지 전송 및 대기 상태로 전환
-            state_broadcastingStockRequest(); // 이 함수 내부에서 메시지 전송, current_timeout_duration_ 설정, 타이머 시작, AWAITING_STOCK_RESPONSES로 상태 변경까지 수행
-            // 여기서 break 후, 다음 루프에서 AWAITING_STOCK_RESPONSES case를 타게 됨
+            state_broadcastingStockRequest(); 
             break;
-        case ControllerState::AWAITING_STOCK_RESPONSES: // UC9: 재고 조회 응답 대기
-            {
-                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: processCurrentState - Entering AWAITING_STOCK_RESPONSES wait." << std::endl;
-                std::unique_lock<std::mutex> lock(mtx_);
-                // current_timeout_duration_은 state_broadcastingStockRequest에서 설정됨 (예: 3초 또는 30초)
-                std::chrono::seconds waitDuration = current_timeout_duration_ + std::chrono::seconds(1); // Asio 타이머보다 약간 길게
-
-                if (cv_.wait_for(lock, waitDuration, [this]{ return cv_data_ready_; })) {
-                    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - Woke up by cv_data_ready_ (response or Asio timeout handled)." << std::endl;
-                    // 상태 변경은 onRespStockReceived 또는 handleTimeout 콜백에서 이미 처리되었을 것임.
-                } else { // cv_.wait_for 자체 타임아웃 (안전장치)
-                    std::lock_guard<std::mutex> guard(mtx_); // unique_lock이 해제되었으므로 다시 잠글 필요 없음, 아래에서 다시 잠금
-                    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - cv_.wait_for timed out." << std::endl;
-                    // 이 시점에서 Asio 타이머의 handleTimeout이 이미 실행되었을 가능성이 높음.
-                    // 만약 handleTimeout이 어떤 이유로 상태 변경을 못했거나 cv_를 깨우지 못했다면, 여기서 한번 더 확인.
-                    std::lock_guard<std::mutex> state_check_lock(mtx_); // currentState_ 접근을 위해 다시 잠금
-                    if (currentState_ == ControllerState::AWAITING_STOCK_RESPONSES) { // 상태가 여전히 그대로라면
-                        if (!availableOtherVmsForDrink_.empty()) { // 응답이 하나라도 있다면
-                            // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - cv_.wait_for timeout, but responses ARE available. Moving to DISPLAYING_OTHER_VM_OPTIONS." << std::endl;
-                            currentState_ = ControllerState::DISPLAYING_OTHER_VM_OPTIONS;
-                        } else { // 응답이 전혀 없다면
-                            // std::cout << "[" << myVendingMachineId_ << "] DEBUG: AWAITING_STOCK_RESPONSES - cv_.wait_for timeout, and NO responses available. Setting error." << std::endl;
-                            last_error_info_ = errorService_.processOccurredError(ErrorType::RESPONSE_TIMEOUT_FROM_OTHER_VM, "주변 자판기 재고 조회 (컨트롤러 cv_.wait_for 타임아웃 - 응답 없음)");
-                            currentState_ = ControllerState::HANDLING_ERROR;
-                        }
-                    }
-                }
-                cv_data_ready_ = false; // 플래그 리셋
+        case ControllerState::AWAITING_STOCK_RESPONSES:
+        {
+            std::unique_lock<std::mutex> lock(mtx_);
+            
+            if (cv_.wait_for(lock, current_timeout_duration_, [this]{ return cv_data_ready_; })) {
+               
+            } else {
+                handleStockResponseTimeout();
             }
-            break;
+            cv_data_ready_ = false;
+        }
+        break;
 
         case ControllerState::AWAITING_PAYMENT_CONFIRMATION:
             state_awaitingPaymentConfirmation();
@@ -246,14 +231,11 @@ void UserProcessController::processCurrentState() {
          case ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION: // UC16: 선결제 예약 요청 및 응답 대기
             state_issuingAuthCodeAndRequestingReservation(); // 메시지 전송 및 타이머 시작
             {
-                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: processCurrentState - Entering ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION wait." << std::endl;
                 std::unique_lock<std::mutex> lock(mtx_);
                 // current_timeout_duration_은 state_issuingAuthCodeAndRequestingReservation에서 10초로 설정됨
                 std::chrono::seconds waitDuration = current_timeout_duration_ + std::chrono::seconds(1);
                 if (cv_.wait_for(lock, waitDuration, [this]{ return cv_data_ready_; })) {
-                    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION - Woke up by cv_data_ready_." << std::endl;
                 } else { // cv_.wait_for 자체 타임아웃
-                    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION - cv_.wait_for timed out." << std::endl;
                     std::lock_guard<std::mutex> state_check_lock(mtx_);
                     if (currentState_ == ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION) {
                         std::string targetVmId_str = selectedTargetVmForPrepayment_ ? selectedTargetVmForPrepayment_->getId() : "대상 자판기";
@@ -298,14 +280,13 @@ void UserProcessController::processCurrentState() {
     }
 }
 // --- 각 유스케이스 상태 처리 함수들 ---
-// (내부에서 공유 멤버 변수 접근 시 std::lock_guard<std::mutex> lock(mtx_); 사용)
 
 // UC1: 음료 목록 조회 및 표시
 void UserProcessController::state_displayingMainMenu() {
     resetCurrentTransactionState(); // 내부에서 뮤텍스 사용
     userInterface_.displayMessage("\n=========== Vending Machine Menu ===========");
     std::vector<domain::Drink> allDrinks = inventoryService_.getAllDrinkTypes(); // PFR R1.1
-    userInterface_.displayDrinkList(allDrinks, {});
+    userInterface_.displayDrinkList(allDrinks);
 
     std::vector<std::string> menuOptions = {
         "1. 음료 선택 (구매/다른 자판기 조회)",
@@ -329,7 +310,7 @@ void UserProcessController::state_displayingMainMenu() {
 
 // UC2: 사용자 음료 선택 처리 & UC3: 현재 자판기 재고 확인
 void UserProcessController::state_awaitingDrinkSelection() {
-    std::string drinkCode = userInterface_.selectDrink(inventoryService_.getAllDrinkTypes(), {}); // 블로킹 입력
+    std::string drinkCode = userInterface_.selectDrink(inventoryService_.getAllDrinkTypes()); // 블로킹 입력
     if (drinkCode.empty()) {
         userInterface_.displayMessage("음료 선택이 취소되었습니다.");
         changeState(ControllerState::DISPLAYING_MAIN_MENU);
@@ -393,15 +374,17 @@ void UserProcessController::state_awaitingPaymentConfirmation() {
     userInterface_.displayMessage(drinkToPay.getName() + " " + action_type + target_info + ". 가격: " + std::to_string(price) + "원.");
     userInterface_.displayPaymentPrompt(price); // (S) UC4.1 / UC11.1
 
-    if (userInterface_.confirmPayment()) { // (A) UC4.2 / UC11.2 (블로킹 입력)
-        changeState(ControllerState::PROCESSING_PAYMENT);
-    } else {
-        userInterface_.displayMessage(action_type + "가 취소되었습니다.");
-        changeState(ControllerState::DISPLAYING_MAIN_MENU);
-    }
+    // 타임아웃 기능이 있는 새 함수를 호출하도록 변경합니다.
+        if (userInterface_.confirmPayment(std::chrono::seconds(15))) {
+            // 'Y'를 입력한 경우
+            changeState(ControllerState::PROCESSING_PAYMENT);
+        } else {
+            // 'N', 다른 값, 또는 30초 타임아웃 시
+            userInterface_.displayMessage(action_type + "가 취소되었거나 응답 시간이 초과되었습니다.");
+            changeState(ControllerState::DISPLAYING_MAIN_MENU);
+        }
 }
 
-// UC4, UC5, UC6: 실제 결제 시도 및 결과 처리
 void UserProcessController::state_processingPayment() {
     domain::Order orderToProcess;
     bool isPrepay;
@@ -427,21 +410,11 @@ void UserProcessController::state_processingPayment() {
         userInterface_.displayPaymentResult(true, "결제가 성공적으로 완료되었습니다!");
         
         orderService_.processOrderApproval(*currentActiveOrder_, isPrepay); // (S) UC5.2
-        // // <<< 디버그 로그 추가 >>>
-        // std::cout << "[" << myVendingMachineId_ << "] DEBUG: state_processingPayment - Payment success. isPrepay: " << isPrepay << std::endl;
-        // if (selectedTargetVmForPrepayment_) {
-        //     std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment ID: " << selectedTargetVmForPrepayment_->getId() << std::endl;
-        // } else {
-        //     std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment_ is NOT set." << std::endl;
-        // }
-
         if (isPrepay) { // (S) UC5.2
             if (!selectedTargetVmForPrepayment_) {
-                // std::cout << "[" << myVendingMachineId_ << "] ERROR: 선결제 대상 자판기 미선택 상태로 UC16 진입 시도!" << std::endl; 
                 last_error_info_ = errorService_.processOccurredError(ErrorType::UNEXPECTED_SYSTEM_ERROR, "선결제 대상 자판기 미선택");
                 currentState_ = ControllerState::HANDLING_ERROR;
             } else {
-                // std::cout << "[" << myVendingMachineId_ << "] DEBUG: Changing state to ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION" << std::endl; // <<< 로그 추가
                 currentState_ = ControllerState::ISSUING_AUTH_CODE_AND_REQUESTING_RESERVATION; // UC16으로
             }
         } else { // (S) UC5.3
@@ -481,7 +454,6 @@ void UserProcessController::state_dispensingDrink() {
     if (prepaymentOrder) { // 선결제 음료 수령 (UC14의 일부)
         prepaymentService_.changeAuthCodeStatusToUsed(certCodeForUsed); // (S) UC14.2
     }
-    // 일반 구매 시 재고 차감(UC7.2)은 OrderService::processOrderApproval에서 이미 처리됨.
     changeState(ControllerState::TRANSACTION_COMPLETED_RETURN_TO_MENU);
 }
 
@@ -540,7 +512,6 @@ void UserProcessController::state_broadcastingStockRequest() {
 
 // UC10, UC11: 다른 자판기 옵션 표시 및 선결제 결정
 void UserProcessController::state_displayingOtherVmOptions() {
-    // 이 함수는 AWAITING_STOCK_RESPONSES에서 타임아웃 또는 모든 응답 수신 후 호출됨
     std::optional<domain::Drink> currentDrinkSelection;
     std::vector<service::OtherVendingMachineInfo> currentAvailableVms;
     {
@@ -572,13 +543,15 @@ void UserProcessController::state_displayingOtherVmOptions() {
             }
             userInterface_.displayNearestVendingMachine(*nearestVm, currentDrinkSelection->getName());
 
-            if (userInterface_.confirmPrepayment(currentDrinkSelection->getName())) { // UC11 (S)-1, (A)-2 (블로킹 입력)
-                std::lock_guard<std::mutex> lock(mtx_); // 공유 변수 업데이트 보호
+            if (userInterface_.confirmPrepayment(currentDrinkSelection->getName(), std::chrono::seconds(15))) {
+                // 'Y'를 입력한 경우에만 true가 반환됨
+                std::lock_guard<std::mutex> lock(mtx_);
                 currentActiveOrder_ = orderService_.createOrder(myVendingMachineId_, *currentDrinkSelection);
                 isCurrentOrderPrepayment_ = true;
-                currentState_ = ControllerState::AWAITING_PAYMENT_CONFIRMATION; // UC11 (S)-3 -> UC4
+                currentState_ = ControllerState::AWAITING_PAYMENT_CONFIRMATION;
             } else {
-                userInterface_.displayMessage("선결제가 취소되었습니다.");
+                // 'N', 다른 값 입력, 또는 타임아웃 시 모두 false가 반환됨
+                userInterface_.displayMessage("선결제가 취소되었거나 응답 시간이 초과되었습니다.");
                 changeState(ControllerState::DISPLAYING_MAIN_MENU);
             }
         } else {
@@ -594,15 +567,9 @@ void UserProcessController::state_displayingOtherVmOptions() {
 // UC16: 재고 확보 요청 전송
 void UserProcessController::state_issuingAuthCodeAndRequestingReservation() {
     std::string targetVmId, drinkCode, certCode, drinkName;
-    { // 공유 변수 읽기 보호
-      // <<< 각 정보 유효성 검사 로그 추가 >>>
+    { 
         std::lock_guard<std::mutex> lock(mtx_);
-        // if (!currentActiveOrder_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: currentActiveOrder_ 없음" << std::endl;
-        // else if (currentActiveOrder_->getCertCode().empty())  std::cout << "[" << myVendingMachineId_ << "] DEBUG: currentActiveOrder_에 certCode 없음" << std::endl;
-        // if (!pendingDrinkSelection_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: pendingDrinkSelection_ 없음" << std::endl;
-        // if (!selectedTargetVmForPrepayment_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: selectedTargetVmForPrepayment_ 없음" << std::endl;
-        // if (!isCurrentOrderPrepayment_) std::cout << "[" << myVendingMachineId_ << "] DEBUG: isCurrentOrderPrepayment_가 false임" << std::endl;
-
+    
         if (!currentActiveOrder_ || currentActiveOrder_->getCertCode().empty() || !pendingDrinkSelection_ || !selectedTargetVmForPrepayment_ || !isCurrentOrderPrepayment_) {
             last_error_info_ = errorService_.processOccurredError(ErrorType::UNEXPECTED_SYSTEM_ERROR, "선결제 요청: 정보 부족");
             currentState_ = ControllerState::HANDLING_ERROR;
@@ -624,7 +591,6 @@ void UserProcessController::state_issuingAuthCodeAndRequestingReservation() {
 
 // UC12: 인증코드 발급 (안내)
 void UserProcessController::state_displayingAuthCodeInfo() {
-    // 이 함수는 onRespPrepayReceived 콜백에서 상태 변경 후 호출됨
     domain::Order orderToShow;
     domain::VendingMachine targetVmToShow;
     std::string drinkNameToShow;
@@ -724,7 +690,6 @@ void UserProcessController::state_handlingError(const service::ErrorInfo& errorI
     changeState(nextState); // 상태 변경
 }
 
-// --- 콜백 핸들러들 (io_context 스레드에서 실행) ---
 
 void UserProcessController::onReqStockReceived(const network::Message& msg) { // UC17
     std::lock_guard<std::mutex> lock(mtx_); // 공유 자원 접근 보호
@@ -742,16 +707,6 @@ void UserProcessController::onReqStockReceived(const network::Message& msg) { //
 
 void UserProcessController::onRespStockReceived(const network::Message& msg) { // UC9
     std::lock_guard<std::mutex> lock(mtx_);
-    // // <<< 디버그 로그 추가 >>>
-    // std::cout << "[" << myVendingMachineId_ << "] onRespStockReceived: 메시지 수신됨 (from: " << msg.src_id << ")" << std::endl;
-    // if (pendingDrinkSelection_) {
-    //     std::cout << "  - 현재 pendingDrinkSelection_ 음료 코드: " << pendingDrinkSelection_->getDrinkCode() << std::endl;
-    // } else {
-    //     std::cout << "  - 현재 pendingDrinkSelection_이 설정되지 않음!" << std::endl;
-    // }
-    // if (msg.msg_content.count("item_code")) {
-    //     std::cout << "  - item_code: " << msg.msg_content.at("item_code") << std::endl;
-    // }
 
     try {
         std::string drinkCode = msg.msg_content.at("item_code");
@@ -766,25 +721,13 @@ void UserProcessController::onRespStockReceived(const network::Message& msg) { /
             if(alreadyReceived) return;
         
             availableOtherVmsForDrink_.push_back({vmId, x, y, true});
-            // // <<< 디버그 로그 추가 >>>
-            // std::cout << "  - 유효한 재고 응답. availableOtherVmsForDrink_ 크기: " << availableOtherVmsForDrink_.size() << "/" << total_other_vms_ << std::endl;
-
-            // // <<< 디버그 로그 추가 >>>
-            // std::cout << "  - 모든 다른 VM으로부터 응답 수신 완료 또는 지정된 수만큼 받음. 타이머 취소 및 상태 변경 시도." << std::endl;
-            
-        
             if (availableOtherVmsForDrink_.size() >= total_other_vms_) {
                 response_timer_.cancel(); // 모든 응답 수신, 타이머 취소
                 currentState_ = ControllerState::DISPLAYING_OTHER_VM_OPTIONS; // (S) UC9.2 -> UC10
                 cv_data_ready_ = true;
                 cv_.notify_one();
             }else{
-                
-            //  // <<< 디버그 로그 추가 >>>
-            //  std::cout << "  - 유효하지 않은 재고 응답 또는 조건 불일치 (요청 음료: "
-            //    << (pendingDrinkSelection_ ? pendingDrinkSelection_->getDrinkCode() : "N/A")
-            //       << ", 수신 음료: " << drinkCode << ", 재고: " << stockQty << ")" << std::endl;
-    
+                userInterface_.displayMessage("[" + vmId + "] " + drinkCode + " 재고: " + std::to_string(stockQty) + "개 (총 " + std::to_string(availableOtherVmsForDrink_.size()) + "/" + std::to_string(total_other_vms_) + ")");
             }
         }
     } catch (const std::exception& e) { // UC9 E1
@@ -796,7 +739,6 @@ void UserProcessController::onRespStockReceived(const network::Message& msg) { /
 }
 
 void UserProcessController::onReqPrepayReceived(const network::Message& msg) { // UC15
-    // std::cout << "[" << myVendingMachineId_ << "] DEBUG: onReqPrepayReceived 진입 (from: " << msg.src_id << ")" << std::endl; // <<< 로그 추가
     std::lock_guard<std::mutex> lock(mtx_);
     try { // (S) UC15.1
         std::string drinkCode = msg.msg_content.at("item_code");
