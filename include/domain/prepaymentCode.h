@@ -41,6 +41,8 @@ public:
     void setHeldOrder(std::shared_ptr<domain::Order> order) { // domain::Order 명시
         heldOrder_attribute = order;
     }
+
+    static std::string generateRandomCode(); // 랜덤 코드 생성 함수 선언 추가
 };
 
 } // namespace domain

@@ -6,6 +6,7 @@
 
 namespace domain {
 class Inventory {
+
 private:
     std::string drinkCode_attribute;
     int qty_attribute;

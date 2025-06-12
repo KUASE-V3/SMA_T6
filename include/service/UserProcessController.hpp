@@ -4,8 +4,8 @@
 #include <vector>
 #include <optional>
 #include <chrono>
-#include <memory> // std::shared_ptr (PrePaymentCode가 Order를 가짐)
 #include <mutex>  // std::mutex, std::lock_guard, std::unique_lock
+#include <memory> // std::shared_ptr (PrePaymentCode가 Order를 가짐)
 #include <condition_variable> // std::condition_variable
 
 #include "domain/drink.h"
@@ -16,8 +16,8 @@
 #include "service/DistanceService.hpp" // service::OtherVendingMachineInfo
 #include "service/ErrorService.hpp"    // service::ErrorInfo
 
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/steady_timer.hpp> // Asio 타이머
+#include "boost/asio/io_context.hpp" 
+#include "boost/asio/steady_timer.hpp" // Asio 타이머
 
 namespace presentation { class UserInterface; }
 namespace service {
@@ -29,7 +29,6 @@ namespace service {
 }
 
 namespace service {
-
 /**
  * @brief 자판기 시스템의 전체 사용자 상호작용 흐름과 비즈니스 로직을 제어하는 메인 컨트롤러입니다.
  * 멀티스레드 환경에 대응하여, 메인 스레드는 UI 및 상태 전이를, 별도 io_context 스레드는
